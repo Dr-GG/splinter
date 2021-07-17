@@ -1,0 +1,13 @@
+IF (OBJECT_ID('tera.PendingTeraMessages') IS NOT NULL) DROP TABLE tera.PendingTeraMessages;
+IF (OBJECT_ID('tera.TeraMessages') IS NOT NULL) DROP TABLE tera.TeraMessages;
+IF (OBJECT_ID('tera.TeraAgents') IS NOT NULL) DROP TABLE tera.TeraAgents;
+IF (OBJECT_ID('nano.NanoInstances') IS NOT NULL) DROP TABLE nano.NanoInstances;
+IF (OBJECT_ID('nano.NanoTypes') IS NOT NULL) DROP TABLE nano.NanoTypes;
+IF (OBJECT_ID('platform.TeraPlatforms') IS NOT NULL) DROP TABLE platform.TeraPlatforms;
+IF (OBJECT_ID('platform.OperatingSystems') IS NOT NULL) DROP TABLE platform.OperatingSystems;
+IF (OBJECT_ID('masterdata.OperatingSystems') IS NOT NULL) DROP TABLE masterdata.OperatingSystems;
+IF (OBJECT_ID('masterdata.ProcessorArchitectures') IS NOT NULL) DROP TABLE masterdata.ProcessorArchitectures;
+IF (OBJECT_ID('masterdata.TeraPlatformStatuses') IS NOT NULL) DROP TABLE masterdata.TeraPlatformStatuses;
+IF (OBJECT_ID('masterdata.TeraAgentStatuses') IS NOT NULL) DROP TABLE masterdata.TeraAgentStatuses;
+IF (OBJECT_ID('masterdata.TeraMessageStatuses') IS NOT NULL) DROP TABLE masterdata.TeraMessageStatuses;
+IF (OBJECT_ID('masterdata.TeraMessageErrorCodes') IS NOT NULL) DROP TABLE masterdata.TeraMessageErrorCodes;

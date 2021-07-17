@@ -1,0 +1,27 @@
+﻿using System.Text.Json;
+using Splinter.NanoTypes.Domain.Constants;
+using Splinter.NanoTypes.Domain.Messaging;
+
+namespace Splinter.NanoInstances.Extensions
+{
+    public static class TeraMessageExtensions
+    {
+        public static string JsonMessage(this TeraMessage message, object? value)
+        {
+            var strValue = value == null
+                ? string.Empty
+                : JsonSerializer.Serialize(value, JsonConstants.DefaultOptions);
+
+            message.Message = strValue;
+
+            return strValue;
+        }
+
+        public static TValue? JsonMessage<TValue>(this TeraMessage message) where TValue : class
+        {
+            return string.IsNullOrEmpty(message.Message) 
+                ? null 
+                : JsonSerializer.Deserialize<TValue>(message.Message, JsonConstants.DefaultOptions);
+        }
+    }
+}

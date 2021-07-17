@@ -1,0 +1,148 @@
+{
+  "Splinter":
+  {
+    "Default": {
+      "Messaging": {
+        "MaximumTeraAgentFetchCount": 20,
+        "MaximumSyncRetryCount": 5,
+        "MaximumDequeueRetryCount": 5,
+        "Disposing": {
+          "MaximumNumberOfMessagesToDispose": 100,
+          "DefaultExpiryTimeSpan": "04:00:00",
+          "MessageDisposalIntervalTimeSpan": "00:01:00"
+        }
+      },
+      "NanoTypeCache": {
+        "SlidingExpirationTimespan": "01:00:00"
+      },
+      "TeraAgentCache": {
+        "SlidingExpirationTimespan": "01:00:00"
+      },
+      "SplinterTeraAgentIds": {
+        "TeraPlatformId": "{33208610-6A1B-41AA-ABBE-565F2D067D6D}",
+        "TeraRegistryId": "{802947B5-EC52-491D-8B88-BB86A3BBEB71}",
+        "TeraMessageId": "{BB026607-CE01-4254-BB53-AFB6D51D9F3D}"
+      },
+      "Superposition": {
+        "RegistryTimeoutSpan": "01:00:00",
+        "Mappings": [
+          /*
+           * ==========================================================================================================================================
+           *                                                      DEFAULT SPLINTER MAPPINGS
+           * ==========================================================================================================================================
+           */
+          {
+            "Description": "The Tera Platform Agent implementation",
+            "Mode": "Collapse",
+            "Scope": "Singleton",
+            "NanoInstanceType": "Splinter.NanoInstances.Database.Agents.TeraAgents.Platform.TeraPlatformDatabaseAgent, Splinter.NanoInstances.Database"
+          },
+          {
+            "Description": "The Tera Registry Agent implementation",
+            "Mode": "Collapse",
+            "Scope": "Singleton",
+            "NanoInstanceType": "Splinter.NanoInstances.Database.Agents.TeraAgents.Registry.TeraRegistryDatabaseAgent, Splinter.NanoInstances.Database"
+          },
+          {
+            "Description": "The Tera Message Agent implementation",
+            "Mode": "Collapse",
+            "Scope": "Singleton",
+            "NanoInstanceType": "Splinter.NanoInstances.Database.Agents.TeraAgents.Messaging.TeraMessageDatabaseAgent, Splinter.NanoInstances.Database"
+          },
+          {
+            "Description": "The Default Tera Message Agent implementation",
+            "Mode": "Collapse",
+            "Scope": "Singleton",
+            "NanoInstanceType": "Splinter.NanoInstances.Default.Agents.NanoAgents.Knowledge.TeraKnowledgeAgent, Splinter.NanoInstances.Default"
+          },
+
+          /*
+           * ==========================================================================================================================================
+           *                                                      TERA MESSAGE TERA AGENTS
+           * ==========================================================================================================================================
+           */
+          {
+            "Description": "The default Tera Agent implementation for tera messages",
+            "Mode": "Collapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.TeraAgents.TeraMessages.TeraMessageTeraAgent, Splinter.Applications.Test"
+          },
+
+          {
+            "Description": "The default Tera Knowledge Agent implementation for tera messages",
+            "Mode": "Collapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.NanoAgents.Knowledge.TeraMessageKnowledgeAgent, Splinter.Applications.Test"
+          },
+
+          /*
+           * ==========================================================================================================================================
+           *                                                      LANGUAGE PHRASE AGENTS
+           * ==========================================================================================================================================
+           */
+          {
+            "Description": "The default hello ILanguagePhraseAgent implementation",
+            "Mode": "Recollapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages.Phrases.SayAfrikaansHelloPhraseAgent, Splinter.Applications.Test"
+          },
+          {
+            "Description": "The default test ILanguagePhraseAgent implementation",
+            "Mode": "Recollapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages.Phrases.SayAfrikaansTestPhraseAgent, Splinter.Applications.Test"
+          },
+          {
+            "Description": "The default goodbye ILanguagePhraseAgent implementation",
+            "Mode": "Recollapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages.Phrases.SayAfrikaansGoodbyePhraseAgent, Splinter.Applications.Test"
+          },
+
+          /*
+           * ==========================================================================================================================================
+           *                                                      LANGUAGE AGENTS
+           * ==========================================================================================================================================
+           */
+          {
+            "Description": "The default ILanguageAgent implementation",
+            "Mode": "Recollapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages.AfrikaansLanguageAgent, Splinter.Applications.Test"
+          },
+
+          /*
+           * ==========================================================================================================================================
+           *                                                      LANGUAGE KNOWLEDGE AGENTS
+           * ==========================================================================================================================================
+           */
+          {
+            "Description": "The default ILanguageKnowledgeAgent implementation",
+            "Mode": "Recollapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.NanoAgents.Knowledge.AfrikaansLanguageKnowledgeAgent, Splinter.Applications.Test"
+          },
+
+          /*
+           * ==========================================================================================================================================
+           *                                                      LANGUAGE TERA AGENTS
+           * ==========================================================================================================================================
+           */
+          {
+            "Description": "The default Tera Agent implementation for languages",
+            "Mode": "Collapse",
+            "Scope": "Request",
+            "NanoInstanceType": "Splinter.Applications.Test.Agents.TeraAgents.Languages.LanguageTeraAgent, Splinter.Applications.Test"
+          }
+        ]
+      }
+    },
+
+    "Database": {
+      "DatabaseConnectionString": "Data Source=.;Initial Catalog=SplinterLab;Integrated Security=True",
+      "TeraPlatform": {
+        "TeraId": "{3384A194-A2F8-45F4-90A6-F6E9EFE97333}"
+      } 
+    }
+  }
+}

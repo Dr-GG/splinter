@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Splinter.NanoInstances\Splinter.NanoInstances.csproj" />
+    <ProjectReference Include="..\Splinter.NanoTypes.Database\Splinter.NanoTypes.Database.csproj" />
+    <ProjectReference Include="..\Splinter.NanoTypes.Default\Splinter.NanoTypes.Default.csproj" />
+    <ProjectReference Include="..\Splinter.NanoTypes\Splinter.NanoTypes.csproj" />
+  </ItemGroup>
+
+</Project>
