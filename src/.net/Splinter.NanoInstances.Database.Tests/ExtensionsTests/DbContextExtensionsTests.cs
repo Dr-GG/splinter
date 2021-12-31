@@ -15,7 +15,7 @@ namespace Splinter.NanoInstances.Database.Tests.ExtensionsTests
         {
             await using var dbContextFactory = new MockTeraDbContextFactory();
             await using var dbContext = dbContextFactory.Context;
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
             var teraId = Guid.NewGuid();
 
             builder.AddTeraAgent(teraId);
@@ -28,7 +28,7 @@ namespace Splinter.NanoInstances.Database.Tests.ExtensionsTests
         {
             await using var dbContextFactory = new MockTeraDbContextFactory();
             await using var dbContext = dbContextFactory.Context;
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
             var teraId = Guid.NewGuid();
 
             builder.AddTeraAgent(teraId);

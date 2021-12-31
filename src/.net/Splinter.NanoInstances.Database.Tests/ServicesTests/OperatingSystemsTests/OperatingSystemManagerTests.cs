@@ -59,7 +59,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.OperatingSystemsTe
 
         private static void AddExistingOperatingSystem(TeraDbContext teraDbContext)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
 
             builder.AddOperatingSystem(
                 TestExistingOperatingSystemId,

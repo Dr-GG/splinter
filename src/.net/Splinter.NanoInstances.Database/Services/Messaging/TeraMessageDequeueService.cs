@@ -11,7 +11,7 @@ using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Messaging;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
-using Splinter.NanoTypes.Interfaces.Mappers;
+using Tenjin.Interfaces.Mappers;
 
 namespace Splinter.NanoInstances.Database.Services.Messaging
 {

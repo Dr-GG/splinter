@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Agents.TeraAgents;
-using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Constants;
@@ -13,6 +12,7 @@ using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Messaging;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Agents.TeraAgents.Messaging
 {

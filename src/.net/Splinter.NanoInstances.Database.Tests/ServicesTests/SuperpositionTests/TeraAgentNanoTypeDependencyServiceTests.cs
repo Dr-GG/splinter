@@ -310,7 +310,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.SuperpositionTests
             int? numberOfDependencies = null,
             bool addRecollapseData = false)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraPlatform(TestPlatformId);
             builder.AddNanoType(TestNanoTypeId, TestNanoType.Guid);
@@ -338,7 +338,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.SuperpositionTests
         {
             var enumeratedTeraAgentIds = TestRecollapseTestTeraAgentIds.ToList();
             var enumeratedTeraIds = TestRecollapseTestTeraIds.ToList();
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             for (var i = 0; i < enumeratedTeraIds.Count; i++)
             {
@@ -409,7 +409,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.SuperpositionTests
                 .Setup(t => t.Relay(It.IsAny<TeraMessageRelayParameters>()))
                 .Callback((TeraMessageRelayParameters parameters) =>
                 {
-                    var builder = new MockTeraDbContextBuilder(dbContext);
+                    var builder = new MockTeraDataBuilder(dbContext);
 
                     parameters.RecipientTeraIds
                         .ToList()

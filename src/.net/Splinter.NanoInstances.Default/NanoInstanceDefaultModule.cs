@@ -2,6 +2,7 @@
 using Splinter.NanoInstances.Default.Extensions;
 using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Default.Domain.Settings;
+using Tenjin.Autofac.Extensions;
 
 namespace Splinter.NanoInstances.Default
 {

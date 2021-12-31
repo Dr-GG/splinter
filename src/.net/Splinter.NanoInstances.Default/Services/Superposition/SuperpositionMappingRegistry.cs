@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Default.Interfaces.Superposition;
 using Splinter.NanoInstances.Default.Models;
-using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition
 {

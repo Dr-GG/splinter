@@ -84,7 +84,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.SuperpositionTests
 
         private static void AddDefaultData(TeraDbContext dbContext)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddNanoType(TestNanoTypeId);
             builder.AddNanoTypeRecollapseOperation(TestNanoTypeId, 

@@ -316,7 +316,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.NanoTypesTests
 
         private static void AddNanoTypeData(TeraDbContext teraDbContext)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
 
             builder.AddNanoType(
                 TestExistingNanoTypeId,
@@ -327,7 +327,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.NanoTypesTests
 
         private static void AddNanoInstanceData(TeraDbContext teraDbContext)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
 
             builder.AddNanoInstance(
                 TestExistingNanoTypeId,

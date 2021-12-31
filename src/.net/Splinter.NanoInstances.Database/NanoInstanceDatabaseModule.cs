@@ -4,6 +4,7 @@ using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.Extensions;
 using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Database.Domain.Settings.Databases;
+using Tenjin.Autofac.Extensions;
 
 namespace Splinter.NanoInstances.Database
 {

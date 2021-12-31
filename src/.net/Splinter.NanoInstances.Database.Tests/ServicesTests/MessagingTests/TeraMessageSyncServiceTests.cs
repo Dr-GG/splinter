@@ -241,7 +241,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
             string? errorStackTrace = null,
             DateTime? completedTimestamp = null)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraMessage(
                 TestSenderTeraAgentId1,
@@ -295,7 +295,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
 
         private static void AddDefaultData(TeraDbContext dbContext)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraAgent(TestRecipientTeraAgentId1);
             builder.AddTeraAgent(TestSenderTeraAgentId1);

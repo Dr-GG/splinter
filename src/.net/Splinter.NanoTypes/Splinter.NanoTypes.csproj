@@ -13,9 +13,4 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Domain\Identifications\" />
-    <Folder Include="Interfaces\Knowledge\" />
-  </ItemGroup>
-
 </Project>

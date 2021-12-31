@@ -247,12 +247,12 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
             Guid teraId, 
             TeraAgentStatus status)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
             var agent = builder.AddTeraAgent(teraId);
 
             agent.Status = status;
 
-            builder.SaveChanges();
+            builder.Save();
         }
 
         private static ITeraMessageRelayService GetService(TeraDbContext teraDbContext)

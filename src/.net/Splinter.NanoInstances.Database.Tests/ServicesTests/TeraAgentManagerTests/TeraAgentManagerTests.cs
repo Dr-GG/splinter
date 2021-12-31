@@ -80,7 +80,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.TeraAgentManagerTe
 
         private static void AddTeraAgent(TeraDbContext dbContext)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraAgent(TestTeraId, TestTeraAgentId);
         }

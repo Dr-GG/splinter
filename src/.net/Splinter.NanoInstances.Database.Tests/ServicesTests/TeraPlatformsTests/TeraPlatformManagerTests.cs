@@ -79,14 +79,14 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.TeraPlatformsTests
 
         private static void AddDefaultData(TeraDbContext teraDbContext)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
 
             builder.AddOperatingSystem(TestOperatingSystemId);
         }
 
         private static void AddDefaultTeraPlatform(TeraDbContext teraDbContext)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
 
             builder.AddTeraPlatform(
                 TestOperatingSystemId,

@@ -104,7 +104,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.RegistrationTests
 
         private static void AddDefaultData(TeraDbContext teraDbContext)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
 
             builder.AddTeraPlatform(TestTeraPlatformId);
             builder.AddNanoInstance(TestNanoInstanceId);
@@ -112,7 +112,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.RegistrationTests
 
         private static void AddExistingTeraAgent(TeraDbContext teraDbContext)
         {
-            var builder = new MockTeraDbContextBuilder(teraDbContext);
+            var builder = new MockTeraDataBuilder(teraDbContext);
 
             builder.AddTeraAgent(
                 TestTeraPlatformId,

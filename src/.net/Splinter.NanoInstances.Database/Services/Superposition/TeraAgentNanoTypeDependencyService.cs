@@ -17,6 +17,7 @@ using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Services.Superposition
 {

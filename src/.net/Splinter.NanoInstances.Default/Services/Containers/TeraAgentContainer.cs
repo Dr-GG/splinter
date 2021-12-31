@@ -3,12 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Domain.Exceptions.Containers;
 using Splinter.NanoTypes.Domain.Parameters.Containers;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 using Splinter.NanoTypes.Interfaces.Services.Containers;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Default.Services.Containers
 {

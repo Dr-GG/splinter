@@ -1,29 +1,17 @@
 ﻿using System;
 using AutoFixture;
-using System.Linq;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.DbContext.Models;
 using Splinter.NanoTypes.Domain.Enums;
+using Tenjin.Tests.Data.Builders.AutoFixture.EntityFramework;
 using OperatingSystem = Splinter.NanoTypes.Domain.Enums.OperatingSystem;
 
 namespace Splinter.NanoInstances.Database.Tests.Utilities
 {
-    public class MockTeraDbContextBuilder
+    public class MockTeraDataBuilder : EntityFrameworkAutoFixtureDataBuilder<TeraDbContext>
     {
-        private readonly Fixture _fixture;
-        private readonly TeraDbContext _dbContext;
-
-        public MockTeraDbContextBuilder(TeraDbContext teraDbContext)
-        {
-            _dbContext = teraDbContext;
-            _fixture = new Fixture();
-
-            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _fixture.Behaviors
-                .OfType<ThrowingRecursionBehavior>()
-                .ToList()
-                .ForEach(x => _fixture.Behaviors.Remove(x));
-        }
+        public MockTeraDataBuilder(TeraDbContext teraDbContext) : base(teraDbContext)
+        { }
 
         public OperatingSystemModel AddOperatingSystem(
             long id = 0,
@@ -31,7 +19,7 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             ProcessorArchitecture? architecture = null,
             OperatingSystem? type = null)
         {
-            var query = _fixture.Build<OperatingSystemModel>()
+            var query = Fixture.Build<OperatingSystemModel>()
                 .With(m => m.Id, id);
 
             if (!string.IsNullOrEmpty(description))
@@ -51,8 +39,8 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
 
             var operatingSystem = query.Create();
 
-            _dbContext.OperatingSystems.Add(operatingSystem);
-            _dbContext.SaveChanges();
+            DbContext.OperatingSystems.Add(operatingSystem);
+            DbContext.SaveChanges();
 
             return operatingSystem;
         }
@@ -64,12 +52,11 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             TeraPlatformStatus status = TeraPlatformStatus.Running,
             string? frameworkDescription = null)
         {
-            var query = _fixture.Build<TeraPlatformModel>()
+            var query = Fixture.Build<TeraPlatformModel>()
                 .With(m => m.Id, id)
                 .With(m => m.OperatingSystemId, operatingSystemId)
                 .With(m => m.TeraId, teraId ?? Guid.NewGuid())
-                .With(m => m.Status, status)
-                .Without(m => m.OperatingSystem);
+                .With(m => m.Status, status);
 
             if (!string.IsNullOrEmpty(frameworkDescription))
             {
@@ -78,8 +65,8 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
 
             var platform = query.Create();
 
-            _dbContext.TeraPlatforms.Add(platform);
-            _dbContext.SaveChanges();
+            DbContext.TeraPlatforms.Add(platform);
+            DbContext.SaveChanges();
 
             return platform;
         }
@@ -97,7 +84,7 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             string? name = null,
             string? version = null)
         {
-            var query = _fixture.Build<NanoTypeModel>()
+            var query = Fixture.Build<NanoTypeModel>()
                 .With(m => m.Id, id)
                 .With(m => m.Guid, guid ?? Guid.NewGuid());
 
@@ -113,8 +100,8 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
 
             var nanoType = query.Create();
 
-            _dbContext.NanoTypes.Add(nanoType);
-            _dbContext.SaveChanges();
+            DbContext.NanoTypes.Add(nanoType);
+            DbContext.SaveChanges();
 
             return nanoType;
         }
@@ -126,11 +113,10 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             string? name = null,
             string? version = null)
         {
-            var query = _fixture.Build<NanoInstanceModel>()
+            var query = Fixture.Build<NanoInstanceModel>()
                 .With(m => m.Id, id)
                 .With(m => m.NanoTypeId, nanoTypeId)
-                .With(m => m.Guid, guid ?? Guid.NewGuid())
-                .Without(m => m.NanoType);
+                .With(m => m.Guid, guid ?? Guid.NewGuid());
 
             if (!string.IsNullOrEmpty(name))
             {
@@ -144,8 +130,8 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
 
             var nanoInstance = query.Create();
 
-            _dbContext.NanoInstances.Add(nanoInstance);
-            _dbContext.SaveChanges();
+            DbContext.NanoInstances.Add(nanoInstance);
+            DbContext.SaveChanges();
 
             return nanoInstance;
         }
@@ -164,18 +150,16 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             Guid? teraId = null,
             TeraAgentStatus status = TeraAgentStatus.Running)
         {
-            var teraAgent = _fixture.Build<TeraAgentModel>()
+            var teraAgent = Fixture.Build<TeraAgentModel>()
                 .With(m => m.Id, id)
                 .With(m => m.TeraPlatformId, platformId)
                 .With(m => m.NanoInstanceId, nanoInstanceId)
                 .With(m => m.TeraId, teraId ?? Guid.NewGuid())
                 .With(m => m.Status, status)
-                .Without(m => m.NanoInstance)
-                .Without(m => m.TeraPlatform)
                 .Create();
 
-            _dbContext.TeraAgents.Add(teraAgent);
-            _dbContext.SaveChanges();
+            DbContext.TeraAgents.Add(teraAgent);
+            DbContext.SaveChanges();
 
             return teraAgent;
         }
@@ -212,7 +196,7 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             string? errorStackTrace = null,
             bool addPending = true)
         {
-            var query = _fixture.Build<TeraMessageModel>()
+            var query = Fixture.Build<TeraMessageModel>()
                 .With(m => m.Id, id)
                 .With(m => m.SourceTeraAgentId, sourceTeraAgentId)
                 .With(m => m.RecipientTeraAgentId, recipientTeraAgentId)
@@ -221,10 +205,7 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
                 .With(m => m.Code, code)
                 .Without(m => m.ErrorCode)
                 .Without(m => m.ErrorMessage)
-                .Without(m => m.ErrorStackTrace)
-                .Without(m => m.Pending)
-                .Without(m => m.SourceTeraAgent)
-                .Without(m => m.RecipientTeraAgent);
+                .Without(m => m.ErrorStackTrace);
 
             if (priority.HasValue)
             {
@@ -268,12 +249,12 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
 
             var dbMessage = query.Create();
 
-            _dbContext.TeraMessages.Add(dbMessage);
-            _dbContext.SaveChanges();
+            DbContext.TeraMessages.Add(dbMessage);
+            DbContext.SaveChanges();
 
             if (addPending)
             {
-                AddPendingTeraMessage(
+                dbMessage.Pending = AddPendingTeraMessage(
                     dbMessage.RecipientTeraAgentId,
                     dbMessage.Id);
             }
@@ -287,12 +268,10 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             long? id = 0,
             int? numberOfDependencies = null)
         {
-            var query = _fixture.Build<TeraAgentNanoTypeDependencyModel>()
+            var query = Fixture.Build<TeraAgentNanoTypeDependencyModel>()
                 .With(m => m.Id, id)
                 .With(m => m.TeraAgentId, teraAgentId)
-                .With(m => m.NanoTypeId, nanoTypeId)
-                .Without(m => m.NanoType)
-                .Without(m => m.TeraAgent);
+                .With(m => m.NanoTypeId, nanoTypeId);
 
             if (numberOfDependencies.HasValue)
             {
@@ -301,8 +280,8 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
 
             var model = query.Create();
 
-            _dbContext.TeraAgentNanoTypeDependencies.Add(model);
-            _dbContext.SaveChanges();
+            DbContext.TeraAgentNanoTypeDependencies.Add(model);
+            DbContext.SaveChanges();
 
             return model;
         }
@@ -319,8 +298,8 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
                 Id = id
             };
 
-            _dbContext.PendingTeraMessages.Add(pending);
-            _dbContext.SaveChanges();
+            DbContext.PendingTeraMessages.Add(pending);
+            DbContext.SaveChanges();
 
             return pending;
         }
@@ -333,10 +312,9 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             long? numberOfSuccessfulRecollapses = null,
             long? numberOfFailedRecollapses = null)
         {
-            var query = _fixture.Build<NanoTypeRecollapseOperationModel>()
+            var query = Fixture.Build<NanoTypeRecollapseOperationModel>()
                 .With(m => m.Id, id)
-                .With(m => m.NanoTypeId, nanoTypeId)
-                .Without(m => m.NanoType);
+                .With(m => m.NanoTypeId, nanoTypeId);
 
             if (guid.HasValue)
             {
@@ -360,15 +338,10 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
 
             var operation = query.Create();
 
-            _dbContext.NanoTypeRecollapseOperations.Add(operation);
-            _dbContext.SaveChanges();
+            DbContext.NanoTypeRecollapseOperations.Add(operation);
+            DbContext.SaveChanges();
 
             return operation;
-        }
-
-        public void SaveChanges()
-        {
-            _dbContext.SaveChanges();
         }
     }
 }

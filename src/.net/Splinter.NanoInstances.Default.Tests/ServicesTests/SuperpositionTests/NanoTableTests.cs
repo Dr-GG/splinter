@@ -6,9 +6,9 @@ using NUnit.Framework;
 using Splinter.NanoInstances.Default.Extensions;
 using Splinter.NanoInstances.Default.Services.Superposition;
 using Splinter.NanoInstances.Default.Tests.Agents.NanoAgents;
-using Splinter.NanoInstances.Extensions;
 using Splinter.NanoInstances.Services.Superposition;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests
 {

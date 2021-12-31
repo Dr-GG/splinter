@@ -253,7 +253,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
 
         private static void AddDefaultData(TeraDbContext dbContext)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraPlatform(TestPlatformId);
             builder.AddNanoInstance(TestNanoInstanceId);
@@ -266,7 +266,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
 
         private static void AddTeraAgent(TeraDbContext dbContext, long teraAgentId, Guid teraId)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraAgent(
                 TestPlatformId,
@@ -315,7 +315,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
             int priority,
             DateTime loggedTimestamp)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraMessage(
                 TestSenderTeraAgentId1,
@@ -351,7 +351,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
             int dequeueCount,
             TeraMessageStatus status)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraMessage(
                 sourceTeraId,

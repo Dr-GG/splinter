@@ -156,7 +156,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
 
         private static void AddDefaultData(TeraDbContext dbContext)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraAgent(TestSenderTeraAgentId);
             builder.AddTeraAgent(TestRecipientTeraAgentId1);
@@ -168,7 +168,7 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
             TeraMessageStatus status,
             int millisecondsExpiryOffset)
         {
-            var builder = new MockTeraDbContextBuilder(dbContext);
+            var builder = new MockTeraDataBuilder(dbContext);
 
             builder.AddTeraMessage(
                 TestSenderTeraAgentId,
