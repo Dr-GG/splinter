@@ -1,4 +1,4 @@
-﻿using Splinter.NanoTypes.Interfaces.Agents;
+﻿using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Tests.Agents
 {

@@ -16,7 +16,7 @@ using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 using Splinter.NanoTypes.Domain.Parameters.Superposition;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Superposition;
 
 namespace Splinter.NanoInstances.Default.Agents.TeraAgents.Superposition

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Interfaces.WaveFunctions;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Services.Containers
 {

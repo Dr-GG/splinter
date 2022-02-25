@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 
 namespace Splinter.NanoInstances.Extensions

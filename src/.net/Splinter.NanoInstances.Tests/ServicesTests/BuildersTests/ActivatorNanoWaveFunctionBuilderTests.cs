@@ -6,7 +6,7 @@ using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoInstances.Tests.ExtensionsTests;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Tests.ServicesTests.BuildersTests
 {

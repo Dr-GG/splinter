@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
 namespace Splinter.NanoInstances.Services.Superposition

@@ -56,10 +56,10 @@ namespace Splinter.NanoInstances.Tests.ExtensionsTests
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result!.Property1);
-            Assert.AreEqual(1.22, result!.Property2);
-            Assert.AreEqual(2.33f, result!.Property3);
-            Assert.AreEqual("property 4", result!.Property4);
-            Assert.AreEqual(new DateTime(1983, 10, 03), result!.Property5);
+            Assert.AreEqual(1.22, result.Property2);
+            Assert.AreEqual(2.33f, result.Property3);
+            Assert.AreEqual("property 4", result.Property4);
+            Assert.AreEqual(new DateTime(1983, 10, 03), result.Property5);
         }
     }
 }

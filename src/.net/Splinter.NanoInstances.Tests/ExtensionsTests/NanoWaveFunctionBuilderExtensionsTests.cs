@@ -5,7 +5,7 @@ using Splinter.NanoInstances.Extensions;
 using Splinter.NanoInstances.Services.Builders;
 using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Tests.ExtensionsTests
 {
@@ -74,7 +74,7 @@ namespace Splinter.NanoInstances.Tests.ExtensionsTests
             Assert.ThrowsAsync<InvalidNanoInstanceException>(() => builder.Register(type));
         }
 
-        [TestCase("Splinter.NanoTypes.Interfaces.Agents.INanoAgent, Splinter.NanoTypes")]
+        [TestCase("Splinter.NanoTypes.Interfaces.Agents.NanoAgents.INanoAgent, Splinter.NanoTypes")]
         [TestCase("Splinter.NanoInstances.Tests.Agents.IUnitTestNanoAgent, Splinter.NanoInstances.Tests")]
         [TestCase("Splinter.NanoInstances.Tests.Agents.UnitTestAbstractNanoAgent, Splinter.NanoInstances.Tests")]
         public void Register_WhenProvidingAValidTypeButInvalidNanoType_ThrowsAnException(string type)

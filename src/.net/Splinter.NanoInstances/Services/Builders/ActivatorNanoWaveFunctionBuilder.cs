@@ -6,7 +6,7 @@ using Splinter.NanoInstances.Services.Containers;
 using Splinter.NanoInstances.Utilities;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Services.Builders
 {

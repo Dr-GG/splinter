@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
 namespace Splinter.NanoInstances.Extensions
@@ -9,7 +9,7 @@ namespace Splinter.NanoInstances.Extensions
     {
         public static bool IsNotNullOrEmpty([NotNullWhen(true)] this INanoReference? nanoReference)
         {
-            return nanoReference != null && nanoReference.HasReference;
+            return nanoReference is {HasReference: true};
         }
 
         public static bool IsNullOrEmpty([NotNullWhen(false)] this INanoReference? nanoReference)
@@ -25,13 +25,13 @@ namespace Splinter.NanoInstances.Extensions
                 throw new InvalidNanoInstanceException("No nano instance exists in nano reference");
             }
 
-            if (nanoReference.Reference is not TNanoAgent)
+            if (nanoReference.Reference is not TNanoAgent agent)
             {
                 throw new InvalidNanoInstanceException(
                     $"The nano instance in the nano reference is not of the type {typeof(TNanoAgent)}");
             }
 
-            return (TNanoAgent) nanoReference.Reference;
+            return agent;
         }
     }
 }

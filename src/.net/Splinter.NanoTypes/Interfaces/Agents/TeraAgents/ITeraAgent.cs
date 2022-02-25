@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
 using Splinter.NanoTypes.Domain.Parameters.Registration;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents.Knowledge;
 
 namespace Splinter.NanoTypes.Interfaces.Agents.TeraAgents

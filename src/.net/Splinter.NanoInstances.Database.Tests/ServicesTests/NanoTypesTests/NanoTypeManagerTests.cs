@@ -9,7 +9,7 @@ using Splinter.NanoInstances.Database.Services.NanoTypes;
 using Splinter.NanoInstances.Database.Tests.Utilities;
 using Splinter.NanoTypes.Default.Interfaces.Services.NanoTypes;
 using Splinter.NanoTypes.Domain.Core;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Database.Tests.ServicesTests.NanoTypesTests
 {

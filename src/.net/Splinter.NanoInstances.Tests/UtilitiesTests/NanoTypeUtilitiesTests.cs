@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoInstances.Utilities;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 // ReSharper disable AccessToStaticMemberViaDerivedType
 

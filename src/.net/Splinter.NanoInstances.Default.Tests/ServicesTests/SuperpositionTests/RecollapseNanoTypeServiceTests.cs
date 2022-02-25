@@ -8,7 +8,7 @@ using Splinter.NanoInstances.Default.Services.Superposition;
 using Splinter.NanoTypes.Default.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Messaging;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Interfaces.ServiceScope;

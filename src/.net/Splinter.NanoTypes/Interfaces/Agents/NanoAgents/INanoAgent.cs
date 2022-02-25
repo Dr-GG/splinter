@@ -12,7 +12,7 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Superposition;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
 
-namespace Splinter.NanoTypes.Interfaces.Agents
+namespace Splinter.NanoTypes.Interfaces.Agents.NanoAgents
 {
     public interface INanoAgent
     {

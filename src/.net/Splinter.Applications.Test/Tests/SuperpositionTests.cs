@@ -21,7 +21,7 @@ using Splinter.NanoTypes.Default.Domain.Superposition;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 
 namespace Splinter.Applications.Test.Tests
@@ -655,7 +655,7 @@ namespace Splinter.Applications.Test.Tests
                                            && t.NanoType.Guid == nanoTypeId.Guid);
 
             Assert.IsTrue(expectedCount == 0 && (dependency == null || dependency.NumberOfDependencies == 0)
-                          || dependency.NumberOfDependencies == expectedCount);
+                          || (dependency != null && dependency.NumberOfDependencies == expectedCount));
         }
 
         private static async Task AssertNanoTypeDependenciesAreEmpty(ITeraAgent teraAgent)

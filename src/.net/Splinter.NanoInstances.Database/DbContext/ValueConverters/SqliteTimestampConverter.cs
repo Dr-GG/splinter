@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -8,8 +7,8 @@ namespace Splinter.NanoInstances.Database.DbContext.ValueConverters
     public class SqliteTimestampConverter : ValueConverter<byte[], string>
     {
         public SqliteTimestampConverter() : base(
-            v => (v == null ? null : ToDatabase(v)) ?? string.Empty,
-            v => (v == null ? null : FromDatabase(v)) ?? Array.Empty<byte>())
+            v => ToDatabase(v),
+            v => FromDatabase(v))
         { }
 
         private static byte[] FromDatabase(string value) =>

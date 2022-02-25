@@ -67,7 +67,7 @@ namespace Splinter.Applications.Test.Tests
             var teraAgent = await dbContext.TeraAgents.SingleOrDefaultAsync(a => a.TeraId == teraId);
 
             Assert.IsNotNull(teraAgent);
-            Assert.AreEqual(TeraAgentStatus.Running, teraAgent.Status);
+            Assert.AreEqual(TeraAgentStatus.Running, teraAgent!.Status);
         }
 
         private static async Task AssertAsDisposed(Guid teraId)
@@ -77,7 +77,7 @@ namespace Splinter.Applications.Test.Tests
             var teraAgent = await dbContext.TeraAgents.SingleOrDefaultAsync(a => a.TeraId == teraId);
 
             Assert.IsNotNull(teraAgent);
-            Assert.AreEqual(TeraAgentStatus.Disposed, teraAgent.Status);
+            Assert.AreEqual(TeraAgentStatus.Disposed, teraAgent!.Status);
         }
 
         private static async Task<ITeraAgent> InitialiseTeraAgent(Guid? teraId = null)

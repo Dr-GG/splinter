@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.Applications.Test.Interfaces.Agents.NanoAgents.Knowledge.Languages.Phrases
 {

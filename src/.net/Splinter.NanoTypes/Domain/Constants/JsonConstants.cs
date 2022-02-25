@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Splinter.NanoTypes.Domain.Constants
 {
@@ -7,10 +8,10 @@ namespace Splinter.NanoTypes.Domain.Constants
         public static readonly JsonSerializerOptions DefaultOptions = new()
         {
             AllowTrailingCommas = true,
-            IgnoreNullValues = true,
             IgnoreReadOnlyFields = true,
             PropertyNameCaseInsensitive = false,
             WriteIndented = false,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
     }

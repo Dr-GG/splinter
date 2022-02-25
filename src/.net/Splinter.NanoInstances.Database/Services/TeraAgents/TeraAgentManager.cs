@@ -51,7 +51,7 @@ namespace Splinter.NanoInstances.Database.Services.TeraAgents
                 .Select(t => t.Id)
                 .SingleOrDefaultAsync();
 
-            return id == 0 ? (long?) null : id;
+            return id == 0 ? null : id;
         }
     }
 }

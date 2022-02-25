@@ -1,7 +1,6 @@
 ﻿using System;
 using Splinter.NanoTypes.Default.Interfaces.Services.NanoTypes;
 using Splinter.NanoTypes.Domain.Core;
-using Splinter.NanoTypes.Interfaces.Agents;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Splinter.NanoInstances.Database.DbContext;
@@ -9,6 +8,7 @@ using Splinter.NanoInstances.Database.DbContext.Models;
 using Splinter.NanoInstances.Database.Extensions;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Exceptions.Data;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Database.Services.NanoTypes
 {

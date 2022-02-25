@@ -16,7 +16,7 @@ using Splinter.NanoTypes.Default.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Domain.Parameters.Superposition;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 
 namespace Splinter.NanoInstances.Default.NanoWaveFunctions

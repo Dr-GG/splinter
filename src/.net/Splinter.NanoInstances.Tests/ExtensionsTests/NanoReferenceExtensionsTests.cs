@@ -3,7 +3,7 @@ using Splinter.NanoInstances.Extensions;
 using Splinter.NanoInstances.Services.Superposition;
 using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 

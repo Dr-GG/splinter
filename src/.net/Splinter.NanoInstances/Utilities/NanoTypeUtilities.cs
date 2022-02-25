@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Core;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Utilities
 {

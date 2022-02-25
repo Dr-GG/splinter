@@ -8,7 +8,7 @@ using Splinter.NanoInstances.Default.Interfaces.Superposition;
 using Splinter.NanoInstances.Default.Services.Superposition;
 using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
 using Splinter.NanoTypes.Domain.Core;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests
 {
@@ -35,7 +35,9 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests
 
                     return registry.Register(TestNanoTypeId, s);
                 }
-            }).ToArray();
+            })
+                .Cast<Task>()
+                .ToArray();
 
             Task.WaitAll(tasks);
 
@@ -53,6 +55,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests
             var singletons = GetRandomSingleton(TestNanoInstanceId).ToList();
             var originalSingleton = singletons.First();
             var tasks = singletons.Select(s => registry.Register(TestNanoTypeId, s))
+                .Cast<Task>()
                 .ToArray();
 
             Task.WaitAll(tasks);
@@ -61,7 +64,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests
 
             Assert.IsNotNull(nanoAgent);
             Assert.IsNotNull(originalSingleton);
-            Assert.AreEqual(originalSingleton!.InstanceId.Guid, nanoAgent!.InstanceId.Guid);
+            Assert.AreEqual(originalSingleton.InstanceId.Guid, nanoAgent!.InstanceId.Guid);
         }
 
         private static IEnumerable<INanoAgent> GetRandomSingleton(Guid? nanoInstanceId = null)

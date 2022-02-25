@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Splinter.NanoInstances.Default.Interfaces.Superposition;
 using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
 using Splinter.NanoTypes.Domain.Parameters.Dispose;
-using Splinter.NanoTypes.Interfaces.Agents;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition
 {

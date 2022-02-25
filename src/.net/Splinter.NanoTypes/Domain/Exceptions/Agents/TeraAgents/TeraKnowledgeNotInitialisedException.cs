@@ -2,7 +2,8 @@
 {
     public class TeraKnowledgeNotInitialisedException : SplinterException
     {
-        public TeraKnowledgeNotInitialisedException() : base("The Tera Knowledge has not yet been initialised")
+        public TeraKnowledgeNotInitialisedException() : 
+            base("The Tera Knowledge has not yet been initialised")
         { }
     }
 }
