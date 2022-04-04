@@ -107,7 +107,7 @@ namespace Splinter.NanoInstances.Default.Services.Containers
 
         private Task InternalExecute(CancellationToken cancellationToken)
         {
-            return new(() =>
+            return new Task(() =>
             {
                 while (cancellationToken.CanContinue())
                 {
@@ -130,7 +130,7 @@ namespace Splinter.NanoInstances.Default.Services.Containers
 
         private TeraAgentExecutionParameters GetExecutionParameters()
         {
-            return new()
+            return new TeraAgentExecutionParameters
             {
                 ExecutionCount = ++_executionCount,
                 AbsoluteTimestamp = GetAbsoluteDateTime(),

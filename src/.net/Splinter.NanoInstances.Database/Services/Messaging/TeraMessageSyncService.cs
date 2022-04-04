@@ -8,6 +8,7 @@ using Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Services.Messaging
 {
@@ -38,8 +39,9 @@ namespace Splinter.NanoInstances.Database.Services.Messaging
 
         private static void Reset(TeraMessageModel message)
         {
-            if (message.Status == TeraMessageStatus.Dequeued
-                || message.Status == TeraMessageStatus.Pending)
+            if (message.Status.EqualsAny(
+                    TeraMessageStatus.Dequeued, 
+                    TeraMessageStatus.Pending))
             {
                 return;
             }
@@ -51,8 +53,9 @@ namespace Splinter.NanoInstances.Database.Services.Messaging
 
         private void RemovePending(TeraMessageModel message)
         {
-            if (message.Status == TeraMessageStatus.Pending
-                || message.Status == TeraMessageStatus.Dequeued)
+            if (message.Status.EqualsAny(
+                    TeraMessageStatus.Pending,
+                    TeraMessageStatus.Dequeued))
             {
                 _dbContext.PendingTeraMessages.Remove(message.Pending);
             }
@@ -90,8 +93,8 @@ namespace Splinter.NanoInstances.Database.Services.Messaging
             message.CompletedTimestamp = parameter.CompletionTimestamp;
 
             if (parameter.ErrorCode.HasValue
-                || !string.IsNullOrEmpty(parameter.ErrorMessage)
-                || !string.IsNullOrEmpty(parameter.ErrorStackTrace))
+                || parameter.ErrorMessage.IsNotNullOrEmpty()
+                || parameter.ErrorStackTrace.IsNotNullOrEmpty())
             {
                 message.Status = TeraMessageStatus.Failed;
                 message.ErrorCode = parameter.ErrorCode ?? TeraMessageErrorCode.Unknown;

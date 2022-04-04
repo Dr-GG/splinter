@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30709.132
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - Nano Types", "01 - Nano Types", "{4331FDD0-0CA5-415F-BA9A-316198867515}"
 EndProject
@@ -34,6 +34,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Splinter.Applications.Test", "Splinter.Applications.Test\Splinter.Applications.Test.csproj", "{5487D582-C8BC-4B91-AE14-9E8865F39116}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Splinter.NanoInstances.Database.Tests", "Splinter.NanoInstances.Database.Tests\Splinter.NanoInstances.Database.Tests.csproj", "{DF6BE592-A3F9-4060-B9AC-782354FCCE63}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06 - Nuget", "06 - Nuget", "{A7DAD419-DB51-4D06-814C-236D5B95DC3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splinter.Nuget.Default", "Splinter.Nuget.Default\Splinter.Nuget.Default.csproj", "{5FB45918-7F30-4196-B9C3-EC0383E17860}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +89,10 @@ Global
 		{DF6BE592-A3F9-4060-B9AC-782354FCCE63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF6BE592-A3F9-4060-B9AC-782354FCCE63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF6BE592-A3F9-4060-B9AC-782354FCCE63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FB45918-7F30-4196-B9C3-EC0383E17860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FB45918-7F30-4196-B9C3-EC0383E17860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FB45918-7F30-4196-B9C3-EC0383E17860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FB45918-7F30-4196-B9C3-EC0383E17860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +109,7 @@ Global
 		{F1359C94-97F7-43F9-98F7-B65862EFABE9} = {B18D1A09-E5EE-408B-BBB5-7C7BCFE32133}
 		{5487D582-C8BC-4B91-AE14-9E8865F39116} = {F2D7661E-3B58-40FA-A02B-B764F8EC50A9}
 		{DF6BE592-A3F9-4060-B9AC-782354FCCE63} = {4130EB3A-2DBB-42B9-907E-B351D49152C2}
+		{5FB45918-7F30-4196-B9C3-EC0383E17860} = {A7DAD419-DB51-4D06-814C-236D5B95DC3E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4E907BD8-4490-4110-AAD0-7C1C3E0F3768}

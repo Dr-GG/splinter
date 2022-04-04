@@ -45,8 +45,7 @@ namespace Splinter.NanoInstances.Extensions
             if (nanoTypeId == null)
             {
                 throw new InvalidNanoTypeException(
-                    $"Could not find the static '{typeof(SplinterId).FullName}' " +
-                          $"with the name '{SplinterIdConstants.NanoTypeId}'");
+                    $"Could not find the static '{typeof(SplinterId).FullName}' with the name '{SplinterIdConstants.NanoTypeId}'");
             }
 
             await builder.Register(nanoTypeId, nanoType);

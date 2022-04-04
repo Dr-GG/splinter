@@ -9,6 +9,7 @@ using Splinter.NanoInstances.Database.Tests.Utilities;
 using Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Enums;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
 {
@@ -176,8 +177,9 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
                 id,
                 status: status,
                 absoluteExpiryTimestamp: DateTime.UtcNow.AddMilliseconds(millisecondsExpiryOffset),
-                addPending: status == TeraMessageStatus.Dequeued
-                            || status == TeraMessageStatus.Pending);
+                addPending: status.EqualsAny(
+                    TeraMessageStatus.Dequeued,
+                    TeraMessageStatus.Pending));
         }
 
         private static void AssertMessageIsDisposed(TeraDbContext dbContext, long id)

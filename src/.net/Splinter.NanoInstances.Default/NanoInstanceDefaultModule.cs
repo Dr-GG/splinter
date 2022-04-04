@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Splinter.NanoInstances.Default.Extensions;
-using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Default.Domain.Settings;
 using Tenjin.Autofac.Extensions;
 
@@ -27,12 +26,12 @@ namespace Splinter.NanoInstances.Default
 
         private void RegisterSettings(ContainerBuilder container)
         {
-            container.RegisterSettings(_settings);
-            container.RegisterSettings(_settings.Messaging);
-            container.RegisterSettings(_settings.NanoTypeCache);
-            container.RegisterSettings(_settings.TeraAgentCache);
-            container.RegisterSettings(_settings.SplinterTeraAgentIds);
-            container.RegisterSettings(_settings.Superposition);
+            container.RegisterSingleton(_settings);
+            container.RegisterSingleton(_settings.Messaging);
+            container.RegisterSingleton(_settings.NanoTypeCache);
+            container.RegisterSingleton(_settings.TeraAgentCache);
+            container.RegisterSingleton(_settings.SplinterTeraAgentIds);
+            container.RegisterSingleton(_settings.Superposition);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Splinter.NanoInstances.Extensions
     {
         public static SplinterId ToSplinterId(this Guid nanoTypeId)
         {
-            return new()
+            return new SplinterId
             {
                 Name = nanoTypeId.ToString(),
                 Version = "0",

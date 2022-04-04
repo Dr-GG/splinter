@@ -99,7 +99,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests
 
         private static TeraMessage GetMessage(string json = DefaultJson)
         {
-            return new()
+            return new TeraMessage
             {
                 Message = json
             };

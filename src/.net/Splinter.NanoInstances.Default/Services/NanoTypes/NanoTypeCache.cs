@@ -45,7 +45,7 @@ namespace Splinter.NanoInstances.Default.Services.NanoTypes
 
         private MemoryCacheEntryOptions GetDefaultOptions()
         {
-            return new()
+            return new MemoryCacheEntryOptions
             {
                 SlidingExpiration = _settings.SlidingExpirationTimespan,
                 Priority = CacheItemPriority.Normal

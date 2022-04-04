@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Splinter.NanoInstances.Database.DbContext.Models;
-using Splinter.NanoInstances.Database.DbContext.ValueConverters;
+using Tenjin.Data.EntityFramework.ValueConverters;
 
 namespace Splinter.NanoInstances.Database.DbContext
 {
@@ -54,7 +54,7 @@ namespace Splinter.NanoInstances.Database.DbContext
                 .Property(model => model.ETag)
                 .IsRowVersion()
                 .HasColumnType("BLOB")
-                .HasConversion(new SqliteTimestampConverter())
+                .HasConversion(new BinaryTimestampConverter())
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }

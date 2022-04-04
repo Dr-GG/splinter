@@ -144,7 +144,7 @@ namespace Splinter.NanoInstances.Default.NanoWaveFunctions
             InternalSuperpositionMapping originalMapping,
             SuperpositionMapping newMapping)
         {
-            return new()
+            return new InternalSuperpositionMapping
             {
                 NanoTypeId = originalMapping.NanoTypeId,
                 Mode = originalMapping.Mode,

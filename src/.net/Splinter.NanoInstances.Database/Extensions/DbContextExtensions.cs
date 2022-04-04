@@ -22,13 +22,5 @@ namespace Splinter.NanoInstances.Database.Extensions
 
             return result;
         }
-
-        public static Task RemoveAsync<TEntity>(this DbSet<TEntity> dbSet, TEntity entity)
-            where TEntity : class
-        {
-            dbSet.Remove(entity);
-
-            return Task.CompletedTask;
-        }
     }
 }

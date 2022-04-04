@@ -133,11 +133,11 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
                 TimeSpan.FromMilliseconds(intervalMilliseconds + 100));
         }
 
-        [TestCase(0, 1)]
-        [TestCase(1, 1)]
-        [TestCase(10, 1)]
-        [TestCase(100, 1)]
-        [TestCase(1000, 1)]
+        [TestCase(0, 10)]
+        [TestCase(1, 10)]
+        [TestCase(10, 10)]
+        [TestCase(100, 10)]
+        [TestCase(1000, 10)]
         [TestCase(0, 100)]
         [TestCase(1, 100)]
         [TestCase(10, 100)]
@@ -178,11 +178,11 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
                 TimeSpan.FromMilliseconds(incrementMilliseconds));
         }
 
-        [TestCase(0, 1)]
-        [TestCase(1, 1)]
-        [TestCase(10, 1)]
-        [TestCase(100, 1)]
-        [TestCase(1000, 1)]
+        [TestCase(0, 10)]
+        [TestCase(1, 10)]
+        [TestCase(10, 10)]
+        [TestCase(100, 10)]
+        [TestCase(1000, 10)]
         [TestCase(0, 100)]
         [TestCase(1, 100)]
         [TestCase(10, 100)]

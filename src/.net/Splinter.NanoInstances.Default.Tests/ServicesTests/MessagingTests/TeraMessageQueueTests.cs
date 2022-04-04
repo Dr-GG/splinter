@@ -67,7 +67,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.MessagingTests
 
         private static TeraMessage ConstructNextTeraMessage(int index)
         {
-            return new()
+            return new TeraMessage
             {
                 Id = index,
                 Message = $"Message {index}"

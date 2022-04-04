@@ -6,7 +6,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Messaging
 {
     public record TeraMessageRelayParameters : NanoParameters
     {
-        public int Code { get; set; }
+        public int Code { get; init; }
         public int Priority { get; init; }
         public string? Message { get; init; }
         public TimeSpan? AbsoluteExpiryTimeSpan { get; init; }

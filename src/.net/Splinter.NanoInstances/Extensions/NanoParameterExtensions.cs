@@ -8,9 +8,7 @@ namespace Splinter.NanoInstances.Extensions
         public static TNanoParameters Cast<TNanoParameters>(this NanoParameters parameters)
             where TNanoParameters : NanoParameters
         {
-            var result = parameters as TNanoParameters;
-
-            if (result == null)
+            if (parameters is not TNanoParameters result)
             {
                 throw new InvalidNanoParametersException(
                     $"Expected the type {typeof(TNanoParameters).FullName} but got {parameters.GetType().FullName}");

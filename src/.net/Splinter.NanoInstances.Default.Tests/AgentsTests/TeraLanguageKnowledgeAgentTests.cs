@@ -1399,7 +1399,7 @@ namespace Splinter.NanoInstances.Default.Tests.AgentsTests
 
         private static async Task<TeraLanguageAgentsSuite> InitialiseSuite()
         {
-            return new()
+            return new TeraLanguageAgentsSuite
             {
                 AfrikaansAgent = await InitialiseLanguageAgent(LanguageSplinterIds.AfrikaansTeraId),
                 EnglishAgent = await InitialiseLanguageAgent(LanguageSplinterIds.EnglishTeraId),

@@ -9,6 +9,7 @@ using Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
 {
@@ -252,8 +253,9 @@ namespace Splinter.NanoInstances.Database.Tests.ServicesTests.MessagingTests
                 errorCode: errorCode,
                 errorMessage: errorMessage,
                 errorStackTrace: errorStackTrace,
-                addPending: status == TeraMessageStatus.Dequeued
-                            || status == TeraMessageStatus.Pending);
+                addPending: status.EqualsAny(
+                    TeraMessageStatus.Dequeued,
+                    TeraMessageStatus.Pending));
         }
 
         private static void AssertMessageCompleted(

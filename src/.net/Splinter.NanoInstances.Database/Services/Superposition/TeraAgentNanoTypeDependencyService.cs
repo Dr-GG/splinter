@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.DbContext.Models;
-using Splinter.NanoInstances.Database.Extensions;
 using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Default.Domain.Messaging.Superposition;
@@ -17,6 +16,7 @@ using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
+using Tenjin.Data.EntityFramework.Extensions;
 using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Services.Superposition

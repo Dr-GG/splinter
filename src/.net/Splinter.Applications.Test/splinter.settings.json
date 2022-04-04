@@ -139,10 +139,10 @@
     },
 
     "Database": {
-      "DatabaseConnectionString": "Data Source=.;Initial Catalog=SplinterLab;Integrated Security=True",
+      "DatabaseConnectionString": "Data Source=.;Initial Catalog=SplinterLab;Integrated Security=True;TrustServerCertificate=True",
       "TeraPlatform": {
         "TeraId": "{3384A194-A2F8-45F4-90A6-F6E9EFE97333}"
-      } 
+      }
     }
   }
 }

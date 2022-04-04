@@ -3,7 +3,8 @@ using AutoFixture;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.DbContext.Models;
 using Splinter.NanoTypes.Domain.Enums;
-using Tenjin.Tests.Data.Builders.AutoFixture.EntityFramework;
+using Tenjin.Extensions;
+using Tenjin.Tests.AutoFixture.EntityFramework.Data.Builders;
 using OperatingSystem = Splinter.NanoTypes.Domain.Enums.OperatingSystem;
 
 namespace Splinter.NanoInstances.Database.Tests.Utilities
@@ -22,7 +23,7 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
             var query = Fixture.Build<OperatingSystemModel>()
                 .With(m => m.Id, id);
 
-            if (!string.IsNullOrEmpty(description))
+            if (description.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.Description, description);
             }
@@ -58,7 +59,7 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
                 .With(m => m.TeraId, teraId ?? Guid.NewGuid())
                 .With(m => m.Status, status);
 
-            if (!string.IsNullOrEmpty(frameworkDescription))
+            if (frameworkDescription.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.FrameworkDescription, frameworkDescription);
             }
@@ -88,12 +89,12 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
                 .With(m => m.Id, id)
                 .With(m => m.Guid, guid ?? Guid.NewGuid());
 
-            if (!string.IsNullOrEmpty(name))
+            if (name.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.Name, name);
             }
 
-            if (!string.IsNullOrEmpty(version))
+            if (version.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.Version, version);
             }
@@ -118,12 +119,12 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
                 .With(m => m.NanoTypeId, nanoTypeId)
                 .With(m => m.Guid, guid ?? Guid.NewGuid());
 
-            if (!string.IsNullOrEmpty(name))
+            if (name.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.Name, name);
             }
 
-            if (!string.IsNullOrEmpty(version))
+            if (version.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.Version, version);
             }
@@ -237,12 +238,12 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
                 query = query.With(m => m.ErrorCode, errorCode);
             }
 
-            if (!string.IsNullOrEmpty(errorMessage))
+            if (errorMessage.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.ErrorMessage, errorMessage);
             }
 
-            if (!string.IsNullOrEmpty(errorStackTrace))
+            if (errorStackTrace.IsNotNullOrEmpty())
             {
                 query = query.With(m => m.ErrorStackTrace, errorStackTrace);
             }

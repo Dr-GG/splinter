@@ -107,7 +107,7 @@ namespace Splinter.NanoInstances.Default.Tests.NanoWaveFunctionsTests
 
         private static NanoCollapseParameters GetCollapseParameters(Guid nanoTypeId)
         {
-            return new()
+            return new NanoCollapseParameters
             {
                 TeraAgentId = TestTeraId,
                 NanoTypeId = nanoTypeId

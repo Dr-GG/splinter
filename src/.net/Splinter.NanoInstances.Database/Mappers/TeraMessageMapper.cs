@@ -8,7 +8,7 @@ namespace Splinter.NanoInstances.Database.Mappers
     {
         public TeraMessage Map(TeraMessageModel source)
         {
-            return new()
+            return new TeraMessage
             {
                 Id = source.Id,
                 Status = source.Status,

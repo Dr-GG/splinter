@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.Extensions;
-using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Database.Domain.Settings.Databases;
 using Tenjin.Autofac.Extensions;
 
@@ -30,8 +29,8 @@ namespace Splinter.NanoInstances.Database
 
         private void RegisterSettings(ContainerBuilder builder)
         {
-            builder.RegisterSettings(_settings);
-            builder.RegisterSettings(_settings.TeraPlatform);
+            builder.RegisterSingleton(_settings);
+            builder.RegisterSingleton(_settings.TeraPlatform);
         }
 
         private void RegisterDbContext(ContainerBuilder builder)

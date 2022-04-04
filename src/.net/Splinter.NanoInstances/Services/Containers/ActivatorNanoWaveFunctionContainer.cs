@@ -10,8 +10,8 @@ namespace Splinter.NanoInstances.Services.Containers
 {
     public class ActivatorNanoWaveFunctionContainer : INanoWaveFunctionContainer
     {
-        private readonly TimeSpan _lockTimeoutTimeSpan;
         private readonly ReaderWriterLock _rwLock = new();
+        private readonly TimeSpan _lockTimeoutTimeSpan;
         private readonly IDictionary<Guid, Type> _nanoTypeMap;
 
         public ActivatorNanoWaveFunctionContainer(

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Splinter.NanoInstances.Database.DbContext;
-using Tenjin.Tests.Databases.Sqlite.EntityFramework;
+using Tenjin.Tests.EntityFramework.Sqlite.Factories;
 
 namespace Splinter.NanoInstances.Database.Tests.Utilities
 {
@@ -8,7 +8,7 @@ namespace Splinter.NanoInstances.Database.Tests.Utilities
     {
         protected override TeraDbContext Create(DbContextOptions<TeraDbContext> options)
         {
-            return new(options)
+            return new TeraDbContext(options)
             {
                 IsSqliteDatabase = true
             };

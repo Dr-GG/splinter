@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Splinter.Bootstrap.Extensions;
 using Splinter.NanoInstances.Database;
 using Splinter.NanoInstances.Default;
 using Splinter.NanoInstances.Default.Agents.TeraAgents.Superposition;
@@ -30,6 +29,7 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Platform;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Registry;
 using Splinter.NanoTypes.Interfaces.Bootstrap;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
+using Tenjin.Configuration.Extensions;
 
 namespace Splinter.Bootstrap
 {
@@ -52,8 +52,8 @@ namespace Splinter.Bootstrap
 
         private static IContainer AddDefaultModules(IConfiguration configuration, ContainerBuilder container)
         {
-            var defaultSplinterSettings = configuration.BindSettings<SplinterDefaultSettings>("Splinter:Default");
-            var databaseSettings = configuration.BindSettings<SplinterDatabaseSettings>("Splinter:Database");
+            var defaultSplinterSettings = configuration.BindObject<SplinterDefaultSettings>("Splinter:Default");
+            var databaseSettings = configuration.BindObject<SplinterDatabaseSettings>("Splinter:Database");
 
             var defaultModule = new NanoInstanceDefaultModule(defaultSplinterSettings);
             var databaseModule = new NanoInstanceDatabaseModule(databaseSettings);

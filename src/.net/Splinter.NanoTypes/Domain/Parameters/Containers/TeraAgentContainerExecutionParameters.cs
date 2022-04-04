@@ -4,9 +4,9 @@ namespace Splinter.NanoTypes.Domain.Parameters.Containers
 {
     public record TeraAgentContainerExecutionParameters : NanoParameters
     {
-        public int? NumberOfConcurrentThreads { get; set; }
+        public int? NumberOfConcurrentThreads { get; init; }
         public TimeSpan ExecutionIntervalTimeSpan { get; init; }
-        public DateTime? StartTimestamp { get; set; }
-        public TimeSpan? IncrementTimestamp { get; set; }
+        public DateTime? StartTimestamp { get; init; }
+        public TimeSpan? IncrementTimestamp { get; init; }
     }
 }

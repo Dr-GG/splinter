@@ -5,6 +5,7 @@ using System.Reflection;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Utilities
 {
@@ -50,7 +51,7 @@ namespace Splinter.NanoInstances.Utilities
             IEnumerable<FieldInfo> fields)
         {
             var field = fields.FirstOrDefault(f =>
-                f.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+                f.Name.EqualsOrdinalIgnoreCase(propertyName));
 
             if (field == null)
             {

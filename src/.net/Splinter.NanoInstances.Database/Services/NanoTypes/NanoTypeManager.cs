@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.DbContext.Models;
-using Splinter.NanoInstances.Database.Extensions;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Exceptions.Data;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
+using Tenjin.Data.Extensions;
 
 namespace Splinter.NanoInstances.Database.Services.NanoTypes
 {

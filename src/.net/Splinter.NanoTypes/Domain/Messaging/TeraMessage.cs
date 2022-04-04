@@ -13,7 +13,7 @@ namespace Splinter.NanoTypes.Domain.Messaging
         public TeraMessageErrorCode? ErrorCode { get; init; }
         public Guid SourceTeraId { get; init; }
         public Guid BatchId { get; init; }
-        public string? Message { get; set; } = string.Empty;
+        public string? Message { get; set; } = string.Empty; // Keep this a set for performance reasons.
         public string? ErrorMessage { get; init; } = string.Empty;
         public string? ErrorStacktrace { get; init; } = string.Empty;
         public DateTime AbsoluteExpiryTimestamp { get; init; }
