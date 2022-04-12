@@ -19,7 +19,8 @@ pool:
 
 variables:
   solution: 'src/.net/Splinter.sln'
-  nugetProject: 'src/.net/Splinter.Nuget.Default/Splinter.Nuget.Default.csproj'
+  nanoTypesNugetProject: 'src/.net/Splinter.Nuget.NanoTypes.Default/Splinter.Nuget.NanoTypes.Default.csproj'
+  nanoInstancesNugetProject: 'src/.net/Splinter.Nuget.NanoInstances.Default/Splinter.Nuget.NanoInstances.Default.csproj'
   buildConfiguration: 'Release'
   ngBuildConfiguration: '--prod'
   coreVersion: "6.x"
@@ -68,25 +69,49 @@ jobs:
       arguments: '--configuration $(buildConfiguration) --no-restore --no-build --filter TestCategory!=Integration'  
       
   - task: DotNetCoreCLI@2
-    displayName: Package NuGet library
+    displayName: Package Nano Types NuGet library
     condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
     inputs:
       command: pack
-      packagesToPack: '$(nugetProject)'
+      packagesToPack: '$(nanoTypesNugetProject)'
       packDestination: '$(Build.ArtifactStagingDirectory)'
       noBuild: true
       includeSymbols: true
       versioningScheme: byEnvVar
       versionEnvVar: 'versionNumber'
+      
+  - task: DotNetCoreCLI@2
+    displayName: Package Nano Instances NuGet library
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+    inputs:
+      command: pack
+      packagesToPack: '$(nanoInstancesNugetProject)'
+      packDestination: '$(Build.ArtifactStagingDirectory)'
+      noBuild: true
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: 'versionNumber'      
 
   - task: NuGetCommand@2
-    displayName: Publish NuGet to nuget.org
+    displayName: Publish Splinter Nano Types Nuget to nuget.org
     continueOnError: true
     condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
     inputs:
       command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/Splinter.Agents.NanoTypes.Default.$(versionNumber).nupkg;'
       nuGetFeedType: 'external'
       publishFeedCredentials: 'Nuget.org'
       allowPackageConflicts: true
       includeSymbols: true
+      
+  - task: NuGetCommand@2
+    displayName: Publish Splinter Nano Instances Nuget to nuget.org
+    continueOnError: true
+    condition: and(succeededOrFailed(), eq(variables['Build.SourceBranchName'], 'master'))
+    inputs:
+      command: 'push'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/Splinter.Agents.NanoInstances.Default.$(versionNumber).nupkg;'
+      nuGetFeedType: 'external'
+      publishFeedCredentials: 'Nuget.org'
+      allowPackageConflicts: true
+      includeSymbols: true      

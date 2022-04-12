@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<PackageId>Splinter.Agents.NanoTypes.Default</PackageId>
+	<Authors>Gerard Gouws</Authors>
+	<Company>Splinter</Company>
+	<Description>The default Splinter Nano Type interfaces required for the default Splinter implementation.</Description>
+	<PackageIcon>splinter.png</PackageIcon>
+	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/Dr-GG/splinter</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/Dr-GG/splinter</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<RepositoryBranch>master</RepositoryBranch>
+	<PackageTags>holonic superposition intelligence; multi-agent system; splinter nano types</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<None Include="splinter.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Splinter.NanoTypes.Database\Splinter.NanoTypes.Database.csproj" />
+    <ProjectReference Include="..\Splinter.NanoTypes.Default\Splinter.NanoTypes.Default.csproj" />
+    <ProjectReference Include="..\Splinter.NanoTypes\Splinter.NanoTypes.csproj" />
+  </ItemGroup>
+
+</Project>

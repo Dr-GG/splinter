@@ -4,10 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<PackageId>Splinter</PackageId>
+	<PackageId>Splinter.Agents.NanoInstances.Default</PackageId>
 	<Authors>Gerard Gouws</Authors>
 	<Company>Splinter</Company>
-	<Description>The multi-agent system development framework to develop holonic superposition intelligent agent systems</Description>
+	<Description>The default Nano Instance implementations of the default Splinter Nano Types.</Description>
 	<PackageIcon>splinter.png</PackageIcon>
 	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
@@ -15,7 +15,7 @@
 	<RepositoryUrl>https://github.com/Dr-GG/splinter</RepositoryUrl>
 	<RepositoryType>git</RepositoryType>
 	<RepositoryBranch>master</RepositoryBranch>
-	<PackageTags>holonic superposition intelligence; multi-agent system;</PackageTags>
+	<PackageTags>holonic superposition intelligence; multi-agent system; splinter nano instances</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
