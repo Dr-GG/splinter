@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Splinter.NanoTypes.Domain.Exceptions.Containers;
@@ -115,17 +116,26 @@ namespace Splinter.NanoInstances.Default.Services.Containers
                     ProcessPendingRemovals();
 
                     var executionParameters = GetExecutionParameters();
-                    var threadCount = Parameters.NumberOfConcurrentThreads ?? System.Environment.ProcessorCount;
-                    var parallelOptions = new ParallelOptions
-                    {
-                        CancellationToken = cancellationToken,
-                        MaxDegreeOfParallelism = threadCount
-                    };
+                    var batchSize = Parameters.NumberOfConcurrentThreads ?? System.Environment.ProcessorCount;
 
-                    Parallel.ForEach(_teraAgents, parallelOptions, agent => agent.Execute(executionParameters));
+                    _teraAgents
+                        .Batch(batchSize)
+                        .Select(a => a.ToFunctionTask(() => ProcessTeraAgents(executionParameters, a)))
+                        .RunParallel(cancellationToken);
+
                     Thread.Sleep(Parameters.ExecutionIntervalTimeSpan);
                 }
             });
+        }
+
+        private static async Task ProcessTeraAgents(
+            TeraAgentExecutionParameters executionParameters,
+            IEnumerable<ITeraAgent> agents)
+        {
+            foreach (var agent in agents)
+            {
+                await agent.Execute(executionParameters);
+            }
         }
 
         private TeraAgentExecutionParameters GetExecutionParameters()

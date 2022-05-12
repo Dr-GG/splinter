@@ -16,13 +16,15 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
     [TestFixture]
     public class TeraAgentContainerTests
     {
-        private const int DefaultNumberOfTestAgents = 10000;
-        private const int TestDisposeNumberOfTeraAgents = 25000;
+        private const int DefaultNumberOfTestAgents = 1000;
+        private const int TestDisposeNumberOfTeraAgents = 1000;
+        private const int TestDisposeThreadingNumberOfTeraAgents = 25;
+        private const int TestExplicitMultiThreadCount = 5;
 
         [Test]
         public void Execute_WhenContainerIsNotInitialised_ThrowsException()
         {
-            var container = GetContainer();
+            using var container = GetContainer();
 
             Assert.ThrowsAsync<TeraAgentContainerNotInitialisedException>(() => container.Execute());
         }
@@ -30,7 +32,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
         [Test]
         public async Task Execute_WhenAddingAgentsWhileContainerIsRunning_AddsAndExecutesAllAgents()
         {
-            var container = GetContainer();
+            await using var container = GetContainer();
             var parameters = new TeraAgentContainerExecutionParameters();
             var agents = GetTestAgents(executionLimit: 1);
 
@@ -51,7 +53,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
         [Test]
         public async Task Execute_WhenRemovingAgentsWhileContainerIsRunning_AddsAndExecutesAllAgents()
         {
-            var container = GetContainer();
+            await using var container = GetContainer();
             var parameters = new TeraAgentContainerExecutionParameters();
             var agents = GetTestAgents(executionLimit: 1).ToList();
 
@@ -78,9 +80,12 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
         [Test]
         public async Task Halt_WhenStoppingTheTeraAgentContainerWhileRunning_StopsAllAgents()
         {
-            var container = GetContainer();
-            var parameters = new TeraAgentContainerExecutionParameters();
-            var agents = GetTestAgents(TestDisposeNumberOfTeraAgents, 1).ToList();
+            await using var container = GetContainer();
+            var agents = GetSlidingTestAgents().ToList();
+            var parameters = new TeraAgentContainerExecutionParameters
+            {
+                ExecutionIntervalTimeSpan = TimeSpan.FromMilliseconds(10)
+            };
 
             foreach (var agent in agents)
             {
@@ -94,10 +99,9 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
 
             await container.Halt();
 
-            Thread.Sleep(5000);
-
-            Assert.IsTrue(TeraAgentContainerUnitTestAgent.ExecutionHit < TestDisposeNumberOfTeraAgents);
-            Assert.AreEqual(TestDisposeNumberOfTeraAgents, container.NumberOfTeraAgents);
+            Assert.IsTrue(TeraAgentContainerUnitTestAgent.ExecutionHit > 0);
+            Assert.IsTrue(TeraAgentContainerUnitTestAgent.CompletedHit > 0);
+            Assert.IsTrue(TeraAgentContainerUnitTestAgent.CompletedHit < TestDisposeNumberOfTeraAgents);
         }
 
         [TestCase(0)]
@@ -107,9 +111,9 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
         [TestCase(1000)]
         public async Task Execute_WhenGivenIntervals_ExecutesAsExpected(int intervalMilliseconds)
         {
+            await using var container = GetContainer();
             var threadSleep = intervalMilliseconds == 0 ? 100 : intervalMilliseconds * 5 + 100;
             var start = DateTime.UtcNow;
-            var container = GetContainer();
             var agent = GetTestAgents(1, 5).First();
             var parameters = new TeraAgentContainerExecutionParameters
             {
@@ -137,7 +141,6 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
         [TestCase(1, 10)]
         [TestCase(10, 10)]
         [TestCase(100, 10)]
-        [TestCase(1000, 10)]
         [TestCase(0, 100)]
         [TestCase(1, 100)]
         [TestCase(10, 100)]
@@ -152,10 +155,10 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
             int intervalMilliseconds,
             int incrementMilliseconds)
         {
+            await using var container = GetContainer();
             var threadSleep = intervalMilliseconds == 0 ? 100 : intervalMilliseconds * 5 + 100;
             var start = DateTime.UtcNow;
             var end = start.AddMilliseconds(5 * incrementMilliseconds + 100);
-            var container = GetContainer();
             var agent = GetTestAgents(1, 5).First();
             var parameters = new TeraAgentContainerExecutionParameters
             {
@@ -182,7 +185,6 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
         [TestCase(1, 10)]
         [TestCase(10, 10)]
         [TestCase(100, 10)]
-        [TestCase(1000, 10)]
         [TestCase(0, 100)]
         [TestCase(1, 100)]
         [TestCase(10, 100)]
@@ -197,10 +199,10 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
             int intervalMilliseconds,
             int incrementMilliseconds)
         {
+            await using var container = GetContainer();
             var threadSleep = intervalMilliseconds == 0 ? 100 : intervalMilliseconds * 5 + 100;
             var start = new DateTime(1983, 10, 03, 18, 00, 00);
-            var end = start.AddMilliseconds(5 * incrementMilliseconds);
-            var container = GetContainer();
+            var end = start.AddMilliseconds(5 * incrementMilliseconds + 500);
             var agent = GetTestAgents(1, 5).First();
             var parameters = new TeraAgentContainerExecutionParameters
             {
@@ -222,6 +224,62 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
                 end,
                 TimeSpan.FromMilliseconds(incrementMilliseconds),
                 TimeSpan.FromMilliseconds(incrementMilliseconds));
+        }
+
+        [Test]
+        public async Task Execute_WhenRunningOnASingleThread_OnlyInvokesFromASingleThread()
+        {
+            await using var container = GetContainer();
+            var agents = GetTestAgents(TestDisposeThreadingNumberOfTeraAgents, 1).ToList();
+            var parameters = new TeraAgentContainerExecutionParameters
+            {
+                ExecutionIntervalTimeSpan = TimeSpan.FromMilliseconds(10),
+                NumberOfConcurrentThreads = 1
+            };
+
+            foreach (var agent in agents)
+            {
+                await container.Register(agent);
+            }
+
+            await container.Initialise(parameters);
+            await container.Execute();
+
+            Thread.Sleep(5000);
+
+            await container.Halt();
+
+            Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.ExecutionHit);
+            Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.CompletedHit);
+            Assert.AreEqual(1, TeraAgentContainerUnitTestAgent.ThreadIdCounter.Count);
+        }
+
+        [Test]
+        public async Task Execute_WhenRunningOnMultipleThreads_ExecutesAsExpectedOnMultipleThreads()
+        {
+            await using var container = GetContainer();
+            var agents = GetTestAgents(TestDisposeThreadingNumberOfTeraAgents, 1).ToList();
+            var parameters = new TeraAgentContainerExecutionParameters
+            {
+                ExecutionIntervalTimeSpan = TimeSpan.FromMilliseconds(10),
+                NumberOfConcurrentThreads = TestExplicitMultiThreadCount
+            };
+
+            foreach (var agent in agents)
+            {
+                await container.Register(agent);
+            }
+
+            await container.Initialise(parameters);
+            await container.Execute();
+
+            Thread.Sleep(5000);
+
+            await container.Halt();
+
+            Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.ExecutionHit);
+            Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.CompletedHit);
+            Assert.GreaterOrEqual(TestExplicitMultiThreadCount, TeraAgentContainerUnitTestAgent.ThreadIdCounter.Count);
         }
 
         private static void AssertExecutionParameters(
@@ -264,13 +322,29 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
             int numberOfAgents = DefaultNumberOfTestAgents,
             int executionLimit = int.MaxValue)
         {
-            TeraAgentContainerUnitTestAgent.ExecutionHit = 0;
+            TeraAgentContainerUnitTestAgent.ResetMultiThreadVariables();
 
             var result = new List<ITeraAgent>(numberOfAgents);
 
             for (var i = 0; i < numberOfAgents; i++)
             {
                 result.Add(new TeraAgentContainerUnitTestAgent(executionLimit));
+            }
+
+            return result;
+        }
+
+        private static IEnumerable<ITeraAgent> GetSlidingTestAgents(
+            int numberOfAgents = DefaultNumberOfTestAgents,
+            int executionLimitOffset = 1)
+        {
+            TeraAgentContainerUnitTestAgent.ResetMultiThreadVariables();
+
+            var result = new List<ITeraAgent>(numberOfAgents);
+
+            for (var i = 0; i < numberOfAgents; i++)
+            {
+                result.Add(new TeraAgentContainerUnitTestAgent(executionLimitOffset + i));
             }
 
             return result;

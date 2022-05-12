@@ -18,6 +18,7 @@ using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Domain.Parameters.Superposition;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Default.NanoWaveFunctions
 {
@@ -150,7 +151,7 @@ namespace Splinter.NanoInstances.Default.NanoWaveFunctions
                 Mode = originalMapping.Mode,
                 Scope = newMapping.Scope,
                 NanoInstanceType = newMapping.NanoInstanceType,
-                Description = string.IsNullOrEmpty(newMapping.Description)
+                Description = newMapping.Description.IsNullOrEmpty()
                     ? originalMapping.Description
                     : newMapping.Description
 

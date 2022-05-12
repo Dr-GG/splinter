@@ -1,3 +1,5 @@
+IF (OBJECT_ID('superposition.TeraAgentNanoTypeDependencies') IS NOT NULL) DROP TABLE superposition.TeraAgentNanoTypeDependencies;
+IF (OBJECT_ID('superposition.NanoTypeRecollapseOperations') IS NOT NULL) DROP TABLE superposition.NanoTypeRecollapseOperations;
 IF (OBJECT_ID('tera.PendingTeraMessages') IS NOT NULL) DROP TABLE tera.PendingTeraMessages;
 IF (OBJECT_ID('tera.TeraMessages') IS NOT NULL) DROP TABLE tera.TeraMessages;
 IF (OBJECT_ID('tera.TeraAgents') IS NOT NULL) DROP TABLE tera.TeraAgents;

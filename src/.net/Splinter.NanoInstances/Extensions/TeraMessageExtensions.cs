@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Messaging;
+using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Extensions
 {
@@ -19,7 +20,7 @@ namespace Splinter.NanoInstances.Extensions
 
         public static TValue? JsonMessage<TValue>(this TeraMessage message) where TValue : class
         {
-            return string.IsNullOrEmpty(message.Message) 
+            return message.Message.IsNullOrEmpty()
                 ? null 
                 : JsonSerializer.Deserialize<TValue>(message.Message, JsonConstants.DefaultOptions);
         }
