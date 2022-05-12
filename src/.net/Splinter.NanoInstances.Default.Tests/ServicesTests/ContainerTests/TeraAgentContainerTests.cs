@@ -17,7 +17,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.ContainerTests
     public class TeraAgentContainerTests
     {
         private const int DefaultNumberOfTestAgents = 10000;
-        private const int TestDisposeNumberOfTeraAgents = 25000;
+        private const int TestDisposeNumberOfTeraAgents = 50000;
 
         [Test]
         public void Execute_WhenContainerIsNotInitialised_ThrowsException()
