@@ -44,7 +44,7 @@ public class TeraAgentContainerTests
             await container.Register(agent);
         }
 
-        Thread.Sleep(1000);
+        Thread.Sleep(5000);
 
         Assert.AreEqual(DefaultNumberOfTestAgents, container.NumberOfTeraAgents);
         Assert.AreEqual(DefaultNumberOfTestAgents, TeraAgentContainerUnitTestAgent.ExecutionHit);

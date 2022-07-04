@@ -76,7 +76,7 @@ jobs:
       command: pack
       packagesToPack: '$(nanoTypesNugetProject)'
       packDestination: '$(Build.ArtifactStagingDirectory)'
-      noBuild: true
+      noBuild: false
       includeSymbols: true
       versioningScheme: byEnvVar
       versionEnvVar: 'versionNumber'
@@ -88,7 +88,7 @@ jobs:
       command: pack
       packagesToPack: '$(nanoInstancesNugetProject)'
       packDestination: '$(Build.ArtifactStagingDirectory)'
-      noBuild: true
+      noBuild: false
       includeSymbols: true
       versioningScheme: byEnvVar
       versionEnvVar: 'versionNumber'      
