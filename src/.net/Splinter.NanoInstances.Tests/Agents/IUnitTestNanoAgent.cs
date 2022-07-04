@@ -1,8 +1,7 @@
 ﻿using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
-namespace Splinter.NanoInstances.Tests.Agents
+namespace Splinter.NanoInstances.Tests.Agents;
+
+public interface IUnitTestNanoAgent : INanoAgent
 {
-    public interface IUnitTestNanoAgent : INanoAgent
-    {
-    }
 }

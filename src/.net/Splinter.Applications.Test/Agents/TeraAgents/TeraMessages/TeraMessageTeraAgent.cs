@@ -3,21 +3,20 @@ using Splinter.Applications.Test.Domain.Constants;
 using Splinter.NanoInstances.Agents.TeraAgents;
 using Splinter.NanoTypes.Domain.Core;
 
-namespace Splinter.Applications.Test.Agents.TeraAgents.TeraMessages
+namespace Splinter.Applications.Test.Agents.TeraAgents.TeraMessages;
+
+public class TeraMessageTeraAgent : TeraAgent
 {
-    public class TeraMessageTeraAgent : TeraAgent
+    public static readonly SplinterId NanoTypeId = TeraMessageSplinterIds.TeraTypeId;
+    public static readonly SplinterId NanoInstanceId = new()
     {
-        public static readonly SplinterId NanoTypeId = TeraMessageSplinterIds.TeraTypeId;
-        public static readonly SplinterId NanoInstanceId = new()
-        {
-            Name = "Tera Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{102904AD-CD6A-4FFD-B95E-C78C7006D655}")
-        };
+        Name = "Tera Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{102904AD-CD6A-4FFD-B95E-C78C7006D655}")
+    };
 
-        public override SplinterId TypeId => NanoTypeId;
-        public override SplinterId InstanceId => NanoInstanceId;
+    public override SplinterId TypeId => NanoTypeId;
+    public override SplinterId InstanceId => NanoInstanceId;
 
-        protected override SplinterId TeraKnowledgeNanoTypeId => TeraMessageSplinterIds.KnowledgeNanoTypeId;
-    }
+    protected override SplinterId TeraKnowledgeNanoTypeId => TeraMessageSplinterIds.KnowledgeNanoTypeId;
 }

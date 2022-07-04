@@ -1,4 +1,3 @@
-﻿namespace Splinter.NanoTypes.Domain.Parameters.Bootstrap
-{
-    public record NanoBootstrapParameters : NanoParameters;
-}
+﻿namespace Splinter.NanoTypes.Domain.Parameters.Bootstrap;
+
+public record NanoBootstrapParameters : NanoParameters;

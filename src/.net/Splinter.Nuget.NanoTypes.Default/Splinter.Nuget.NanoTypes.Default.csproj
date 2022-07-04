@@ -23,9 +23,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Splinter.NanoTypes.Database\Splinter.NanoTypes.Database.csproj" />
-    <ProjectReference Include="..\Splinter.NanoTypes.Default\Splinter.NanoTypes.Default.csproj" />
-    <ProjectReference Include="..\Splinter.NanoTypes\Splinter.NanoTypes.csproj" />
+    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Splinter.NanoTypes.Database\Splinter.NanoTypes.Database.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Splinter.NanoTypes.Default\Splinter.NanoTypes.Default.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Splinter.NanoTypes\Splinter.NanoTypes.csproj" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

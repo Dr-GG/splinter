@@ -19,11 +19,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Splinter.Bootstrap\Splinter.Bootstrap.csproj" />
+    <ProjectReference Include="..\Splinter.Bootstrap\Splinter.Bootstrap.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
 	<None Include="splinter.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

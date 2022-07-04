@@ -1,17 +1,16 @@
 ﻿using System;
 
-namespace Splinter.NanoTypes.Domain.Exceptions
+namespace Splinter.NanoTypes.Domain.Exceptions;
+
+public class SplinterException : Exception
 {
-    public class SplinterException : Exception
-    {
-        public SplinterException()
-        { }
+    public SplinterException()
+    { }
 
-        public SplinterException(string message) : base(message)
-        { }
+    public SplinterException(string message) : base(message)
+    { }
 
-        public SplinterException(string message, Exception innerException) 
-            : base(message, innerException)
-        { }
-    }
+    public SplinterException(string message, Exception innerException) 
+        : base(message, innerException)
+    { }
 }

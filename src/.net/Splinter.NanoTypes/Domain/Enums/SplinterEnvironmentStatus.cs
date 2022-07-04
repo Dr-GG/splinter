@@ -1,11 +1,10 @@
-﻿namespace Splinter.NanoTypes.Domain.Enums
+﻿namespace Splinter.NanoTypes.Domain.Enums;
+
+public enum SplinterEnvironmentStatus
 {
-    public enum SplinterEnvironmentStatus
-    {
-        Uninitialised = 1,
-        Initialising = 2,
-        Initialised = 3,
-        Disposing = 4,
-        Disposed = 5
-    }
+    Uninitialised = 1,
+    Initialising = 2,
+    Initialised = 3,
+    Disposing = 4,
+    Disposed = 5
 }

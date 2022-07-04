@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace Splinter.NanoTypes.Default.Interfaces.Services.TeraAgents
+namespace Splinter.NanoTypes.Default.Interfaces.Services.TeraAgents;
+
+public interface ITeraAgentCache
 {
-    public interface ITeraAgentCache
-    {
-        void RegisterTeraId(Guid teraId, long id);
-        bool TryGetTeraId(Guid teraId, out long id);
-    }
+    void RegisterTeraId(Guid teraId, long id);
+    bool TryGetTeraId(Guid teraId, out long id);
 }

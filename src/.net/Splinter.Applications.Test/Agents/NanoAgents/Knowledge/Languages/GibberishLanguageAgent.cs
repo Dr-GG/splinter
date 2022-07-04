@@ -5,34 +5,33 @@ using Splinter.Applications.Test.Interfaces.Agents.NanoAgents.Knowledge.Language
 using Splinter.NanoInstances.Agents.NanoAgents;
 using Splinter.NanoTypes.Domain.Core;
 
-namespace Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages
+namespace Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages;
+
+public class GibberishLanguageAgent : NanoAgent, ILanguageAgent
 {
-    public class GibberishLanguageAgent : NanoAgent, ILanguageAgent
+    public static readonly SplinterId NanoTypeId = LanguageSplinterIds.LanguageNanoTypeId;
+    public static readonly SplinterId NanoInstanceId = new()
     {
-        public static readonly SplinterId NanoTypeId = LanguageSplinterIds.LanguageNanoTypeId;
-        public static readonly SplinterId NanoInstanceId = new()
-        {
-            Name = "Gibberish Language Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{B25C0F84-3432-4C7F-A13A-30760DA9B755}")
-        };
+        Name = "Gibberish Language Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{B25C0F84-3432-4C7F-A13A-30760DA9B755}")
+    };
 
-        public override SplinterId TypeId => NanoTypeId;
-        public override SplinterId InstanceId => NanoInstanceId;
+    public override SplinterId TypeId => NanoTypeId;
+    public override SplinterId InstanceId => NanoInstanceId;
 
-        public Task<string> SayHello()
-        {
-            return Task.FromResult(LanguageConstants.Gibberish.Hello);
-        }
+    public Task<string> SayHello()
+    {
+        return Task.FromResult(LanguageConstants.Gibberish.Hello);
+    }
 
-        public Task<string> SayTest()
-        {
-            return Task.FromResult(LanguageConstants.Gibberish.Test);
-        }
+    public Task<string> SayTest()
+    {
+        return Task.FromResult(LanguageConstants.Gibberish.Test);
+    }
 
-        public Task<string> SayGoodbye()
-        {
-            return Task.FromResult(LanguageConstants.Gibberish.Goodbye);
-        }
+    public Task<string> SayGoodbye()
+    {
+        return Task.FromResult(LanguageConstants.Gibberish.Goodbye);
     }
 }

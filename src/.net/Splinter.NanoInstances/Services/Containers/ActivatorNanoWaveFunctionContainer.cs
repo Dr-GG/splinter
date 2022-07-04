@@ -6,53 +6,52 @@ using Splinter.NanoInstances.Interfaces.WaveFunctions;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
-namespace Splinter.NanoInstances.Services.Containers
+namespace Splinter.NanoInstances.Services.Containers;
+
+public class ActivatorNanoWaveFunctionContainer : INanoWaveFunctionContainer
 {
-    public class ActivatorNanoWaveFunctionContainer : INanoWaveFunctionContainer
+    private readonly ReaderWriterLock _rwLock = new();
+    private readonly TimeSpan _lockTimeoutTimeSpan;
+    private readonly IDictionary<Guid, Type> _nanoTypeMap;
+
+    public ActivatorNanoWaveFunctionContainer(
+        TimeSpan lockTimeoutTimeSpan,
+        IDictionary<Guid, Type> nanoTypeMap)
     {
-        private readonly ReaderWriterLock _rwLock = new();
-        private readonly TimeSpan _lockTimeoutTimeSpan;
-        private readonly IDictionary<Guid, Type> _nanoTypeMap;
+        _lockTimeoutTimeSpan = lockTimeoutTimeSpan;
+        _nanoTypeMap = nanoTypeMap;
+    }
 
-        public ActivatorNanoWaveFunctionContainer(
-            TimeSpan lockTimeoutTimeSpan,
-            IDictionary<Guid, Type> nanoTypeMap)
+    public Task<INanoAgent?> Collapse(NanoCollapseParameters collapseParameters)
+    {
+        try
         {
-            _lockTimeoutTimeSpan = lockTimeoutTimeSpan;
-            _nanoTypeMap = nanoTypeMap;
+            _rwLock.AcquireReaderLock(_lockTimeoutTimeSpan);
+
+            return _nanoTypeMap.TryGetValue(
+                collapseParameters.NanoTypeId, out var type)
+                ? Task.FromResult(Activator.CreateInstance(type) as INanoAgent)
+                : Task.FromResult<INanoAgent?>(null);
+        }
+        finally
+        {
+            _rwLock.ReleaseReaderLock();
+        }
+    }
+
+    public Task Synch(Guid nanoTypeId, Type type)
+    {
+        try
+        {
+            _rwLock.AcquireWriterLock(_lockTimeoutTimeSpan);
+
+            _nanoTypeMap[nanoTypeId] = type;
+        }
+        finally
+        {
+            _rwLock.ReleaseWriterLock();
         }
 
-        public Task<INanoAgent?> Collapse(NanoCollapseParameters collapseParameters)
-        {
-            try
-            {
-                _rwLock.AcquireReaderLock(_lockTimeoutTimeSpan);
-
-                return _nanoTypeMap.TryGetValue(
-                    collapseParameters.NanoTypeId, out var type)
-                    ? Task.FromResult(Activator.CreateInstance(type) as INanoAgent)
-                    : Task.FromResult<INanoAgent?>(null);
-            }
-            finally
-            {
-                _rwLock.ReleaseReaderLock();
-            }
-        }
-
-        public Task Synch(Guid nanoTypeId, Type type)
-        {
-            try
-            {
-                _rwLock.AcquireWriterLock(_lockTimeoutTimeSpan);
-
-                _nanoTypeMap[nanoTypeId] = type;
-            }
-            finally
-            {
-                _rwLock.ReleaseWriterLock();
-            }
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

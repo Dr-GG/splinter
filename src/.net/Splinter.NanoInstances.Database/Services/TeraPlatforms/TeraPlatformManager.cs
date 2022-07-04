@@ -7,81 +7,80 @@ using Splinter.NanoTypes.Default.Interfaces.Services.OperatingSystems;
 using Splinter.NanoTypes.Default.Interfaces.Services.TeraPlatforms;
 using Splinter.NanoTypes.Domain.Enums;
 
-namespace Splinter.NanoInstances.Database.Services.TeraPlatforms
+namespace Splinter.NanoInstances.Database.Services.TeraPlatforms;
+
+public class TeraPlatformManager : ITeraPlatformManager
 {
-    public class TeraPlatformManager : ITeraPlatformManager
+    private readonly TeraPlatformSettings _settings;
+    private readonly TeraDbContext _dbContext;
+    private readonly IOperatingSystemInformationProvider _osProvider;
+
+    public TeraPlatformManager(
+        TeraPlatformSettings settings,
+        TeraDbContext teraDbContext, 
+        IOperatingSystemInformationProvider osProvider)
     {
-        private readonly TeraPlatformSettings _settings;
-        private readonly TeraDbContext _dbContext;
-        private readonly IOperatingSystemInformationProvider _osProvider;
+        _settings = settings;
+        _dbContext = teraDbContext;
+        _osProvider = osProvider;
+    }
 
-        public TeraPlatformManager(
-            TeraPlatformSettings settings,
-            TeraDbContext teraDbContext, 
-            IOperatingSystemInformationProvider osProvider)
+    public async Task<long> RegisterTeraPlatform(long operatingSystemId)
+    {
+        var platform = await GetTeraPlatform();
+
+        if (platform == null)
         {
-            _settings = settings;
-            _dbContext = teraDbContext;
-            _osProvider = osProvider;
+            platform = await AddNewTeraPlatform(operatingSystemId);
+        }
+        else
+        {
+            await SetPlatformAsRunning(platform);
         }
 
-        public async Task<long> RegisterTeraPlatform(long operatingSystemId)
+        return platform.Id;
+    }
+
+    public async Task DisableTeraPlatform()
+    {
+        var platform = await GetTeraPlatform();
+
+        if (platform == null)
         {
-            var platform = await GetTeraPlatform();
-
-            if (platform == null)
-            {
-                platform = await AddNewTeraPlatform(operatingSystemId);
-            }
-            else
-            {
-                await SetPlatformAsRunning(platform);
-            }
-
-            return platform.Id;
+            return;
         }
 
-        public async Task DisableTeraPlatform()
+        platform.Status = TeraPlatformStatus.Halted;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task SetPlatformAsRunning(TeraPlatformModel teraPlatform)
+    {
+        teraPlatform.Status = TeraPlatformStatus.Running;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task<TeraPlatformModel> AddNewTeraPlatform(long operatingSystemId)
+    {
+        var platformModel = new TeraPlatformModel
         {
-            var platform = await GetTeraPlatform();
+            Status = TeraPlatformStatus.Running,
+            TeraId = _settings.TeraId,
+            FrameworkDescription = await _osProvider.GetFrameworkDescription(),
+            OperatingSystemId = operatingSystemId
+        };
 
-            if (platform == null)
-            {
-                return;
-            }
+        await _dbContext.TeraPlatforms.AddAsync(platformModel);
+        await _dbContext.SaveChangesAsync();
 
-            platform.Status = TeraPlatformStatus.Halted;
+        return platformModel;
+    }
 
-            await _dbContext.SaveChangesAsync();
-        }
-
-        private async Task SetPlatformAsRunning(TeraPlatformModel teraPlatform)
-        {
-            teraPlatform.Status = TeraPlatformStatus.Running;
-
-            await _dbContext.SaveChangesAsync();
-        }
-
-        private async Task<TeraPlatformModel> AddNewTeraPlatform(long operatingSystemId)
-        {
-            var platformModel = new TeraPlatformModel
-            {
-                Status = TeraPlatformStatus.Running,
-                TeraId = _settings.TeraId,
-                FrameworkDescription = await _osProvider.GetFrameworkDescription(),
-                OperatingSystemId = operatingSystemId
-            };
-
-            await _dbContext.TeraPlatforms.AddAsync(platformModel);
-            await _dbContext.SaveChangesAsync();
-
-            return platformModel;
-        }
-
-        private async Task<TeraPlatformModel?> GetTeraPlatform()
-        {
-            return await _dbContext.TeraPlatforms
-                .SingleOrDefaultAsync(p => p.TeraId == _settings.TeraId);
-        }
+    private async Task<TeraPlatformModel?> GetTeraPlatform()
+    {
+        return await _dbContext.TeraPlatforms
+            .SingleOrDefaultAsync(p => p.TeraId == _settings.TeraId);
     }
 }

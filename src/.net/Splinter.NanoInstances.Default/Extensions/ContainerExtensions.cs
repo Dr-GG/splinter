@@ -14,61 +14,60 @@ using Splinter.NanoTypes.Default.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Default.Interfaces.Services.TeraAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
-namespace Splinter.NanoInstances.Default.Extensions
+namespace Splinter.NanoInstances.Default.Extensions;
+
+public static class ContainerExtensions
 {
-    public static class ContainerExtensions
+    public static void RegisterDefaultServices(this ContainerBuilder container)
     {
-        public static void RegisterDefaultServices(this ContainerBuilder container)
-        {
-            container
-                .RegisterType<JsonSuperpositionMappingResolver>()
-                .As<ISuperpositionMappingResolver>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<JsonSuperpositionMappingResolver>()
+            .As<ISuperpositionMappingResolver>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<SuperpositionMappingRegistry>()
-                .As<ISuperpositionMappingRegistry>()
-                .SingleInstance();
+        container
+            .RegisterType<SuperpositionMappingRegistry>()
+            .As<ISuperpositionMappingRegistry>()
+            .SingleInstance();
 
-            container
-                .RegisterType<SuperpositionSingletonRegistry>()
-                .As<ISuperpositionSingletonRegistry>()
-                .SingleInstance();
+        container
+            .RegisterType<SuperpositionSingletonRegistry>()
+            .As<ISuperpositionSingletonRegistry>()
+            .SingleInstance();
 
-            container
-                .RegisterType<ActivatorNanoWaveFunctionBuilder>()
-                .As<INanoWaveFunctionBuilder>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<ActivatorNanoWaveFunctionBuilder>()
+            .As<INanoWaveFunctionBuilder>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<OperatingSystemInformationProvider>()
-                .As<IOperatingSystemInformationProvider>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<OperatingSystemInformationProvider>()
+            .As<IOperatingSystemInformationProvider>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<NanoTypeCache>()
-                .As<INanoTypeCache>()
-                .SingleInstance();
+        container
+            .RegisterType<NanoTypeCache>()
+            .As<INanoTypeCache>()
+            .SingleInstance();
 
-            container
-                .RegisterType<TeraAgentCache>()
-                .As<ITeraAgentCache>()
-                .SingleInstance();
+        container
+            .RegisterType<TeraAgentCache>()
+            .As<ITeraAgentCache>()
+            .SingleInstance();
 
-            container
-                .RegisterType<NanoTable>()
-                .As<INanoTable>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<NanoTable>()
+            .As<INanoTable>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraMessageQueue>()
-                .As<ITeraMessageQueue>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraMessageQueue>()
+            .As<ITeraMessageQueue>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<RecollapseNanoTypeService>()
-                .As<IRecollapseNanoTypeService>()
-                .InstancePerLifetimeScope();
-        }
+        container
+            .RegisterType<RecollapseNanoTypeService>()
+            .As<IRecollapseNanoTypeService>()
+            .InstancePerLifetimeScope();
     }
 }

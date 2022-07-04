@@ -1,4 +1,3 @@
-﻿namespace Splinter.NanoTypes.Domain.Parameters
-{
-    public record NanoParameters;
-}
+﻿namespace Splinter.NanoTypes.Domain.Parameters;
+
+public record NanoParameters;

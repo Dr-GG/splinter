@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace Splinter.NanoTypes.Database.Interfaces.Services.OperatingSystems
+namespace Splinter.NanoTypes.Database.Interfaces.Services.OperatingSystems;
+
+public interface IOperatingSystemManager
 {
-    public interface IOperatingSystemManager
-    {
-        Task<long> RegisterOperatingSystemInformation();
-    }
+    Task<long> RegisterOperatingSystemInformation();
 }

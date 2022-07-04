@@ -13,119 +13,118 @@ using Splinter.NanoTypes.Domain.Messaging;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
 using Tenjin.Interfaces.Mappers;
 
-namespace Splinter.NanoInstances.Database.Services.Messaging
+namespace Splinter.NanoInstances.Database.Services.Messaging;
+
+public class TeraMessageDequeueService : ITeraMessageDequeueService
 {
-    public class TeraMessageDequeueService : ITeraMessageDequeueService
+    private readonly TeraMessagingSettings _settings;
+    private readonly TeraDbContext _dbContext;
+    private readonly IUnaryMapper<TeraMessageModel, TeraMessage> _messageMapper;
+
+    public TeraMessageDequeueService(
+        TeraMessagingSettings settings, 
+        TeraDbContext teraDbContext, 
+        IUnaryMapper<TeraMessageModel, TeraMessage> messageMapper)
     {
-        private readonly TeraMessagingSettings _settings;
-        private readonly TeraDbContext _dbContext;
-        private readonly IUnaryMapper<TeraMessageModel, TeraMessage> _messageMapper;
+        _settings = settings;
+        _dbContext = teraDbContext;
+        _messageMapper = messageMapper;
+    }
 
-        public TeraMessageDequeueService(
-            TeraMessagingSettings settings, 
-            TeraDbContext teraDbContext, 
-            IUnaryMapper<TeraMessageModel, TeraMessage> messageMapper)
+    public async Task<IEnumerable<TeraMessage>> Dequeue(TeraMessageDequeueParameters parameters)
+    {
+        if (parameters.MaximumNumberOfTeraMessages <= 0)
         {
-            _settings = settings;
-            _dbContext = teraDbContext;
-            _messageMapper = messageMapper;
+            return Enumerable.Empty<TeraMessage>();
         }
 
-        public async Task<IEnumerable<TeraMessage>> Dequeue(TeraMessageDequeueParameters parameters)
+        var result = new List<TeraMessage>();
+        var teraMessages = await GetInitialTeraMessages(
+            parameters.TeraId, 
+            parameters.MaximumNumberOfTeraMessages);
+
+        foreach (var teraMessage in teraMessages)
         {
-            if (parameters.MaximumNumberOfTeraMessages <= 0)
+            if (!await DequeueMessage(teraMessage))
             {
-                return Enumerable.Empty<TeraMessage>();
+                continue;
             }
 
-            var result = new List<TeraMessage>();
-            var teraMessages = await GetInitialTeraMessages(
-                parameters.TeraId, 
-                parameters.MaximumNumberOfTeraMessages);
+            var message = _messageMapper.Map(teraMessage);
 
-            foreach (var teraMessage in teraMessages)
-            {
-                if (!await DequeueMessage(teraMessage))
-                {
-                    continue;
-                }
-
-                var message = _messageMapper.Map(teraMessage);
-
-                result.Add(message);
-            }
-
-            return result;
+            result.Add(message);
         }
 
-        private async Task<bool> DequeueMessage(TeraMessageModel teraMessage)
+        return result;
+    }
+
+    private async Task<bool> DequeueMessage(TeraMessageModel teraMessage)
+    {
+        try
         {
-            try
-            {
-                if (CancelTeraMessage(teraMessage))
-                {
-                    return false;
-                }
-
-                await MarkAsDequeued(teraMessage);
-            }
-            catch (DBConcurrencyException)
-            {
-                // Ignore the message, because another process modified it.
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool CancelTeraMessage(TeraMessageModel teraMessage)
-        {
-            if (teraMessage.DequeueCount < _settings.MaximumDequeueRetryCount)
+            if (CancelTeraMessage(teraMessage))
             {
                 return false;
             }
 
-            teraMessage.Status = TeraMessageStatus.Cancelled;
-            teraMessage.ErrorCode = TeraMessageErrorCode.MaximumDequeueCountReached;
-            teraMessage.CompletedTimestamp = DateTime.UtcNow;
-
-            _dbContext.PendingTeraMessages.Remove(teraMessage.Pending);
-            _dbContext.SaveChanges();
-
-            return true;
+            await MarkAsDequeued(teraMessage);
         }
-
-        private async Task MarkAsDequeued(TeraMessageModel teraMessage)
+        catch (DBConcurrencyException)
         {
-            teraMessage.Status = TeraMessageStatus.Dequeued;
-            teraMessage.DequeuedTimestamp = DateTime.UtcNow;
-            teraMessage.DequeueCount++;
+            // Ignore the message, because another process modified it.
 
-            await _dbContext.SaveChangesAsync();
+            return false;
         }
 
-        private async Task<IEnumerable<TeraMessageModel>> GetInitialTeraMessages(
-            Guid teraId,
-            int maximumNumberOfMembers)
+        return true;
+    }
+
+    private bool CancelTeraMessage(TeraMessageModel teraMessage)
+    {
+        if (teraMessage.DequeueCount < _settings.MaximumDequeueRetryCount)
         {
-            var messageIds = await _dbContext.PendingTeraMessages
-                .AsNoTracking()
-                .Where(p => p.TeraAgent.TeraId == teraId
-                            && p.TeraMessage.Status == TeraMessageStatus.Pending)
-                .OrderByDescending(p => p.TeraMessage.Priority)
-                .ThenBy(p => p.TeraMessage.LoggedTimestamp)
-                .Take(maximumNumberOfMembers)
-                .Select(p => p.TeraMessageId)
-                .ToListAsync();
-
-            return await _dbContext.TeraMessages
-                .Include(m => m.Pending)
-                .Include(m => m.SourceTeraAgent)
-                .Where(m => messageIds.Contains(m.Id))
-                .OrderByDescending(m => m.Priority)
-                .ThenBy(m => m.LoggedTimestamp)
-                .ToListAsync();
+            return false;
         }
+
+        teraMessage.Status = TeraMessageStatus.Cancelled;
+        teraMessage.ErrorCode = TeraMessageErrorCode.MaximumDequeueCountReached;
+        teraMessage.CompletedTimestamp = DateTime.UtcNow;
+
+        _dbContext.PendingTeraMessages.Remove(teraMessage.Pending);
+        _dbContext.SaveChanges();
+
+        return true;
+    }
+
+    private async Task MarkAsDequeued(TeraMessageModel teraMessage)
+    {
+        teraMessage.Status = TeraMessageStatus.Dequeued;
+        teraMessage.DequeuedTimestamp = DateTime.UtcNow;
+        teraMessage.DequeueCount++;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task<IEnumerable<TeraMessageModel>> GetInitialTeraMessages(
+        Guid teraId,
+        int maximumNumberOfMembers)
+    {
+        var messageIds = await _dbContext.PendingTeraMessages
+            .AsNoTracking()
+            .Where(p => p.TeraAgent.TeraId == teraId
+                        && p.TeraMessage.Status == TeraMessageStatus.Pending)
+            .OrderByDescending(p => p.TeraMessage.Priority)
+            .ThenBy(p => p.TeraMessage.LoggedTimestamp)
+            .Take(maximumNumberOfMembers)
+            .Select(p => p.TeraMessageId)
+            .ToListAsync();
+
+        return await _dbContext.TeraMessages
+            .Include(m => m.Pending)
+            .Include(m => m.SourceTeraAgent)
+            .Where(m => messageIds.Contains(m.Id))
+            .OrderByDescending(m => m.Priority)
+            .ThenBy(m => m.LoggedTimestamp)
+            .ToListAsync();
     }
 }

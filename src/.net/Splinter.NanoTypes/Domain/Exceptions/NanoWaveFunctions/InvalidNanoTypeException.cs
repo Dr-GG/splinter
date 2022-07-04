@@ -1,8 +1,7 @@
-﻿namespace Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions
+﻿namespace Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
+
+public class InvalidNanoTypeException : SplinterException
 {
-    public class InvalidNanoTypeException : SplinterException
-    {
-        public InvalidNanoTypeException(string message) : base(message)
-        { }
-    }
+    public InvalidNanoTypeException(string message) : base(message)
+    { }
 }

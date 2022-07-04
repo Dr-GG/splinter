@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Splinter.NanoTypes.Database.Domain.Settings.TeraPlatforms
+namespace Splinter.NanoTypes.Database.Domain.Settings.TeraPlatforms;
+
+public class TeraPlatformSettings
 {
-    public class TeraPlatformSettings
-    {
-        public Guid TeraId { get; set; }
-    }
+    public Guid TeraId { get; set; }
 }

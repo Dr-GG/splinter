@@ -10,114 +10,113 @@ using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
 using Tenjin.Extensions;
 
-namespace Splinter.NanoInstances.Database.Services.Messaging
+namespace Splinter.NanoInstances.Database.Services.Messaging;
+
+public class TeraMessageSyncService : ITeraMessageSyncService
 {
-    public class TeraMessageSyncService : ITeraMessageSyncService
+    private readonly TeraMessagingSettings _settings;
+    private readonly TeraDbContext _dbContext;
+
+    public TeraMessageSyncService(
+        TeraMessagingSettings settings,
+        TeraDbContext dbContext)
     {
-        private readonly TeraMessagingSettings _settings;
-        private readonly TeraDbContext _dbContext;
+        _settings = settings;
+        _dbContext = dbContext;
+    }
 
-        public TeraMessageSyncService(
-            TeraMessagingSettings settings,
-            TeraDbContext dbContext)
+    public async Task Sync(TeraMessageSyncParameters parameters)
+    {
+        var messages = await GetMessages(parameters);
+
+        foreach (var message in messages)
         {
-            _settings = settings;
-            _dbContext = dbContext;
+            var sync = parameters.Syncs.Single(s => s.TeraMessageId == message.Id);
+
+            await Sync(message, sync);
+        }
+    }
+
+    private static void Reset(TeraMessageModel message)
+    {
+        if (message.Status.EqualsAny(
+                TeraMessageStatus.Dequeued, 
+                TeraMessageStatus.Pending))
+        {
+            return;
         }
 
-        public async Task Sync(TeraMessageSyncParameters parameters)
+        message.ErrorCode = null;
+        message.ErrorMessage = null;
+        message.ErrorStackTrace = null;
+    }
+
+    private void RemovePending(TeraMessageModel message)
+    {
+        if (message.Status.EqualsAny(
+                TeraMessageStatus.Pending,
+                TeraMessageStatus.Dequeued))
         {
-            var messages = await GetMessages(parameters);
+            _dbContext.PendingTeraMessages.Remove(message.Pending);
+        }
+    }
 
-            foreach (var message in messages)
+    private async Task Sync(TeraMessageModel message, TeraMessageSyncParameter parameter)
+    {
+        var synced = false;
+
+        for (var i = 0; i < _settings.MaximumSyncRetryCount && !synced; i++)
+        {
+            try
             {
-                var sync = parameters.Syncs.Single(s => s.TeraMessageId == message.Id);
+                await InternalSync(message, parameter);
 
-                await Sync(message, sync);
+                synced = true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Ignore the error as another processed changed it.
             }
         }
+    }
 
-        private static void Reset(TeraMessageModel message)
+    private async Task InternalSync(TeraMessageModel message, TeraMessageSyncParameter parameter)
+    {
+        if (message.Status == TeraMessageStatus.Completed)
         {
-            if (message.Status.EqualsAny(
-                    TeraMessageStatus.Dequeued, 
-                    TeraMessageStatus.Pending))
-            {
-                return;
-            }
-
-            message.ErrorCode = null;
-            message.ErrorMessage = null;
-            message.ErrorStackTrace = null;
+            return;
         }
 
-        private void RemovePending(TeraMessageModel message)
+        Reset(message);
+        RemovePending(message);
+
+        message.CompletedTimestamp = parameter.CompletionTimestamp;
+
+        if (parameter.ErrorCode.HasValue
+            || parameter.ErrorMessage.IsNotNullOrEmpty()
+            || parameter.ErrorStackTrace.IsNotNullOrEmpty())
         {
-            if (message.Status.EqualsAny(
-                    TeraMessageStatus.Pending,
-                    TeraMessageStatus.Dequeued))
-            {
-                _dbContext.PendingTeraMessages.Remove(message.Pending);
-            }
+            message.Status = TeraMessageStatus.Failed;
+            message.ErrorCode = parameter.ErrorCode ?? TeraMessageErrorCode.Unknown;
+            message.ErrorMessage = parameter.ErrorMessage;
+            message.ErrorStackTrace = parameter.ErrorStackTrace;
+        }
+        else
+        {
+            message.Status = TeraMessageStatus.Completed;
         }
 
-        private async Task Sync(TeraMessageModel message, TeraMessageSyncParameter parameter)
-        {
-            var synced = false;
+        await _dbContext.SaveChangesAsync();
+    }
 
-            for (var i = 0; i < _settings.MaximumSyncRetryCount && !synced; i++)
-            {
-                try
-                {
-                    await InternalSync(message, parameter);
+    private async Task<IEnumerable<TeraMessageModel>> GetMessages(
+        TeraMessageSyncParameters parameters)
+    {
+        var messageIds = parameters.Syncs.Select(s => s.TeraMessageId).ToList();
 
-                    synced = true;
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    // Ignore the error as another processed changed it.
-                }
-            }
-        }
-
-        private async Task InternalSync(TeraMessageModel message, TeraMessageSyncParameter parameter)
-        {
-            if (message.Status == TeraMessageStatus.Completed)
-            {
-                return;
-            }
-
-            Reset(message);
-            RemovePending(message);
-
-            message.CompletedTimestamp = parameter.CompletionTimestamp;
-
-            if (parameter.ErrorCode.HasValue
-                || parameter.ErrorMessage.IsNotNullOrEmpty()
-                || parameter.ErrorStackTrace.IsNotNullOrEmpty())
-            {
-                message.Status = TeraMessageStatus.Failed;
-                message.ErrorCode = parameter.ErrorCode ?? TeraMessageErrorCode.Unknown;
-                message.ErrorMessage = parameter.ErrorMessage;
-                message.ErrorStackTrace = parameter.ErrorStackTrace;
-            }
-            else
-            {
-                message.Status = TeraMessageStatus.Completed;
-            }
-
-            await _dbContext.SaveChangesAsync();
-        }
-
-        private async Task<IEnumerable<TeraMessageModel>> GetMessages(
-            TeraMessageSyncParameters parameters)
-        {
-            var messageIds = parameters.Syncs.Select(s => s.TeraMessageId).ToList();
-
-            return await _dbContext.TeraMessages
-                .Include(m => m.Pending)
-                .Where(m => messageIds.Contains(m.Id))
-                .ToListAsync();
-        }
+        return await _dbContext.TeraMessages
+            .Include(m => m.Pending)
+            .Where(m => messageIds.Contains(m.Id))
+            .ToListAsync();
     }
 }

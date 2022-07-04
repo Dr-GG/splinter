@@ -31,148 +31,147 @@ using Splinter.NanoTypes.Interfaces.Bootstrap;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
 using Tenjin.Configuration.Extensions;
 
-namespace Splinter.Bootstrap
+namespace Splinter.Bootstrap;
+
+public class SplinterDefaultBootstrapper : ISplinterBootstrapper
 {
-    public class SplinterDefaultBootstrapper : ISplinterBootstrapper
+    private IContainer _container = null!;
+    private IServiceScope _serviceScope = null!;
+
+    public async Task Initialise(NanoBootstrapParameters parameters)
     {
-        private IContainer _container = null!;
-        private IServiceScope _serviceScope = null!;
+        var containerBuilder = new ContainerBuilder();
+        var defaultParams = parameters.Cast<NanoDefaultBootstrapParameters>();
+        var configuration = GetConfiguration(defaultParams.JsonSettingFileNames);
 
-        public async Task Initialise(NanoBootstrapParameters parameters)
+        _container = AddDefaultModules(configuration, containerBuilder);
+        _serviceScope = new AutofacServiceScope(_container);
+
+        await InitialiseSplinterEnvironment();
+    }
+
+    private static IContainer AddDefaultModules(IConfiguration configuration, ContainerBuilder container)
+    {
+        var defaultSplinterSettings = configuration.BindObject<SplinterDefaultSettings>("Splinter:Default");
+        var databaseSettings = configuration.BindObject<SplinterDatabaseSettings>("Splinter:Database");
+
+        var defaultModule = new NanoInstanceDefaultModule(defaultSplinterSettings);
+        var databaseModule = new NanoInstanceDatabaseModule(databaseSettings);
+
+        container.RegisterModule(defaultModule);
+        container.RegisterModule(databaseModule);
+
+        return container.Build();
+    }
+
+    private async Task InitialiseSplinterEnvironment()
+    {
+        SplinterEnvironment.Status = SplinterEnvironmentStatus.Initialising;
+
+        var agentIds = await _serviceScope.Resolve<SplinterTeraAgentIdSettings>();
+
+        await InitialiseTeraAgentContainer();
+        await InitialiseSuperpositionAgent();
+        await InitialiseTeraPlatformAgent();
+        await InitialiseTeraRegistryAgent();
+
+        await RegisterCoreTeraAgents(agentIds);
+
+        await InitialiseTeraMessageAgent(agentIds.TeraMessageId);
+
+        SplinterEnvironment.Status = SplinterEnvironmentStatus.Initialised;
+    }
+
+    private static async Task RegisterCoreTeraAgents(SplinterTeraAgentIdSettings agentIds)
+    {
+        await RegisterSelf(SplinterEnvironment.TeraPlatformAgent, agentIds.TeraPlatformId);
+        await RegisterSelf(SplinterEnvironment.TeraRegistryAgent, agentIds.TeraRegistryId);
+    }
+
+    private static async Task RegisterSelf(ITeraAgent teraAgent, Guid? agentId)
+    {
+        var parameters = new TeraAgentRegistrationParameters
         {
-            var containerBuilder = new ContainerBuilder();
-            var defaultParams = parameters.Cast<NanoDefaultBootstrapParameters>();
-            var configuration = GetConfiguration(defaultParams.JsonSettingFileNames);
+            TeraId = agentId
+        };
 
-            _container = AddDefaultModules(configuration, containerBuilder);
-            _serviceScope = new AutofacServiceScope(_container);
+        await teraAgent.RegisterSelf(parameters);
+    }
 
-            await InitialiseSplinterEnvironment();
+    private async Task InitialiseSuperpositionAgent()
+    {
+        var superpositionAgent = new SuperpositionAgent();
+        var settings = await _serviceScope.Resolve<SplinterDefaultSettings>();
+        var parameters = new SuperpositionInitialisationParameters
+        {
+            ServiceScope = await _serviceScope.Start(),
+            Register = false,
+            SuperpositionMappings = settings.Superposition.Mappings
+        };
+
+        await superpositionAgent.Initialise(parameters);
+
+        SplinterEnvironment.SuperpositionAgent = superpositionAgent;
+    }
+
+    private static Task InitialiseTeraAgentContainer()
+    {
+        SplinterEnvironment.TeraAgentContainer = new TeraAgentContainer();
+
+        return Task.CompletedTask;
+    }
+
+    private async Task InitialiseTeraPlatformAgent()
+    {
+        SplinterEnvironment.TeraPlatformAgent = await Initialise<ITeraPlatformAgent>(SplinterIdConstants.TeraPlatformAgentNanoTypeId);
+    }
+
+    private async Task InitialiseTeraRegistryAgent()
+    {
+        SplinterEnvironment.TeraRegistryAgent = await Initialise<ITeraRegistryAgent>(SplinterIdConstants.TeraRegistryAgentNanoTypeId);
+    }
+
+    private async Task InitialiseTeraMessageAgent(Guid? teraId)
+    {
+        SplinterEnvironment.TeraMessageAgent = await Initialise<ITeraMessageAgent>(SplinterIdConstants.TeraMessageAgentNanoTypeId, teraId);
+    }
+
+    private async Task<TTeraAgent> Initialise<TTeraAgent>(SplinterId nanoTypeId, Guid? teraId = null) 
+        where TTeraAgent : ITeraAgent
+    {
+        var initParameters = new NanoInitialisationParameters
+        {
+            Register = teraId.HasValue,
+            TeraId = teraId,
+            ServiceScope = await _serviceScope.Start()
+        };
+        var collapseParameters = new NanoCollapseParameters
+        {
+            NanoTypeId = nanoTypeId.Guid
+        };
+        var agent = await SplinterEnvironment.SuperpositionAgent.Collapse(collapseParameters);
+
+        if (agent == null)
+        {
+            throw new InvalidNanoTypeException($"Could not load the core singleton nano type {nanoTypeId.Guid}");
         }
 
-        private static IContainer AddDefaultModules(IConfiguration configuration, ContainerBuilder container)
+        await agent.Initialise(initParameters);
+
+        return (TTeraAgent)agent;
+    }
+
+    private static IConfiguration GetConfiguration(IEnumerable<string> jsonFileNames)
+    {
+        var builder = new ConfigurationBuilder();
+
+        foreach (var file in jsonFileNames)
         {
-            var defaultSplinterSettings = configuration.BindObject<SplinterDefaultSettings>("Splinter:Default");
-            var databaseSettings = configuration.BindObject<SplinterDatabaseSettings>("Splinter:Database");
-
-            var defaultModule = new NanoInstanceDefaultModule(defaultSplinterSettings);
-            var databaseModule = new NanoInstanceDatabaseModule(databaseSettings);
-
-            container.RegisterModule(defaultModule);
-            container.RegisterModule(databaseModule);
-
-            return container.Build();
+            builder.AddJsonFile(file);
         }
 
-        private async Task InitialiseSplinterEnvironment()
-        {
-            SplinterEnvironment.Status = SplinterEnvironmentStatus.Initialising;
-
-            var agentIds = await _serviceScope.Resolve<SplinterTeraAgentIdSettings>();
-
-            await InitialiseTeraAgentContainer();
-            await InitialiseSuperpositionAgent();
-            await InitialiseTeraPlatformAgent();
-            await InitialiseTeraRegistryAgent();
-
-            await RegisterCoreTeraAgents(agentIds);
-
-            await InitialiseTeraMessageAgent(agentIds.TeraMessageId);
-
-            SplinterEnvironment.Status = SplinterEnvironmentStatus.Initialised;
-        }
-
-        private static async Task RegisterCoreTeraAgents(SplinterTeraAgentIdSettings agentIds)
-        {
-            await RegisterSelf(SplinterEnvironment.TeraPlatformAgent, agentIds.TeraPlatformId);
-            await RegisterSelf(SplinterEnvironment.TeraRegistryAgent, agentIds.TeraRegistryId);
-        }
-
-        private static async Task RegisterSelf(ITeraAgent teraAgent, Guid? agentId)
-        {
-            var parameters = new TeraAgentRegistrationParameters
-            {
-                TeraId = agentId
-            };
-
-            await teraAgent.RegisterSelf(parameters);
-        }
-
-        private async Task InitialiseSuperpositionAgent()
-        {
-            var superpositionAgent = new SuperpositionAgent();
-            var settings = await _serviceScope.Resolve<SplinterDefaultSettings>();
-            var parameters = new SuperpositionInitialisationParameters
-            {
-                ServiceScope = await _serviceScope.Start(),
-                Register = false,
-                SuperpositionMappings = settings.Superposition.Mappings
-            };
-
-            await superpositionAgent.Initialise(parameters);
-
-            SplinterEnvironment.SuperpositionAgent = superpositionAgent;
-        }
-
-        private static Task InitialiseTeraAgentContainer()
-        {
-            SplinterEnvironment.TeraAgentContainer = new TeraAgentContainer();
-
-            return Task.CompletedTask;
-        }
-
-        private async Task InitialiseTeraPlatformAgent()
-        {
-            SplinterEnvironment.TeraPlatformAgent = await Initialise<ITeraPlatformAgent>(SplinterIdConstants.TeraPlatformAgentNanoTypeId);
-        }
-
-        private async Task InitialiseTeraRegistryAgent()
-        {
-            SplinterEnvironment.TeraRegistryAgent = await Initialise<ITeraRegistryAgent>(SplinterIdConstants.TeraRegistryAgentNanoTypeId);
-        }
-
-        private async Task InitialiseTeraMessageAgent(Guid? teraId)
-        {
-            SplinterEnvironment.TeraMessageAgent = await Initialise<ITeraMessageAgent>(SplinterIdConstants.TeraMessageAgentNanoTypeId, teraId);
-        }
-
-        private async Task<TTeraAgent> Initialise<TTeraAgent>(SplinterId nanoTypeId, Guid? teraId = null) 
-            where TTeraAgent : ITeraAgent
-        {
-            var initParameters = new NanoInitialisationParameters
-            {
-                Register = teraId.HasValue,
-                TeraId = teraId,
-                ServiceScope = await _serviceScope.Start()
-            };
-            var collapseParameters = new NanoCollapseParameters
-            {
-                NanoTypeId = nanoTypeId.Guid
-            };
-            var agent = await SplinterEnvironment.SuperpositionAgent.Collapse(collapseParameters);
-
-            if (agent == null)
-            {
-                throw new InvalidNanoTypeException($"Could not load the core singleton nano type {nanoTypeId.Guid}");
-            }
-
-            await agent.Initialise(initParameters);
-
-            return (TTeraAgent)agent;
-        }
-
-        private static IConfiguration GetConfiguration(IEnumerable<string> jsonFileNames)
-        {
-            var builder = new ConfigurationBuilder();
-
-            foreach (var file in jsonFileNames)
-            {
-                builder.AddJsonFile(file);
-            }
-
-            return builder
-                .AddEnvironmentVariables()
-                .Build();
-        }
+        return builder
+            .AddEnvironmentVariables()
+            .Build();
     }
 }

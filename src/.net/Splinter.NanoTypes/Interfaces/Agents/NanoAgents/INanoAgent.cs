@@ -12,30 +12,29 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Superposition;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
 
-namespace Splinter.NanoTypes.Interfaces.Agents.NanoAgents
-{
-    public interface INanoAgent
-    {
-        bool HasNoNanoTable { get; }
-        bool HasNanoTable { get; }
-        bool HasNoTeraParent { get; }
-        bool HasTeraParent { get; }
-        SplinterId TypeId { get; }
-        SplinterId InstanceId { get; }
-        HolonType HolonType { get; }
-        ITeraAgent TeraParent { get; set; }
-        INanoTable NanoTable { get; }
-        IServiceScope Scope { get; }
-        ISuperpositionAgent SuperpositionAgent { get; }
-        ITeraPlatformAgent TeraPlatformAgent { get; }
-        ITeraRegistryAgent TeraRegistryAgent { get; }
-        ITeraMessageAgent TeraMessageAgent { get; }
+namespace Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
-        Task Initialise(NanoInitialisationParameters parameters);
-        Task<INanoAgent?> Collapse(NanoCollapseParameters parameters);
-        Task Lock();
-        Task Unlock();
-        Task Synch(INanoAgent nanoAgent);
-        Task Dispose(NanoDisposeParameters parameters);
-    }
+public interface INanoAgent
+{
+    bool HasNoNanoTable { get; }
+    bool HasNanoTable { get; }
+    bool HasNoTeraParent { get; }
+    bool HasTeraParent { get; }
+    SplinterId TypeId { get; }
+    SplinterId InstanceId { get; }
+    HolonType HolonType { get; }
+    ITeraAgent TeraParent { get; set; }
+    INanoTable NanoTable { get; }
+    IServiceScope Scope { get; }
+    ISuperpositionAgent SuperpositionAgent { get; }
+    ITeraPlatformAgent TeraPlatformAgent { get; }
+    ITeraRegistryAgent TeraRegistryAgent { get; }
+    ITeraMessageAgent TeraMessageAgent { get; }
+
+    Task Initialise(NanoInitialisationParameters parameters);
+    Task<INanoAgent?> Collapse(NanoCollapseParameters parameters);
+    Task Lock();
+    Task Unlock();
+    Task Synch(INanoAgent nanoAgent);
+    Task Dispose(NanoDisposeParameters parameters);
 }

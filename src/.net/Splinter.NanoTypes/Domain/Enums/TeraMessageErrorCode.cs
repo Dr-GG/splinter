@@ -1,9 +1,8 @@
-﻿namespace Splinter.NanoTypes.Domain.Enums
+﻿namespace Splinter.NanoTypes.Domain.Enums;
+
+public enum TeraMessageErrorCode
 {
-    public enum TeraMessageErrorCode
-    {
-        Unknown = 1,
-        MaximumDequeueCountReached = 2,
-        Disposed = 3
-    }
+    Unknown = 1,
+    MaximumDequeueCountReached = 2,
+    Disposed = 3
 }

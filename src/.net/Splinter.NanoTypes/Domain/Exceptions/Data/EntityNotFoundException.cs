@@ -1,9 +1,8 @@
-﻿namespace Splinter.NanoTypes.Domain.Exceptions.Data
+﻿namespace Splinter.NanoTypes.Domain.Exceptions.Data;
+
+public class EntityNotFoundException : SplinterException
 {
-    public class EntityNotFoundException : SplinterException
-    {
-        public EntityNotFoundException(string entityType, object entityId) : 
-            base($"Could not find the {entityType} with ID {entityId}")
-        { }
-    }
+    public EntityNotFoundException(string entityType, object entityId) : 
+        base($"Could not find the {entityType} with ID {entityId}")
+    { }
 }

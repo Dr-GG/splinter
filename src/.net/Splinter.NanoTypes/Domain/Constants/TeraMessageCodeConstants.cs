@@ -1,7 +1,6 @@
-﻿namespace Splinter.NanoTypes.Domain.Constants
+﻿namespace Splinter.NanoTypes.Domain.Constants;
+
+public static class TeraMessageCodeConstants
 {
-    public static class TeraMessageCodeConstants
-    {
-        public const int Recollapse = 1;
-    }
+    public const int Recollapse = 1;
 }

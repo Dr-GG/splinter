@@ -7,88 +7,87 @@ using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
 using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
-namespace Splinter.NanoInstances.Default.Services.Superposition
+namespace Splinter.NanoInstances.Default.Services.Superposition;
+
+public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
 {
-    public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
+    private readonly ReaderWriterLock _rwLock = new();
+    private readonly IDictionary<Guid, INanoAgent> _singletonMap = new Dictionary<Guid, INanoAgent>();
+    private readonly SuperpositionSettings _settings;
+
+    public SuperpositionSingletonRegistry(SuperpositionSettings settings)
     {
-        private readonly ReaderWriterLock _rwLock = new();
-        private readonly IDictionary<Guid, INanoAgent> _singletonMap = new Dictionary<Guid, INanoAgent>();
-        private readonly SuperpositionSettings _settings;
+        _settings = settings;
+    }
 
-        public SuperpositionSingletonRegistry(SuperpositionSettings settings)
+    public async Task<INanoAgent> Register(Guid nanoTypeId, INanoAgent singleton)
+    {
+        try
         {
-            _settings = settings;
-        }
+            _rwLock.AcquireWriterLock(_settings.RegistryTimeoutSpan);
 
-        public async Task<INanoAgent> Register(Guid nanoTypeId, INanoAgent singleton)
-        {
-            try
+            if (_singletonMap.TryGetValue(nanoTypeId, out var reference))
             {
-                _rwLock.AcquireWriterLock(_settings.RegistryTimeoutSpan);
-
-                if (_singletonMap.TryGetValue(nanoTypeId, out var reference))
+                if (reference.InstanceId.Guid == singleton.InstanceId.Guid)
                 {
-                    if (reference.InstanceId.Guid == singleton.InstanceId.Guid)
-                    {
-                        return reference;
-                    }
-
-                    await DisposeSingletonReference(reference);
+                    return reference;
                 }
 
-                _singletonMap[nanoTypeId] = singleton;
+                await DisposeSingletonReference(reference);
+            }
 
-                return singleton;
-            }
-            finally
-            {
-                _rwLock.ReleaseWriterLock();
-            }
+            _singletonMap[nanoTypeId] = singleton;
+
+            return singleton;
         }
-
-        public Task<INanoAgent?> Fetch(Guid nanoTypeId)
+        finally
         {
-            try
-            {
-                _rwLock.AcquireReaderLock(_settings.RegistryTimeoutSpan);
-
-                return _singletonMap.TryGetValue(nanoTypeId, out var result) 
-                    ? Task.FromResult<INanoAgent?>(result) 
-                    : Task.FromResult<INanoAgent?>(null);
-            }
-            finally
-            {
-                _rwLock.ReleaseReaderLock();
-            }
+            _rwLock.ReleaseWriterLock();
         }
+    }
 
-        private static async Task DisposeSingletonReference(INanoAgent nanoAgent)
+    public Task<INanoAgent?> Fetch(Guid nanoTypeId)
+    {
+        try
         {
-            var parameters = new NanoDisposeParameters
-            {
-                Force = true
-            };
+            _rwLock.AcquireReaderLock(_settings.RegistryTimeoutSpan);
 
-            await nanoAgent.Dispose(parameters);
+            return _singletonMap.TryGetValue(nanoTypeId, out var result) 
+                ? Task.FromResult<INanoAgent?>(result) 
+                : Task.FromResult<INanoAgent?>(null);
         }
-
-        public async ValueTask DisposeAsync()
+        finally
         {
-            try
-            {
-                _rwLock.AcquireWriterLock(_settings.RegistryTimeoutSpan);
+            _rwLock.ReleaseReaderLock();
+        }
+    }
 
-                foreach (var singleton in _singletonMap)
-                {
-                    await DisposeSingletonReference(singleton.Value);
-                }
+    private static async Task DisposeSingletonReference(INanoAgent nanoAgent)
+    {
+        var parameters = new NanoDisposeParameters
+        {
+            Force = true
+        };
 
-                _singletonMap.Clear();
-            }
-            finally
+        await nanoAgent.Dispose(parameters);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            _rwLock.AcquireWriterLock(_settings.RegistryTimeoutSpan);
+
+            foreach (var singleton in _singletonMap)
             {
-                _rwLock.ReleaseWriterLock();
+                await DisposeSingletonReference(singleton.Value);
             }
+
+            _singletonMap.Clear();
+        }
+        finally
+        {
+            _rwLock.ReleaseWriterLock();
         }
     }
 }

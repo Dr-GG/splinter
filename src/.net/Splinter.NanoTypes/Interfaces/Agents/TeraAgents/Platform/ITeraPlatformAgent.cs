@@ -1,7 +1,6 @@
-﻿namespace Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Platform
+﻿namespace Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Platform;
+
+public interface ITeraPlatformAgent : ITeraAgent
 {
-    public interface ITeraPlatformAgent : ITeraAgent
-    {
-        long TeraPlatformId { get; }
-    }
+    long TeraPlatformId { get; }
 }

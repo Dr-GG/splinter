@@ -3,35 +3,34 @@ using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
-namespace Splinter.NanoInstances.Extensions
+namespace Splinter.NanoInstances.Extensions;
+
+public static class NanoReferenceExtensions
 {
-    public static class NanoReferenceExtensions
+    public static bool IsNotNullOrEmpty([NotNullWhen(true)] this INanoReference? nanoReference)
     {
-        public static bool IsNotNullOrEmpty([NotNullWhen(true)] this INanoReference? nanoReference)
+        return nanoReference is {HasReference: true};
+    }
+
+    public static bool IsNullOrEmpty([NotNullWhen(false)] this INanoReference? nanoReference)
+    {
+        return nanoReference == null || nanoReference.HasNoReference;
+    }
+
+    public static TNanoAgent Typed<TNanoAgent>(this INanoReference nanoReference)
+        where TNanoAgent : INanoAgent
+    {
+        if (nanoReference.HasNoReference)
         {
-            return nanoReference is {HasReference: true};
+            throw new InvalidNanoInstanceException("No nano instance exists in nano reference");
         }
 
-        public static bool IsNullOrEmpty([NotNullWhen(false)] this INanoReference? nanoReference)
+        if (nanoReference.Reference is not TNanoAgent agent)
         {
-            return nanoReference == null || nanoReference.HasNoReference;
+            throw new InvalidNanoInstanceException(
+                $"The nano instance in the nano reference is not of the type {typeof(TNanoAgent)}");
         }
 
-        public static TNanoAgent Typed<TNanoAgent>(this INanoReference nanoReference)
-            where TNanoAgent : INanoAgent
-        {
-            if (nanoReference.HasNoReference)
-            {
-                throw new InvalidNanoInstanceException("No nano instance exists in nano reference");
-            }
-
-            if (nanoReference.Reference is not TNanoAgent agent)
-            {
-                throw new InvalidNanoInstanceException(
-                    $"The nano instance in the nano reference is not of the type {typeof(TNanoAgent)}");
-            }
-
-            return agent;
-        }
+        return agent;
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Splinter.NanoTypes.Default.Domain.Settings.SplinterIds
+namespace Splinter.NanoTypes.Default.Domain.Settings.SplinterIds;
+
+public class SplinterTeraAgentIdSettings
 {
-    public class SplinterTeraAgentIdSettings
-    {
-        public Guid? TeraPlatformId { get; set; }
-        public Guid? TeraRegistryId { get; set; }
-        public Guid? TeraMessageId { get; set; }
-    }
+    public Guid? TeraPlatformId { get; set; }
+    public Guid? TeraRegistryId { get; set; }
+    public Guid? TeraMessageId { get; set; }
 }

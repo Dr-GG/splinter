@@ -17,163 +17,162 @@ using Splinter.NanoTypes.Domain.Parameters.Messaging;
 using Splinter.NanoTypes.Domain.Parameters.Superposition;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents.Knowledge;
 
-namespace Splinter.NanoInstances.Default.Agents.NanoAgents.Knowledge
+namespace Splinter.NanoInstances.Default.Agents.NanoAgents.Knowledge;
+
+public class TeraKnowledgeAgent : NanoAgent, ITeraKnowledgeAgent
 {
-    public class TeraKnowledgeAgent : NanoAgent, ITeraKnowledgeAgent
+    public static readonly SplinterId NanoTypeId = SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
+    public static readonly SplinterId NanoInstanceId = new()
     {
-        public static readonly SplinterId NanoTypeId = SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
-        public static readonly SplinterId NanoInstanceId = new()
+        Name = "Default Tera Knowledge Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{39E1E8C9-4D9D-4F15-99C6-C76754E3D7E9}")
+    };
+
+    private ITeraMessageQueue? _messageQueue;
+
+    protected bool HasNoMessageQueue => _messageQueue == null;
+    protected ITeraMessageQueue MessageQueue
+    {
+        get
         {
-            Name = "Default Tera Knowledge Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{39E1E8C9-4D9D-4F15-99C6-C76754E3D7E9}")
+            if (_messageQueue == null)
+            {
+                throw new NanoServiceNotInitialisedException(typeof(ITeraMessageQueue));
+            }
+
+            return _messageQueue;
+        }
+    }
+
+    public override SplinterId TypeId => SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
+    public override SplinterId InstanceId => NanoInstanceId;
+
+    public override async Task Initialise(NanoInitialisationParameters parameters)
+    {
+        await base.Initialise(parameters);
+        await InitialiseTeraMessageQueue();
+    }
+
+    public virtual async Task Execute(TeraAgentExecutionParameters parameters)
+    {
+        await ProcessTeraMessages();
+    }
+
+    protected virtual async Task<bool> ProcessTeraMessage(TeraMessage teraMessage)
+    {
+        var handled = true;
+
+        switch (teraMessage.Code)
+        {
+            case TeraMessageCodeConstants.Recollapse:
+                await Recollapse(teraMessage);
+                break;
+
+            default:
+                handled = false;
+                break;
+        }
+
+        return handled;
+    }
+
+    private async Task Recollapse(TeraMessage teraMessage)
+    {
+        await using var scope = await NewScope();
+        var service = await scope.Resolve<IRecollapseNanoTypeService>();
+        var recollapseData = teraMessage.JsonMessage<RecollapseTeraMessageData>();
+        var wasSuccessful = true;
+
+        try
+        {
+            await service.Recollapse(this, teraMessage);
+        }
+        catch
+        {
+            wasSuccessful = false;
+        }
+
+        if (recollapseData == null)
+        {
+            return;
+        }
+
+        var recollapseOperationParameters = new NanoRecollapseOperationParameters
+        {
+            TeraId = TeraParent.TeraId,
+            IsSuccessful = wasSuccessful,
+            NanoRecollapseOperationId = recollapseData.NanoTypeRecollapseOperationId
         };
 
-        private ITeraMessageQueue? _messageQueue;
+        await SuperpositionAgent.Sync(recollapseOperationParameters);
+    }
 
-        protected bool HasNoMessageQueue => _messageQueue == null;
-        protected ITeraMessageQueue MessageQueue
+    private async Task ProcessTeraMessages()
+    {
+        if (HasNoMessageQueue)
         {
-            get
-            {
-                if (_messageQueue == null)
-                {
-                    throw new NanoServiceNotInitialisedException(typeof(ITeraMessageQueue));
-                }
-
-                return _messageQueue;
-            }
+            return;
         }
 
-        public override SplinterId TypeId => SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
-        public override SplinterId InstanceId => NanoInstanceId;
+        var syncs = new List<TeraMessageSyncParameter>();
 
-        public override async Task Initialise(NanoInitialisationParameters parameters)
+        while (await MessageQueue.HasNext())
         {
-            await base.Initialise(parameters);
-            await InitialiseTeraMessageQueue();
+            var message = await MessageQueue.Next();
+            var sync = await InternalProcessMessage(message);
+
+            syncs.Add(sync);
         }
 
-        public virtual async Task Execute(TeraAgentExecutionParameters parameters)
+        var syncParameters = new TeraMessageSyncParameters
         {
-            await ProcessTeraMessages();
+            Syncs = syncs
+        };
+
+        await TeraMessageAgent.Sync(syncParameters);
+    }
+
+    private async Task<TeraMessageSyncParameter> InternalProcessMessage(TeraMessage teraMessage)
+    {
+        var result = new TeraMessageSyncParameter
+        {
+            TeraMessageId = teraMessage.Id
+        };
+
+        try
+        {
+            await ProcessTeraMessage(teraMessage);
         }
-
-        protected virtual async Task<bool> ProcessTeraMessage(TeraMessage teraMessage)
+        catch (Exception error)
         {
-            var handled = true;
-
-            switch (teraMessage.Code)
+            result = result with
             {
-                case TeraMessageCodeConstants.Recollapse:
-                    await Recollapse(teraMessage);
-                    break;
-
-                default:
-                    handled = false;
-                    break;
-            }
-
-            return handled;
-        }
-
-        private async Task Recollapse(TeraMessage teraMessage)
-        {
-            await using var scope = await NewScope();
-            var service = await scope.Resolve<IRecollapseNanoTypeService>();
-            var recollapseData = teraMessage.JsonMessage<RecollapseTeraMessageData>();
-            var wasSuccessful = true;
-
-            try
-            {
-                await service.Recollapse(this, teraMessage);
-            }
-            catch
-            {
-                wasSuccessful = false;
-            }
-
-            if (recollapseData == null)
-            {
-                return;
-            }
-
-            var recollapseOperationParameters = new NanoRecollapseOperationParameters
-            {
-                TeraId = TeraParent.TeraId,
-                IsSuccessful = wasSuccessful,
-                NanoRecollapseOperationId = recollapseData.NanoTypeRecollapseOperationId
+                ErrorCode = TeraMessageErrorCode.Unknown,
+                ErrorMessage = error.ToString(),
+                ErrorStackTrace = error.StackTrace
             };
-
-            await SuperpositionAgent.Sync(recollapseOperationParameters);
         }
-
-        private async Task ProcessTeraMessages()
+        finally
         {
-            if (HasNoMessageQueue)
+            result = result with
             {
-                return;
-            }
-
-            var syncs = new List<TeraMessageSyncParameter>();
-
-            while (await MessageQueue.HasNext())
-            {
-                var message = await MessageQueue.Next();
-                var sync = await InternalProcessMessage(message);
-
-                syncs.Add(sync);
-            }
-
-            var syncParameters = new TeraMessageSyncParameters
-            {
-                Syncs = syncs
+                CompletionTimestamp = DateTime.UtcNow
             };
-
-            await TeraMessageAgent.Sync(syncParameters);
         }
 
-        private async Task<TeraMessageSyncParameter> InternalProcessMessage(TeraMessage teraMessage)
+        return result;
+    }
+
+    private async Task InitialiseTeraMessageQueue()
+    {
+        if (HasNoTeraParent)
         {
-            var result = new TeraMessageSyncParameter
-            {
-                TeraMessageId = teraMessage.Id
-            };
-
-            try
-            {
-                await ProcessTeraMessage(teraMessage);
-            }
-            catch (Exception error)
-            {
-                result = result with
-                {
-                    ErrorCode = TeraMessageErrorCode.Unknown,
-                    ErrorMessage = error.ToString(),
-                    ErrorStackTrace = error.StackTrace
-                };
-            }
-            finally
-            {
-                result = result with
-                {
-                    CompletionTimestamp = DateTime.UtcNow
-                };
-            }
-
-            return result;
+            return;
         }
 
-        private async Task InitialiseTeraMessageQueue()
-        {
-            if (HasNoTeraParent)
-            {
-                return;
-            }
+        _messageQueue = await Scope.Resolve<ITeraMessageQueue>();
 
-            _messageQueue = await Scope.Resolve<ITeraMessageQueue>();
-
-            await _messageQueue.Initialise(TeraParent);
-        }
+        await _messageQueue.Initialise(TeraParent);
     }
 }

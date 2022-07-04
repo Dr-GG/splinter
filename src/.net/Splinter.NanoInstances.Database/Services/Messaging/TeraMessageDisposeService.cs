@@ -9,59 +9,58 @@ using Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Enums;
 
-namespace Splinter.NanoInstances.Database.Services.Messaging
+namespace Splinter.NanoInstances.Database.Services.Messaging;
+
+public class TeraMessageDisposeService : ITeraMessageDisposeService
 {
-    public class TeraMessageDisposeService : ITeraMessageDisposeService
+    private readonly TeraMessagingSettings _settings;
+    private readonly TeraDbContext _dbContext;
+
+    public TeraMessageDisposeService(
+        TeraMessagingSettings settings,
+        TeraDbContext dbContext)
     {
-        private readonly TeraMessagingSettings _settings;
-        private readonly TeraDbContext _dbContext;
+        _settings = settings;
+        _dbContext = dbContext;
+    }
 
-        public TeraMessageDisposeService(
-            TeraMessagingSettings settings,
-            TeraDbContext dbContext)
+    public void DisposeMessages()
+    {
+        var messages = GetDisposingTeraMessages();
+
+        foreach (var message in messages)
         {
-            _settings = settings;
-            _dbContext = dbContext;
+            Dispose(message);
         }
+    }
 
-        public void DisposeMessages()
+    private void Dispose(TeraMessageModel teraMessage)
+    {
+        try
         {
-            var messages = GetDisposingTeraMessages();
+            teraMessage.Status = TeraMessageStatus.Cancelled;
+            teraMessage.ErrorCode = TeraMessageErrorCode.Disposed;
+            teraMessage.CompletedTimestamp = DateTime.UtcNow;
 
-            foreach (var message in messages)
-            {
-                Dispose(message);
-            }
+            _dbContext.PendingTeraMessages.Remove(teraMessage.Pending);
+            _dbContext.SaveChanges();
         }
-
-        private void Dispose(TeraMessageModel teraMessage)
+        catch (DBConcurrencyException)
         {
-            try
-            {
-                teraMessage.Status = TeraMessageStatus.Cancelled;
-                teraMessage.ErrorCode = TeraMessageErrorCode.Disposed;
-                teraMessage.CompletedTimestamp = DateTime.UtcNow;
-
-                _dbContext.PendingTeraMessages.Remove(teraMessage.Pending);
-                _dbContext.SaveChanges();
-            }
-            catch (DBConcurrencyException)
-            {
-                // Ignore error, because another process changed it.
-            }
+            // Ignore error, because another process changed it.
         }
+    }
 
-        private IEnumerable<TeraMessageModel> GetDisposingTeraMessages()
-        {
-            var utcNow = DateTime.UtcNow;
+    private IEnumerable<TeraMessageModel> GetDisposingTeraMessages()
+    {
+        var utcNow = DateTime.UtcNow;
 
-            return _dbContext.TeraMessages
-                .Include(m => m.Pending)
-                .Where(m => (m.Status == TeraMessageStatus.Dequeued
-                            || m.Status == TeraMessageStatus.Pending)
-                            && m.AbsoluteExpiryTimestamp < utcNow)
-                .Take(_settings.Disposing.MaximumNumberOfMessagesToDispose)
-                .ToList();
-        }
+        return _dbContext.TeraMessages
+            .Include(m => m.Pending)
+            .Where(m => (m.Status == TeraMessageStatus.Dequeued
+                         || m.Status == TeraMessageStatus.Pending)
+                        && m.AbsoluteExpiryTimestamp < utcNow)
+            .Take(_settings.Disposing.MaximumNumberOfMessagesToDispose)
+            .ToList();
     }
 }
