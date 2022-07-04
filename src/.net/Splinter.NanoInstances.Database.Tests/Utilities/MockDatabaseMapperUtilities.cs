@@ -3,13 +3,12 @@ using Splinter.NanoInstances.Database.Mappers;
 using Splinter.NanoTypes.Domain.Messaging;
 using Tenjin.Interfaces.Mappers;
 
-namespace Splinter.NanoInstances.Database.Tests.Utilities
+namespace Splinter.NanoInstances.Database.Tests.Utilities;
+
+public static class MockDatabaseMapperUtilities
 {
-    public static class MockDatabaseMapperUtilities
+    public static IUnaryMapper<TeraMessageModel, TeraMessage> GetTeraMessageMapper()
     {
-        public static IUnaryMapper<TeraMessageModel, TeraMessage> GetTeraMessageMapper()
-        {
-            return new TeraMessageMapper();
-        }
+        return new TeraMessageMapper();
     }
 }

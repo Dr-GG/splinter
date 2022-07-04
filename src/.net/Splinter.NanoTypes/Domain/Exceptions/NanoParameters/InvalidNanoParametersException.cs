@@ -1,8 +1,7 @@
-﻿namespace Splinter.NanoTypes.Domain.Exceptions.NanoParameters
+﻿namespace Splinter.NanoTypes.Domain.Exceptions.NanoParameters;
+
+public class InvalidNanoParametersException : SplinterException
 {
-    public class InvalidNanoParametersException : SplinterException
-    {
-        public InvalidNanoParametersException(string message) : base(message)
-        { }
-    }
+    public InvalidNanoParametersException(string message) : base(message)
+    { }
 }

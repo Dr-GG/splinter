@@ -14,66 +14,65 @@ using Splinter.NanoTypes.Default.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Default.Interfaces.Services.TeraAgents;
 using Splinter.NanoTypes.Default.Interfaces.Services.TeraPlatforms;
 
-namespace Splinter.NanoInstances.Database.Extensions
+namespace Splinter.NanoInstances.Database.Extensions;
+
+public static class ContainerExtensions
 {
-    public static class ContainerExtensions
+    public static void RegisterDatabaseServices(this ContainerBuilder container)
     {
-        public static void RegisterDatabaseServices(this ContainerBuilder container)
-        {
-            container
-                .RegisterType<OperatingSystemManager>()
-                .As<IOperatingSystemManager>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<OperatingSystemManager>()
+            .As<IOperatingSystemManager>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraPlatformManager>()
-                .As<ITeraPlatformManager>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraPlatformManager>()
+            .As<ITeraPlatformManager>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<NanoTypeManager>()
-                .As<INanoTypeManager>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<NanoTypeManager>()
+            .As<INanoTypeManager>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraAgentManager>()
-                .As<ITeraAgentManager>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraAgentManager>()
+            .As<ITeraAgentManager>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraAgentRegistrationService>()
-                .As<ITeraAgentRegistrationService>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraAgentRegistrationService>()
+            .As<ITeraAgentRegistrationService>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraMessageRelayService>()
-                .As<ITeraMessageRelayService>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraMessageRelayService>()
+            .As<ITeraMessageRelayService>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraMessageDequeueService>()
-                .As<ITeraMessageDequeueService>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraMessageDequeueService>()
+            .As<ITeraMessageDequeueService>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraMessageDisposeService>()
-                .As<ITeraMessageDisposeService>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraMessageDisposeService>()
+            .As<ITeraMessageDisposeService>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraMessageSyncService>()
-                .As<ITeraMessageSyncService>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraMessageSyncService>()
+            .As<ITeraMessageSyncService>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<TeraAgentNanoTypeDependencyService>()
-                .As<ITeraAgentNanoTypeDependencyService>()
-                .InstancePerLifetimeScope();
+        container
+            .RegisterType<TeraAgentNanoTypeDependencyService>()
+            .As<ITeraAgentNanoTypeDependencyService>()
+            .InstancePerLifetimeScope();
 
-            container
-                .RegisterType<NanoTypeRecollapseOperationService>()
-                .As<INanoTypeRecollapseOperationService>()
-                .InstancePerLifetimeScope();
-        }
+        container
+            .RegisterType<NanoTypeRecollapseOperationService>()
+            .As<INanoTypeRecollapseOperationService>()
+            .InstancePerLifetimeScope();
     }
 }

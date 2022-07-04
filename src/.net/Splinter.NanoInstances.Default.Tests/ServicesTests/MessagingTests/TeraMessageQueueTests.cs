@@ -12,105 +12,104 @@ using Splinter.NanoTypes.Domain.Messaging;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Messaging;
 
-namespace Splinter.NanoInstances.Default.Tests.ServicesTests.MessagingTests
+namespace Splinter.NanoInstances.Default.Tests.ServicesTests.MessagingTests;
+
+[TestFixture]
+public class TeraMessageQueueTests
 {
-    [TestFixture]
-    public class TeraMessageQueueTests
+    private const int TestMaximumNumberOfMessages = 12;
+
+    [Test]
+    public void HasNext_WhenNotInitialised_ThrowsException()
     {
-        private const int TestMaximumNumberOfMessages = 12;
+        var queue = GetDefaultQueue();
 
-        [Test]
-        public void HasNext_WhenNotInitialised_ThrowsException()
+        Assert.ThrowsAsync<NanoServiceNotInitialisedException>(() => queue.HasNext());
+    }
+
+    [Test]
+    public void Next_WhenNoMessageIsAvailable_ThrowsException()
+    {
+        var queue = GetDefaultQueue();
+
+        DefaultInitialise(queue);
+
+        Assert.ThrowsAsync<InvalidNanoServiceOperationException>(() => queue.Next());
+    }
+
+    [Test]
+    public async Task HasNextAndNext_WhenMessagesAreAvailable_ReturnsMessagesAsExpected()
+    {
+        var queue = GetDefaultQueue();
+        var dequeuedMessages = 0;
+        var index = 0;
+        var mockMessageAgent = GetDefaultTeraMessageAgent();
+
+        SplinterEnvironment.TeraMessageAgent = mockMessageAgent.Object;
+
+        DefaultInitialise(queue);
+
+        while (await queue.HasNext())
         {
-            var queue = GetDefaultQueue();
+            var message = await queue.Next();
 
-            Assert.ThrowsAsync<NanoServiceNotInitialisedException>(() => queue.HasNext());
+            dequeuedMessages++;
+
+            AssertTeraMessage(message, ++index);
         }
 
-        [Test]
-        public void Next_WhenNoMessageIsAvailable_ThrowsException()
+        Assert.AreEqual(TestMaximumNumberOfMessages, dequeuedMessages);
+
+        mockMessageAgent.Verify(
+            m => m.Dequeue(It.IsAny<TeraMessageDequeueParameters>()),
+            Times.Exactly(TestMaximumNumberOfMessages / 2 + 1));
+    }
+
+    private static TeraMessage ConstructNextTeraMessage(int index)
+    {
+        return new TeraMessage
         {
-            var queue = GetDefaultQueue();
+            Id = index,
+            Message = $"Message {index}"
+        };
+    }
 
-            DefaultInitialise(queue);
+    private static void AssertTeraMessage(TeraMessage message, int index)
+    {
+        Assert.AreEqual(index, message.Id);
+        Assert.AreEqual($"Message {index}", message.Message);
+    }
 
-            Assert.ThrowsAsync<InvalidNanoServiceOperationException>(() => queue.Next());
-        }
+    private static Mock<ITeraMessageAgent> GetDefaultTeraMessageAgent()
+    {
+        var mock = new Mock<ITeraMessageAgent>();
+        var index = 0;
 
-        [Test]
-        public async Task HasNextAndNext_WhenMessagesAreAvailable_ReturnsMessagesAsExpected()
-        {
-            var queue = GetDefaultQueue();
-            var dequeuedMessages = 0;
-            var index = 0;
-            var mockMessageAgent = GetDefaultTeraMessageAgent();
-
-            SplinterEnvironment.TeraMessageAgent = mockMessageAgent.Object;
-
-            DefaultInitialise(queue);
-
-            while (await queue.HasNext())
+        mock
+            .Setup(m => m.Dequeue(It.IsAny<TeraMessageDequeueParameters>()))
+            .ReturnsAsync(() =>
             {
-                var message = await queue.Next();
+                return index >= TestMaximumNumberOfMessages
+                    ? Enumerable.Empty<TeraMessage>()
+                    : new[]
+                    {
+                        ConstructNextTeraMessage(++index),
+                        ConstructNextTeraMessage(++index)
+                    };
+            });
 
-                dequeuedMessages++;
+        return mock;
+    }
 
-                AssertTeraMessage(message, ++index);
-            }
+    private static void DefaultInitialise(ITeraMessageQueue queue)
+    {
+        var teraAgent = new UnitTestTeraAgent();
 
-            Assert.AreEqual(TestMaximumNumberOfMessages, dequeuedMessages);
+        queue.Initialise(teraAgent);
+    }
 
-            mockMessageAgent.Verify(
-                m => m.Dequeue(It.IsAny<TeraMessageDequeueParameters>()),
-                Times.Exactly(TestMaximumNumberOfMessages / 2 + 1));
-        }
-
-        private static TeraMessage ConstructNextTeraMessage(int index)
-        {
-            return new TeraMessage
-            {
-                Id = index,
-                Message = $"Message {index}"
-            };
-        }
-
-        private static void AssertTeraMessage(TeraMessage message, int index)
-        {
-            Assert.AreEqual(index, message.Id);
-            Assert.AreEqual($"Message {index}", message.Message);
-        }
-
-        private static Mock<ITeraMessageAgent> GetDefaultTeraMessageAgent()
-        {
-            var mock = new Mock<ITeraMessageAgent>();
-            var index = 0;
-
-            mock
-                .Setup(m => m.Dequeue(It.IsAny<TeraMessageDequeueParameters>()))
-                .ReturnsAsync(() =>
-                {
-                    return index >= TestMaximumNumberOfMessages
-                        ? Enumerable.Empty<TeraMessage>()
-                        : new[]
-                        {
-                            ConstructNextTeraMessage(++index),
-                            ConstructNextTeraMessage(++index)
-                        };
-                });
-
-            return mock;
-        }
-
-        private static void DefaultInitialise(ITeraMessageQueue queue)
-        {
-            var teraAgent = new UnitTestTeraAgent();
-
-            queue.Initialise(teraAgent);
-        }
-
-        private static ITeraMessageQueue GetDefaultQueue()
-        {
-            return new TeraMessageQueue(new TeraMessagingSettings());
-        }
+    private static ITeraMessageQueue GetDefaultQueue()
+    {
+        return new TeraMessageQueue(new TeraMessagingSettings());
     }
 }

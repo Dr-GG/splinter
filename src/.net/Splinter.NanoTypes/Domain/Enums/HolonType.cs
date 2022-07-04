@@ -1,8 +1,7 @@
-﻿namespace Splinter.NanoTypes.Domain.Enums
+﻿namespace Splinter.NanoTypes.Domain.Enums;
+
+public enum HolonType
 {
-    public enum HolonType
-    {
-        Nano = 1,
-        Tera = 2
-    }
+    Nano = 1,
+    Tera = 2
 }

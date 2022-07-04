@@ -1,8 +1,7 @@
-﻿namespace Splinter.NanoTypes.Default.Domain.Enums
+﻿namespace Splinter.NanoTypes.Default.Domain.Enums;
+
+public enum SuperpositionMode
 {
-    public enum SuperpositionMode
-    {
-        Collapse = 1,
-        Recollapse = 2
-    }
+    Collapse = 1,
+    Recollapse = 2
 }

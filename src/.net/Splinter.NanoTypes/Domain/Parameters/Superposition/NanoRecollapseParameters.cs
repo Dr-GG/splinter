@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Splinter.NanoTypes.Domain.Parameters.Superposition
+namespace Splinter.NanoTypes.Domain.Parameters.Superposition;
+
+public record NanoRecollapseParameters : NanoParameters
 {
-    public record NanoRecollapseParameters : NanoParameters
-    {
-        public Guid? SourceTeraId { get; init; }
-        public IEnumerable<Guid> TeraIds { get; init; } = Enumerable.Empty<Guid>();
-    }
+    public Guid? SourceTeraId { get; init; }
+    public IEnumerable<Guid> TeraIds { get; init; } = Enumerable.Empty<Guid>();
 }

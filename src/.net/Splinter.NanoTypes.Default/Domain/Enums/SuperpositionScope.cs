@@ -1,8 +1,7 @@
-﻿namespace Splinter.NanoTypes.Default.Domain.Enums
+﻿namespace Splinter.NanoTypes.Default.Domain.Enums;
+
+public enum SuperpositionScope
 {
-    public enum SuperpositionScope
-    {
-        Request = 1,
-        Singleton = 2
-    }
+    Request = 1,
+    Singleton = 2
 }

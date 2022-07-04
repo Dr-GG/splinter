@@ -5,30 +5,29 @@ using Splinter.Applications.Test.Utilities;
 using Splinter.Bootstrap;
 using Splinter.NanoTypes.Default.Domain.Parameters.Bootstrap;
 
-namespace Splinter.Applications.Test
+namespace Splinter.Applications.Test;
+
+public static class Program
 {
-    public static class Program
+    private static async Task Main()
     {
-        private static async Task Main()
+        TestUtilities.Reset();
+        Console.Write("Starting...");
+
+        var bootstrapper = new SplinterDefaultBootstrapper();
+        var parameters = new NanoDefaultBootstrapParameters
         {
-            TestUtilities.Reset();
-            Console.Write("Starting...");
+            JsonSettingFileNames = new[] {"splinter.settings.json"}
+        };
 
-            var bootstrapper = new SplinterDefaultBootstrapper();
-            var parameters = new NanoDefaultBootstrapParameters
-            {
-                JsonSettingFileNames = new[] {"splinter.settings.json"}
-            };
+        await bootstrapper.Initialise(parameters);
+        Console.WriteLine("DONE!\r\n");
+        Console.WriteLine("Executing Splinter integration tests.");
 
-            await bootstrapper.Initialise(parameters);
-            Console.WriteLine("DONE!\r\n");
-            Console.WriteLine("Executing Splinter integration tests.");
+        await TestTeraAgentLifecycleTests.Test();
+        await TeraMessageTests.Test();
+        await SuperpositionTests.Test();
 
-            await TestTeraAgentLifecycleTests.Test();
-            await TeraMessageTests.Test();
-            await SuperpositionTests.Test();
-
-            TestUtilities.FinalSuccess();
-        }
+        TestUtilities.FinalSuccess();
     }
 }

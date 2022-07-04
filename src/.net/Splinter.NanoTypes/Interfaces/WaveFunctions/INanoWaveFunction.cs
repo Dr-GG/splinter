@@ -2,10 +2,9 @@
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
-namespace Splinter.NanoTypes.Interfaces.WaveFunctions
+namespace Splinter.NanoTypes.Interfaces.WaveFunctions;
+
+public interface INanoWaveFunction
 {
-    public interface INanoWaveFunction
-    {
-        Task<INanoAgent?> Collapse(NanoCollapseParameters parameters);
-    }
+    Task<INanoAgent?> Collapse(NanoCollapseParameters parameters);
 }

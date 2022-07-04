@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Splinter.NanoTypes.Default.Domain.Settings.Caching
+namespace Splinter.NanoTypes.Default.Domain.Settings.Caching;
+
+public class TeraAgentCacheSettings
 {
-    public class TeraAgentCacheSettings
-    {
-        public TimeSpan SlidingExpirationTimespan { get; set; }
-    }
+    public TimeSpan SlidingExpirationTimespan { get; set; }
 }

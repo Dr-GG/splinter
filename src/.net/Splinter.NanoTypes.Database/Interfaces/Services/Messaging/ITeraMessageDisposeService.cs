@@ -1,7 +1,6 @@
-﻿namespace Splinter.NanoTypes.Database.Interfaces.Services.Messaging
+﻿namespace Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
+
+public interface ITeraMessageDisposeService
 {
-    public interface ITeraMessageDisposeService
-    {
-        void DisposeMessages();
-    }
+    void DisposeMessages();
 }

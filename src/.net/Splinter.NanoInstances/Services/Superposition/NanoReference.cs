@@ -3,34 +3,33 @@ using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
-namespace Splinter.NanoInstances.Services.Superposition
+namespace Splinter.NanoInstances.Services.Superposition;
+
+public class NanoReference : INanoReference
 {
-    public class NanoReference : INanoReference
+    private INanoAgent? _reference;
+
+    public bool HasNoReference => _reference == null;
+
+    public bool HasReference => _reference != null;
+
+    public INanoAgent Reference
     {
-        private INanoAgent? _reference;
-
-        public bool HasNoReference => _reference == null;
-
-        public bool HasReference => _reference != null;
-
-        public INanoAgent Reference
+        get
         {
-            get
+            if (_reference == null)
             {
-                if (_reference == null)
-                {
-                    throw new InvalidNanoInstanceException("No nano instance reference initialised");
-                }
-
-                return _reference;
+                throw new InvalidNanoInstanceException("No nano instance reference initialised");
             }
-        }
 
-        public Task Initialise(INanoAgent? reference)
-        {
-            _reference = reference;
-
-            return Task.CompletedTask;
+            return _reference;
         }
+    }
+
+    public Task Initialise(INanoAgent? reference)
+    {
+        _reference = reference;
+
+        return Task.CompletedTask;
     }
 }

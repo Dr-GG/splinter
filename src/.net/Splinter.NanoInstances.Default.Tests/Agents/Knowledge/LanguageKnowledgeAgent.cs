@@ -9,128 +9,127 @@ using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
-namespace Splinter.NanoInstances.Default.Tests.Agents.Knowledge
+namespace Splinter.NanoInstances.Default.Tests.Agents.Knowledge;
+
+#region Base Class
+
+public abstract class LanguageKnowledgeAgent : TeraKnowledgeAgent, ILanguageKnowledgeAgent
 {
-    #region Base Class
+    private readonly ICollection<string> _saidPhrases = new List<string>();
 
-    public abstract class LanguageKnowledgeAgent : TeraKnowledgeAgent, ILanguageKnowledgeAgent
+    private INanoReference? _languageReference;
+
+    public new static readonly SplinterId NanoTypeId = LanguageSplinterIds.KnowledgeNanoTypeId;
+
+    public override SplinterId TypeId => NanoTypeId;
+    public IEnumerable<string> SaidPhrases => _saidPhrases.ToList();
+
+    public override async Task Execute(TeraAgentExecutionParameters parameters)
     {
-        private readonly ICollection<string> _saidPhrases = new List<string>();
+        await base.Execute(parameters);
 
-        private INanoReference? _languageReference;
-
-        public new static readonly SplinterId NanoTypeId = LanguageSplinterIds.KnowledgeNanoTypeId;
-
-        public override SplinterId TypeId => NanoTypeId;
-        public IEnumerable<string> SaidPhrases => _saidPhrases.ToList();
-
-        public override async Task Execute(TeraAgentExecutionParameters parameters)
+        if (_languageReference.IsNullOrEmpty())
         {
-            await base.Execute(parameters);
-
-            if (_languageReference.IsNullOrEmpty())
-            {
-                return;
-            }
-
-            _saidPhrases.Clear();
-            _saidPhrases.Add(await _languageReference.Typed<ILanguageAgent>().SayHello());
-            _saidPhrases.Add(await _languageReference.Typed<ILanguageAgent>().SayTest());
-            _saidPhrases.Add(await _languageReference.Typed<ILanguageAgent>().SayGoodbye());
+            return;
         }
 
-        protected override async Task InitialiseNanoReferences()
-        {
-            await base.InitialiseNanoReferences();
-
-            _languageReference = await CollapseNanoReference(LanguageSplinterIds.LanguageNanoTypeId);
-        }
-
-        protected override async Task DisposeNanoReferences()
-        {
-            await DisposeNanoReference(_languageReference);
-        }
+        _saidPhrases.Clear();
+        _saidPhrases.Add(await _languageReference.Typed<ILanguageAgent>().SayHello());
+        _saidPhrases.Add(await _languageReference.Typed<ILanguageAgent>().SayTest());
+        _saidPhrases.Add(await _languageReference.Typed<ILanguageAgent>().SayGoodbye());
     }
 
-    #endregion
-
-    #region Afrikaans
-
-    public class AfrikaansLanguageKnowledgeAgent : LanguageKnowledgeAgent
+    protected override async Task InitialiseNanoReferences()
     {
-        public new static readonly SplinterId NanoInstanceId = new()
-        {
-            Name = "Afrikaans Knowledge Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{2FE3B892-576F-42AD-877D-ACBDC63650D4}")
-        };
+        await base.InitialiseNanoReferences();
 
-        public override SplinterId InstanceId => NanoInstanceId;
+        _languageReference = await CollapseNanoReference(LanguageSplinterIds.LanguageNanoTypeId);
     }
 
-    #endregion
-
-    #region English
-
-    public class EnglishLanguageKnowledgeAgent : LanguageKnowledgeAgent
+    protected override async Task DisposeNanoReferences()
     {
-        public new static readonly SplinterId NanoInstanceId = new()
-        {
-            Name = "English Knowledge Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{9360907D-B9DC-41F7-B3C1-21921A96F04D}")
-        };
-
-        public override SplinterId InstanceId => NanoInstanceId;
+        await DisposeNanoReference(_languageReference);
     }
-
-    #endregion
-
-    #region French
-
-    public class FrenchLanguageKnowledgeAgent : LanguageKnowledgeAgent
-    {
-        public new static readonly SplinterId NanoInstanceId = new()
-        {
-            Name = "French Knowledge Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{6DFA0E91-D550-42C7-A334-C1BFB5CEE835}")
-        };
-
-        public override SplinterId InstanceId => NanoInstanceId;
-    }
-
-    #endregion
-
-    #region German
-
-    public class GermanLanguageKnowledgeAgent : LanguageKnowledgeAgent
-    {
-        public new static readonly SplinterId NanoInstanceId = new()
-        {
-            Name = "German Knowledge Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{016960E7-3AD6-46FF-B7B8-F5C76CBF0193}")
-        };
-
-        public override SplinterId InstanceId => NanoInstanceId;
-    }
-
-    #endregion
-
-    #region Spanish
-
-    public class SpanishLanguageKnowledgeAgent : LanguageKnowledgeAgent
-    {
-        public new static readonly SplinterId NanoInstanceId = new()
-        {
-            Name = "Spanish Knowledge Agent",
-            Version = "1.0.0",
-            Guid = new Guid("{7F87ECC3-E859-4E4B-B93D-AEE412506CE5}")
-        };
-
-        public override SplinterId InstanceId => NanoInstanceId;
-    }
-
-    #endregion
 }
+
+#endregion
+
+#region Afrikaans
+
+public class AfrikaansLanguageKnowledgeAgent : LanguageKnowledgeAgent
+{
+    public new static readonly SplinterId NanoInstanceId = new()
+    {
+        Name = "Afrikaans Knowledge Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{2FE3B892-576F-42AD-877D-ACBDC63650D4}")
+    };
+
+    public override SplinterId InstanceId => NanoInstanceId;
+}
+
+#endregion
+
+#region English
+
+public class EnglishLanguageKnowledgeAgent : LanguageKnowledgeAgent
+{
+    public new static readonly SplinterId NanoInstanceId = new()
+    {
+        Name = "English Knowledge Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{9360907D-B9DC-41F7-B3C1-21921A96F04D}")
+    };
+
+    public override SplinterId InstanceId => NanoInstanceId;
+}
+
+#endregion
+
+#region French
+
+public class FrenchLanguageKnowledgeAgent : LanguageKnowledgeAgent
+{
+    public new static readonly SplinterId NanoInstanceId = new()
+    {
+        Name = "French Knowledge Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{6DFA0E91-D550-42C7-A334-C1BFB5CEE835}")
+    };
+
+    public override SplinterId InstanceId => NanoInstanceId;
+}
+
+#endregion
+
+#region German
+
+public class GermanLanguageKnowledgeAgent : LanguageKnowledgeAgent
+{
+    public new static readonly SplinterId NanoInstanceId = new()
+    {
+        Name = "German Knowledge Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{016960E7-3AD6-46FF-B7B8-F5C76CBF0193}")
+    };
+
+    public override SplinterId InstanceId => NanoInstanceId;
+}
+
+#endregion
+
+#region Spanish
+
+public class SpanishLanguageKnowledgeAgent : LanguageKnowledgeAgent
+{
+    public new static readonly SplinterId NanoInstanceId = new()
+    {
+        Name = "Spanish Knowledge Agent",
+        Version = "1.0.0",
+        Guid = new Guid("{7F87ECC3-E859-4E4B-B93D-AEE412506CE5}")
+    };
+
+    public override SplinterId InstanceId => NanoInstanceId;
+}
+
+#endregion

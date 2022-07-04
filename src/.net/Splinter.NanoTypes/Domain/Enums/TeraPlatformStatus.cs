@@ -1,8 +1,7 @@
-﻿namespace Splinter.NanoTypes.Domain.Enums
+﻿namespace Splinter.NanoTypes.Domain.Enums;
+
+public enum TeraPlatformStatus
 {
-    public enum TeraPlatformStatus
-    {
-        Halted = 1,
-        Running = 2
-    }
+    Halted = 1,
+    Running = 2
 }

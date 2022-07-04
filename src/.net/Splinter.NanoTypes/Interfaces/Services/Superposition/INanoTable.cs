@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Splinter.NanoTypes.Interfaces.Services.Superposition
+namespace Splinter.NanoTypes.Interfaces.Services.Superposition;
+
+public interface INanoTable
 {
-    public interface INanoTable
-    {
-        Task Register(INanoReference reference);
-        Task<IEnumerable<INanoReference>> Fetch(Guid nanoTypeId);
-        Task Dispose(INanoReference reference);
-    }
+    Task Register(INanoReference reference);
+    Task<IEnumerable<INanoReference>> Fetch(Guid nanoTypeId);
+    Task Dispose(INanoReference reference);
 }

@@ -1,9 +1,8 @@
-﻿namespace Splinter.NanoTypes.Domain.Enums
+﻿namespace Splinter.NanoTypes.Domain.Enums;
+
+public enum TeraAgentStatus
 {
-    public enum TeraAgentStatus
-    {
-        Running = 1,
-        Migrating = 2,
-        Disposed = 3
-    }
+    Running = 1,
+    Migrating = 2,
+    Disposed = 3
 }

@@ -1,8 +1,7 @@
-﻿namespace Splinter.NanoTypes.Domain.Exceptions.Services
+﻿namespace Splinter.NanoTypes.Domain.Exceptions.Services;
+
+public class InvalidNanoServiceOperationException : SplinterException
 {
-    public class InvalidNanoServiceOperationException : SplinterException
-    {
-        public InvalidNanoServiceOperationException(string message) : base(message)
-        { }
-    }
+    public InvalidNanoServiceOperationException(string message) : base(message)
+    { }
 }

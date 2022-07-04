@@ -1,9 +1,8 @@
-﻿namespace Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents
+﻿namespace Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents;
+
+public class TeraParentNotInitialisedException : SplinterException
 {
-    public class TeraParentNotInitialisedException : SplinterException
-    {
-        public TeraParentNotInitialisedException() : 
-            base("The Tera Parent has not yet been initialised")
-        { }
-    }
+    public TeraParentNotInitialisedException() : 
+        base("The Tera Parent has not yet been initialised")
+    { }
 }

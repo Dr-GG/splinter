@@ -10,167 +10,166 @@ using Splinter.NanoTypes.Domain.Exceptions.Data;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Tenjin.Data.Extensions;
 
-namespace Splinter.NanoInstances.Database.Services.NanoTypes
+namespace Splinter.NanoInstances.Database.Services.NanoTypes;
+
+public class NanoTypeManager : INanoTypeManager
 {
-    public class NanoTypeManager : INanoTypeManager
+    private readonly TeraDbContext _dbContext;
+    private readonly INanoTypeCache _cache;
+
+    public NanoTypeManager(TeraDbContext teraDbContext, INanoTypeCache cache)
     {
-        private readonly TeraDbContext _dbContext;
-        private readonly INanoTypeCache _cache;
+        _dbContext = teraDbContext;
+        _cache = cache;
+    }
 
-        public NanoTypeManager(TeraDbContext teraDbContext, INanoTypeCache cache)
+    public async Task RegisterNanoType(INanoAgent agent)
+    {
+        var nanoTypeId = await RegisterNanoTypeId(agent.TypeId);
+
+        await RegisterNanoInstanceId(nanoTypeId, agent.InstanceId);
+    }
+
+    public async Task<long?> GetNanoTypeId(SplinterId nanoTypeId)
+    {
+        if (_cache.TryGetNanoTypeId(nanoTypeId, out var id))
         {
-            _dbContext = teraDbContext;
-            _cache = cache;
+            return id;
         }
 
-        public async Task RegisterNanoType(INanoAgent agent)
-        {
-            var nanoTypeId = await RegisterNanoTypeId(agent.TypeId);
+        var model = await GetNullableNanoTypeFromDatabase(nanoTypeId);
 
-            await RegisterNanoInstanceId(nanoTypeId, agent.InstanceId);
+        return model?.Id;
+    }
+
+    public async Task<long?> GetNanoInstanceId(SplinterId nanoInstanceId)
+    {
+        if (_cache.TryGetNanoInstanceId(nanoInstanceId, out var id))
+        {
+            return id;
         }
 
-        public async Task<long?> GetNanoTypeId(SplinterId nanoTypeId)
+        var model = await GetNullableNanoInstanceFromDatabase(nanoInstanceId);
+
+        return model?.Id;
+    }
+
+    private async Task<long> RegisterNanoTypeId(SplinterId nanoTypeId)
+    {
+        if (_cache.TryGetNanoTypeId(nanoTypeId, out var id))
         {
-            if (_cache.TryGetNanoTypeId(nanoTypeId, out var id))
+            return id;
+        }
+
+        var nanoTypeModel = await GetNullableNanoTypeFromDatabase(nanoTypeId) 
+                            ?? await AddNanoTypeToDatabase(nanoTypeId);
+
+        _cache.RegisterNanoTypeId(nanoTypeId, nanoTypeModel.Id);
+
+        return nanoTypeModel.Id;
+    }
+
+    private async Task RegisterNanoInstanceId(long nanoTypeId, SplinterId nanoInstanceId)
+    {
+        if (_cache.TryGetNanoInstanceId(nanoInstanceId, out _))
+        {
+            return;
+        }
+
+        var nanoInstanceModel = await GetNullableNanoInstanceFromDatabase(nanoInstanceId)
+                                ?? await AddNanoInstanceToDatabase(nanoTypeId, nanoInstanceId);
+
+        _cache.RegisterNanoInstanceId(nanoInstanceId, nanoInstanceModel.Id);
+    }
+
+    private async Task<NanoTypeModel> GetNonNullableNanoTypeFromDatabase(SplinterId nanoTypeId)
+    {
+        var result = await GetNullableNanoTypeFromDatabase(nanoTypeId);
+
+        if (result == null)
+        {
+            throw new EntityNotFoundException(EntityNameConstants.NanoTypeId, nanoTypeId);
+        }
+
+        return result;
+    }
+
+    private async Task<NanoInstanceModel> GetNonNullableNanoInstanceFromDatabase(SplinterId nanoInstanceId)
+    {
+        var result = await GetNullableNanoInstanceFromDatabase(nanoInstanceId);
+
+        if (result == null)
+        {
+            throw new EntityNotFoundException(EntityNameConstants.NanoInstanceId, nanoInstanceId);
+        }
+
+        return result;
+    }
+
+    private async Task<NanoTypeModel?> GetNullableNanoTypeFromDatabase(SplinterId nanoTypeId)
+    {
+        return await _dbContext.NanoTypes
+            .SingleOrDefaultAsync(n => n.Guid == nanoTypeId.Guid);
+    }
+
+    private async Task<NanoInstanceModel?> GetNullableNanoInstanceFromDatabase(SplinterId nanoInstanceId)
+    {
+        return await _dbContext.NanoInstances
+            .SingleOrDefaultAsync(n => n.Guid == nanoInstanceId.Guid);
+    }
+
+    private async Task<NanoTypeModel> AddNanoTypeToDatabase(SplinterId nanoTypeId)
+    {
+        try
+        {
+            var nanoTypeModel = new NanoTypeModel
             {
-                return id;
+                Guid = nanoTypeId.Guid,
+                Name = nanoTypeId.Name,
+                Version = nanoTypeId.Version
+            };
+
+            await _dbContext.NanoTypes.AddAsync(nanoTypeModel);
+            await _dbContext.SaveChangesAsync();
+
+            return nanoTypeModel;
+        }
+        catch (Exception error)
+        {
+            if (error.IsDuplicateDataException())
+            {
+                return await GetNonNullableNanoTypeFromDatabase(nanoTypeId);
             }
 
-            var model = await GetNullableNanoTypeFromDatabase(nanoTypeId);
-
-            return model?.Id;
+            throw;
         }
+    }
 
-        public async Task<long?> GetNanoInstanceId(SplinterId nanoInstanceId)
+    private async Task<NanoInstanceModel> AddNanoInstanceToDatabase(long nanoTypeId, SplinterId nanoInstanceId)
+    {
+        try
         {
-            if (_cache.TryGetNanoInstanceId(nanoInstanceId, out var id))
+            var nanoInstanceModel = new NanoInstanceModel
             {
-                return id;
+                NanoTypeId = nanoTypeId,
+                Guid = nanoInstanceId.Guid,
+                Name = nanoInstanceId.Name,
+                Version = nanoInstanceId.Version
+            };
+
+            await _dbContext.NanoInstances.AddAsync(nanoInstanceModel);
+            await _dbContext.SaveChangesAsync();
+
+            return nanoInstanceModel;
+        }
+        catch (Exception error)
+        {
+            if (error.IsDuplicateDataException())
+            {
+                return await GetNonNullableNanoInstanceFromDatabase(nanoInstanceId);
             }
 
-            var model = await GetNullableNanoInstanceFromDatabase(nanoInstanceId);
-
-            return model?.Id;
-        }
-
-        private async Task<long> RegisterNanoTypeId(SplinterId nanoTypeId)
-        {
-            if (_cache.TryGetNanoTypeId(nanoTypeId, out var id))
-            {
-                return id;
-            }
-
-            var nanoTypeModel = await GetNullableNanoTypeFromDatabase(nanoTypeId) 
-                                ?? await AddNanoTypeToDatabase(nanoTypeId);
-
-            _cache.RegisterNanoTypeId(nanoTypeId, nanoTypeModel.Id);
-
-            return nanoTypeModel.Id;
-        }
-
-        private async Task RegisterNanoInstanceId(long nanoTypeId, SplinterId nanoInstanceId)
-        {
-            if (_cache.TryGetNanoInstanceId(nanoInstanceId, out _))
-            {
-                return;
-            }
-
-            var nanoInstanceModel = await GetNullableNanoInstanceFromDatabase(nanoInstanceId)
-                                    ?? await AddNanoInstanceToDatabase(nanoTypeId, nanoInstanceId);
-
-            _cache.RegisterNanoInstanceId(nanoInstanceId, nanoInstanceModel.Id);
-        }
-
-        private async Task<NanoTypeModel> GetNonNullableNanoTypeFromDatabase(SplinterId nanoTypeId)
-        {
-            var result = await GetNullableNanoTypeFromDatabase(nanoTypeId);
-
-            if (result == null)
-            {
-                throw new EntityNotFoundException(EntityNameConstants.NanoTypeId, nanoTypeId);
-            }
-
-            return result;
-        }
-
-        private async Task<NanoInstanceModel> GetNonNullableNanoInstanceFromDatabase(SplinterId nanoInstanceId)
-        {
-            var result = await GetNullableNanoInstanceFromDatabase(nanoInstanceId);
-
-            if (result == null)
-            {
-                throw new EntityNotFoundException(EntityNameConstants.NanoInstanceId, nanoInstanceId);
-            }
-
-            return result;
-        }
-
-        private async Task<NanoTypeModel?> GetNullableNanoTypeFromDatabase(SplinterId nanoTypeId)
-        {
-            return await _dbContext.NanoTypes
-                .SingleOrDefaultAsync(n => n.Guid == nanoTypeId.Guid);
-        }
-
-        private async Task<NanoInstanceModel?> GetNullableNanoInstanceFromDatabase(SplinterId nanoInstanceId)
-        {
-            return await _dbContext.NanoInstances
-                .SingleOrDefaultAsync(n => n.Guid == nanoInstanceId.Guid);
-        }
-
-        private async Task<NanoTypeModel> AddNanoTypeToDatabase(SplinterId nanoTypeId)
-        {
-            try
-            {
-                var nanoTypeModel = new NanoTypeModel
-                {
-                    Guid = nanoTypeId.Guid,
-                    Name = nanoTypeId.Name,
-                    Version = nanoTypeId.Version
-                };
-
-                await _dbContext.NanoTypes.AddAsync(nanoTypeModel);
-                await _dbContext.SaveChangesAsync();
-
-                return nanoTypeModel;
-            }
-            catch (Exception error)
-            {
-                if (error.IsDuplicateDataException())
-                {
-                    return await GetNonNullableNanoTypeFromDatabase(nanoTypeId);
-                }
-
-                throw;
-            }
-        }
-
-        private async Task<NanoInstanceModel> AddNanoInstanceToDatabase(long nanoTypeId, SplinterId nanoInstanceId)
-        {
-            try
-            {
-                var nanoInstanceModel = new NanoInstanceModel
-                {
-                    NanoTypeId = nanoTypeId,
-                    Guid = nanoInstanceId.Guid,
-                    Name = nanoInstanceId.Name,
-                    Version = nanoInstanceId.Version
-                };
-
-                await _dbContext.NanoInstances.AddAsync(nanoInstanceModel);
-                await _dbContext.SaveChangesAsync();
-
-                return nanoInstanceModel;
-            }
-            catch (Exception error)
-            {
-                if (error.IsDuplicateDataException())
-                {
-                    return await GetNonNullableNanoInstanceFromDatabase(nanoInstanceId);
-                }
-
-                throw;
-            }
+            throw;
         }
     }
 }

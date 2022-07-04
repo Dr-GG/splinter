@@ -1,10 +1,9 @@
 ﻿using System;
 using Splinter.NanoTypes.Default.Domain.Superposition;
 
-namespace Splinter.NanoInstances.Default.Models
+namespace Splinter.NanoInstances.Default.Models;
+
+public record InternalSuperpositionMapping : SuperpositionMapping
 {
-    public record InternalSuperpositionMapping : SuperpositionMapping
-    {
-        public Guid NanoTypeId { get; init; }
-    }
+    public Guid NanoTypeId { get; init; }
 }
