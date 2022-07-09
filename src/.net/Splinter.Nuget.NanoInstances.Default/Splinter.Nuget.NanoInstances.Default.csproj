@@ -20,6 +20,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Splinter.Bootstrap\Splinter.Bootstrap.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Splinter.NanoInstances.Database\Splinter.NanoInstances.Database.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Splinter.NanoInstances.Default\Splinter.NanoInstances.Default.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Splinter.NanoInstances\Splinter.NanoInstances.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
