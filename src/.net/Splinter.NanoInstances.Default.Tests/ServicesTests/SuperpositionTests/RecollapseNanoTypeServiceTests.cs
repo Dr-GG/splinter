@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Services.Superposition;
@@ -28,7 +29,7 @@ public class RecollapseNanoTypeServiceTests
         var message = GetMessage();
         var result = await service.Recollapse(nanoAgent, message);
 
-        Assert.AreEqual(0, result);
+        result.Should().Be(0);
     }
 
     [Test]
@@ -39,7 +40,7 @@ public class RecollapseNanoTypeServiceTests
         var message = GetMessage();
         var result = await service.Recollapse(nanoAgent, message);
 
-        Assert.AreEqual(0, result);
+        result.Should().Be(0);
     }
 
     [Test]
@@ -50,7 +51,7 @@ public class RecollapseNanoTypeServiceTests
         var message = GetMessage("");
         var result = await service.Recollapse(nanoAgent, message);
 
-        Assert.AreEqual(0, result);
+        result.Should().Be(0);
     }
 
     [Test]
@@ -61,7 +62,7 @@ public class RecollapseNanoTypeServiceTests
         var message = GetMessage();
         var result = await service.Recollapse(nanoAgent, message);
 
-        Assert.AreEqual(0, result);
+        result.Should().Be(0);
     }
 
     [Test]
@@ -72,7 +73,7 @@ public class RecollapseNanoTypeServiceTests
         var message = GetMessage();
         var result = await service.Recollapse(nanoAgent, message);
 
-        Assert.AreEqual(0, result);
+        result.Should().Be(0);
     }
 
     [Test]
@@ -83,7 +84,7 @@ public class RecollapseNanoTypeServiceTests
         var message = GetMessage();
         var result = await service.Recollapse(nanoAgent, message);
 
-        Assert.AreEqual(3, result);
+        result.Should().Be(3);
     }
 
     [Test]
@@ -94,7 +95,7 @@ public class RecollapseNanoTypeServiceTests
         var message = GetMessage();
         var result = await service.Recollapse(nanoAgent, message);
 
-        Assert.AreEqual(3, result);
+        result.Should().Be(3);
     }
 
     private static TeraMessage GetMessage(string json = DefaultJson)

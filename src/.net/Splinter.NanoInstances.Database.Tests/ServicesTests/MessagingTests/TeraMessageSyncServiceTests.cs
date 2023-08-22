@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.Services.Messaging;
@@ -107,7 +108,7 @@ public class TeraMessageSyncServiceTests
                 {
                     TeraMessageId = TestTeraMessageId04,
                     CompletionTimestamp = TestCompletedTimestamp4,
-                    ErrorCode = TeraMessageErrorCode.MaximumDequeueCountReached,
+                    ErrorCode = TeraMessageErrorCode.MaximumDequeueRetryCountReached,
                     ErrorMessage = TestErrorMessage2,
                     ErrorStackTrace = TestErrorStackTrace2
                 }
@@ -126,7 +127,7 @@ public class TeraMessageSyncServiceTests
         AssertFailedMessage(dbContext, TestTeraMessageId01, TestCompletedTimestamp1, TeraMessageErrorCode.Disposed, null, null);
         AssertFailedMessage(dbContext, TestTeraMessageId02, TestCompletedTimestamp2, TeraMessageErrorCode.Unknown, TestErrorMessage1, null);
         AssertFailedMessage(dbContext, TestTeraMessageId03, TestCompletedTimestamp3, TeraMessageErrorCode.Unknown, null, TestErrorStackTrace1);
-        AssertFailedMessage(dbContext, TestTeraMessageId04, TestCompletedTimestamp4, TeraMessageErrorCode.MaximumDequeueCountReached, TestErrorMessage2, TestErrorStackTrace2);
+        AssertFailedMessage(dbContext, TestTeraMessageId04, TestCompletedTimestamp4, TeraMessageErrorCode.MaximumDequeueRetryCountReached, TestErrorMessage2, TestErrorStackTrace2);
     }
 
     [Test]
@@ -266,13 +267,13 @@ public class TeraMessageSyncServiceTests
         var message = dbContext.TeraMessages.Single(m => m.Id == messageId);
         var pending = dbContext.PendingTeraMessages.SingleOrDefault(p => p.TeraMessageId == messageId);
 
-        Assert.IsNull(pending);
+        pending.Should().BeNull();
 
-        Assert.AreEqual(TeraMessageStatus.Completed, message.Status);
-        Assert.AreEqual(expectedCompletionTimestamp, message.CompletedTimestamp);
-        Assert.IsNull(message.ErrorCode);
-        Assert.IsNull(message.ErrorStackTrace);
-        Assert.IsNull(message.ErrorMessage);
+        message.Status.Should().Be(TeraMessageStatus.Completed);
+        message.CompletedTimestamp.Should().Be(expectedCompletionTimestamp);
+        message.ErrorCode.Should().BeNull();
+        message.ErrorMessage.Should().BeNull();
+        message.ErrorStackTrace.Should().BeNull();
     }
 
     private static void AssertFailedMessage(
@@ -286,13 +287,13 @@ public class TeraMessageSyncServiceTests
         var message = dbContext.TeraMessages.Single(m => m.Id == messageId);
         var pending = dbContext.PendingTeraMessages.SingleOrDefault(p => p.TeraMessageId == messageId);
 
-        Assert.IsNull(pending);
+        pending.Should().BeNull();
 
-        Assert.AreEqual(TeraMessageStatus.Failed, message.Status);
-        Assert.AreEqual(expectedCompletionTimestamp, message.CompletedTimestamp);
-        Assert.AreEqual(errorCode, message.ErrorCode);
-        Assert.AreEqual(errorMessage, message.ErrorMessage);
-        Assert.AreEqual(errorStacktrace, message.ErrorStackTrace);
+        message.Status.Should().Be(TeraMessageStatus.Failed);
+        message.CompletedTimestamp.Should().Be(expectedCompletionTimestamp);
+        message.ErrorCode.Should().Be(errorCode);
+        message.ErrorMessage.Should().Be(errorMessage);
+        message.ErrorStackTrace.Should().Be(errorStacktrace);
     }
 
     private static void AddDefaultData(TeraDbContext dbContext)

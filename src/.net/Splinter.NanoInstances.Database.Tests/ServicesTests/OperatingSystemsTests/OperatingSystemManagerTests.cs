@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
@@ -18,7 +19,7 @@ public class OperatingSystemManagerTests
     private const int TestNewOperatingSystemId = 1;
     private const int TestExistingOperatingSystemId = 341;
     private const string TestOsDescription = "Windows Test";
-    private const ProcessorArchitecture TestProcessorArchitecture = ProcessorArchitecture.x64;
+    private const ProcessorArchitecture TestProcessorArchitecture = ProcessorArchitecture.x86_64;
     private const OperatingSystem TestOperatingSystem = OperatingSystem.Windows;
 
     [Test]
@@ -31,11 +32,11 @@ public class OperatingSystemManagerTests
         var id = await manager.RegisterOperatingSystemInformation();
         var os = dbContext.OperatingSystems.Single();
 
-        Assert.AreEqual(TestNewOperatingSystemId, id);
-        Assert.AreEqual(TestNewOperatingSystemId, os.Id);
-        Assert.AreEqual(TestOsDescription, os.Description);
-        Assert.AreEqual(TestProcessorArchitecture, os.ProcessorArchitecture);
-        Assert.AreEqual(TestOperatingSystem, os.Type);
+        id.Should().Be(TestNewOperatingSystemId);
+        os.Id.Should().Be(TestNewOperatingSystemId);
+        os.Description.Should().Be(TestOsDescription);
+        os.ProcessorArchitecture.Should().Be(TestProcessorArchitecture);
+        os.Type.Should().Be(TestOperatingSystem);
     }
 
     [Test]
@@ -50,11 +51,11 @@ public class OperatingSystemManagerTests
         var id = await manager.RegisterOperatingSystemInformation();
         var os = dbContext.OperatingSystems.Single();
 
-        Assert.AreEqual(TestExistingOperatingSystemId, id);
-        Assert.AreEqual(TestExistingOperatingSystemId, os.Id);
-        Assert.AreEqual(TestOsDescription, os.Description);
-        Assert.AreEqual(TestProcessorArchitecture, os.ProcessorArchitecture);
-        Assert.AreEqual(TestOperatingSystem, os.Type);
+        id.Should().Be(TestExistingOperatingSystemId);
+        os.Id.Should().Be(TestExistingOperatingSystemId);
+        os.Description.Should().Be(TestOsDescription);
+        os.ProcessorArchitecture.Should().Be(TestProcessorArchitecture);
+        os.Type.Should().Be(TestOperatingSystem);
     }
 
     private static void AddExistingOperatingSystem(TeraDbContext teraDbContext)

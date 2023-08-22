@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents;
@@ -16,7 +17,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent();
 
-        Assert.IsFalse(result.HasTeraParent);
+        result.HasTeraParent.Should().BeFalse();
     }
 
     [Test]
@@ -24,7 +25,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent();
 
-        Assert.IsTrue(result.HasNoTeraParent);
+        result.HasNoTeraParent.Should().BeTrue();
     }
 
     [Test]
@@ -32,7 +33,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent(true);
 
-        Assert.IsTrue(result.HasTeraParent);
+        result.HasTeraParent.Should().BeTrue();
     }
 
     [Test]
@@ -40,7 +41,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent(true);
 
-        Assert.IsFalse(result.HasNoTeraParent);
+        result.HasNoTeraParent.Should().BeFalse();
     }
 
     [Test]
@@ -64,7 +65,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent();
 
-        Assert.IsTrue(result.HasNoNanoTable);
+        result.HasNoNanoTable.Should().BeTrue();
     }
 
     [Test]
@@ -72,7 +73,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent();
 
-        Assert.IsFalse(result.HasNanoTable);
+        result.HasNanoTable.Should().BeFalse();
     }
 
     [Test]
@@ -80,7 +81,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent(true);
 
-        Assert.IsTrue(result.HasNoNanoTable);
+        result.HasNoNanoTable.Should().BeTrue();
     }
 
     [Test]
@@ -88,15 +89,15 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent(true);
 
-        Assert.IsFalse(result.HasNanoTable);
+        result.HasNanoTable.Should().BeFalse();
     }
 
     [Test]
     public void HasNoNanoTable_WhenParentIsSetAndParentHasNanoTable_ReturnsFalse()
     {
         var result = GetNanoAgent(true, true);
-             
-        Assert.IsFalse(result.HasNoNanoTable);
+
+        result.HasNoNanoTable.Should().BeFalse();
     }
 
     [Test]
@@ -104,7 +105,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent(true, true);
 
-        Assert.IsTrue(result.HasNanoTable);
+        result.HasNanoTable.Should().BeTrue();
     }
         
     [Test]
@@ -142,8 +143,7 @@ public class NanoAgentTests
             return result;
         }
 
-        result.TeraParent = GetTeraParent(
-            parentHasNanoTable);
+        result.TeraParent = GetTeraParent(parentHasNanoTable);
 
         return result;
     }

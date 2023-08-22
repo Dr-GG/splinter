@@ -7,6 +7,7 @@ using Splinter.NanoTypes.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Splinter.NanoTypes.Database.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Messaging;
@@ -77,7 +78,7 @@ public class TeraMessageDequeueServiceTests
 
         var messages = (await service.Dequeue(parameters)).ToList();
 
-        Assert.AreEqual(3, messages.Count);
+        messages.Count.Should().Be(3);
 
         AssertDequeuedMessage(dbContext, messages, TestTeraMessageId01, TestSenderTeraAgentId1, TestSenderTeraId1, 1);
         AssertDequeuedMessage(dbContext, messages, TestTeraMessageId02, TestSenderTeraAgentId2, TestSenderTeraId2, 1);
@@ -107,7 +108,7 @@ public class TeraMessageDequeueServiceTests
 
         var messages = (await service.Dequeue(parameters)).ToList();
 
-        Assert.AreEqual(3, messages.Count);
+        messages.Count.Should().Be(3);
 
         AssertDequeuedMessage(dbContext, messages, TestTeraMessageId01, TestSenderTeraAgentId1, TestSenderTeraId1, 1);
         AssertDequeuedMessage(dbContext, messages, TestTeraMessageId02, TestSenderTeraAgentId2, TestSenderTeraId2, 1);
@@ -145,16 +146,17 @@ public class TeraMessageDequeueServiceTests
 
         var messages = (await service.Dequeue(parameters)).ToList();
 
-        Assert.AreEqual(9, messages.Count);
-        Assert.AreEqual(TestTeraMessageId07, messages[0].Id);
-        Assert.AreEqual(TestTeraMessageId08, messages[1].Id);
-        Assert.AreEqual(TestTeraMessageId09, messages[2].Id);
-        Assert.AreEqual(TestTeraMessageId06, messages[3].Id);
-        Assert.AreEqual(TestTeraMessageId05, messages[4].Id);
-        Assert.AreEqual(TestTeraMessageId04, messages[5].Id);
-        Assert.AreEqual(TestTeraMessageId01, messages[6].Id);
-        Assert.AreEqual(TestTeraMessageId02, messages[7].Id);
-        Assert.AreEqual(TestTeraMessageId03, messages[8].Id);
+        messages.Count.Should().Be(9);
+
+        messages[0].Id.Should().Be(TestTeraMessageId07);
+        messages[1].Id.Should().Be(TestTeraMessageId08);
+        messages[2].Id.Should().Be(TestTeraMessageId09);
+        messages[3].Id.Should().Be(TestTeraMessageId06);
+        messages[4].Id.Should().Be(TestTeraMessageId05);
+        messages[5].Id.Should().Be(TestTeraMessageId04);
+        messages[6].Id.Should().Be(TestTeraMessageId01);
+        messages[7].Id.Should().Be(TestTeraMessageId02);
+        messages[8].Id.Should().Be(TestTeraMessageId03);
     }
 
     [Test]
@@ -177,7 +179,7 @@ public class TeraMessageDequeueServiceTests
 
         var messages = (await service.Dequeue(parameters)).ToList();
 
-        Assert.AreEqual(1, messages.Count);
+        messages.Count.Should().Be(1);
 
         AssertDequeuedMessage(dbContext, messages, TestTeraMessageId01, TestSenderTeraAgentId1, TestSenderTeraId1, 1);
     }
@@ -203,10 +205,10 @@ public class TeraMessageDequeueServiceTests
         var messages1 = (await service.Dequeue(parameters)).ToList();
         var messages2 = (await service.Dequeue(parameters)).ToList();
         var messages3 = (await service.Dequeue(parameters)).ToList();
-
-        Assert.AreEqual(1, messages1.Count);
-        Assert.AreEqual(1, messages2.Count);
-        Assert.AreEqual(1, messages3.Count);
+        
+        messages1.Count.Should().Be(1);
+        messages2.Count.Should().Be(1);
+        messages3.Count.Should().Be(1);
 
         AssertDequeuedMessage(dbContext, messages1, TestTeraMessageId01, TestSenderTeraAgentId1, TestSenderTeraId1, 1);
         AssertDequeuedMessage(dbContext, messages2, TestTeraMessageId02, TestSenderTeraAgentId1, TestSenderTeraId1, 1);
@@ -220,13 +222,12 @@ public class TeraMessageDequeueServiceTests
         var dbTeraMessage = dbContext.TeraMessages.Single(m => m.Id == messageId);
         var pendingMessage = dbContext.PendingTeraMessages.SingleOrDefault(p => p.TeraMessageId == messageId);
 
-        Assert.IsNull(pendingMessage);
+        pendingMessage.Should().BeNull();
 
-        Assert.AreEqual(TeraMessageStatus.Cancelled, dbTeraMessage.Status);
-        Assert.AreEqual(TeraMessageErrorCode.MaximumDequeueCountReached, dbTeraMessage.ErrorCode);
-        Assert.AreEqual(TeraMessageErrorCode.MaximumDequeueCountReached, dbTeraMessage.ErrorCode);
+        dbTeraMessage.Status.Should().Be(TeraMessageStatus.Cancelled);
+        dbTeraMessage.ErrorCode.Should().Be(TeraMessageErrorCode.MaximumDequeueRetryCountReached);
 
-        Assert.IsTrue(dbTeraMessage.CompletedTimestamp <= DateTime.UtcNow);
+        (dbTeraMessage.CompletedTimestamp <= DateTime.UtcNow).Should().BeTrue();
     }
 
     private static void AssertDequeuedMessage(
@@ -240,15 +241,15 @@ public class TeraMessageDequeueServiceTests
         var responseTeraMessage = teraMessages.Single(m => m.Id == messageId);
         var dbTeraMessage = dbContext.TeraMessages.Single(m => m.Id == messageId);
 
-        Assert.AreEqual(TeraMessageStatus.Dequeued, responseTeraMessage.Status);
-        Assert.AreEqual(TeraMessageStatus.Dequeued, dbTeraMessage.Status);
-        Assert.AreEqual(expectedDequeueCount, responseTeraMessage.DequeueCount);
-        Assert.AreEqual(expectedDequeueCount, dbTeraMessage.DequeueCount);
-        Assert.AreEqual(expectedSenderTeraId, responseTeraMessage.SourceTeraId);
-        Assert.AreEqual(expectedSenderTeraAgentId, dbTeraMessage.SourceTeraAgentId);
+        responseTeraMessage.Status.Should().Be(TeraMessageStatus.Dequeued);
+        dbTeraMessage.Status.Should().Be(TeraMessageStatus.Dequeued);
+        responseTeraMessage.DequeueCount.Should().Be(expectedDequeueCount);
+        dbTeraMessage.DequeueCount.Should().Be(expectedDequeueCount);
+        responseTeraMessage.SourceTeraId.Should().Be(expectedSenderTeraId);
+        dbTeraMessage.SourceTeraAgentId.Should().Be(expectedSenderTeraAgentId);
 
-        Assert.IsTrue(responseTeraMessage.DequeuedTimestamp <= DateTime.UtcNow);
-        Assert.IsTrue(dbTeraMessage.DequeuedTimestamp <= DateTime.UtcNow);
+        (responseTeraMessage.DequeuedTimestamp <= DateTime.UtcNow).Should().BeTrue();
+        (dbTeraMessage.DequeuedTimestamp <= DateTime.UtcNow).Should().BeTrue();
     }
 
     private static void AddDefaultData(TeraDbContext dbContext)

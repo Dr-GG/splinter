@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.Services.Superposition;
@@ -53,9 +54,9 @@ public class NanoTypeRecollapseOperationServiceTests
 
         var operation = dbContext.NanoTypeRecollapseOperations.Single();
 
-        Assert.AreEqual(TestOperationGuid, operation.Guid);
-        Assert.AreEqual(TestNumberOfFailedRecollapses, operation.NumberOfFailedRecollapses);
-        Assert.AreEqual(TestNumberOfSuccessfulRecollapses + 1, operation.NumberOfSuccessfulRecollapses);
+        operation.Guid.Should().Be(TestOperationGuid);
+        operation.NumberOfFailedRecollapses.Should().Be(TestNumberOfFailedRecollapses);
+        operation.NumberOfSuccessfulRecollapses.Should().Be(TestNumberOfSuccessfulRecollapses + 1);
     }
 
     [Test]
@@ -77,9 +78,9 @@ public class NanoTypeRecollapseOperationServiceTests
 
         var operation = dbContext.NanoTypeRecollapseOperations.Single();
 
-        Assert.AreEqual(TestOperationGuid, operation.Guid);
-        Assert.AreEqual(TestNumberOfFailedRecollapses + 1, operation.NumberOfFailedRecollapses);
-        Assert.AreEqual(TestNumberOfSuccessfulRecollapses, operation.NumberOfSuccessfulRecollapses);
+        operation.Guid.Should().Be(TestOperationGuid);
+        operation.NumberOfFailedRecollapses.Should().Be(TestNumberOfFailedRecollapses + 1);
+        operation.NumberOfSuccessfulRecollapses.Should().Be(TestNumberOfSuccessfulRecollapses);
     }
 
     private static void AddDefaultData(TeraDbContext dbContext)

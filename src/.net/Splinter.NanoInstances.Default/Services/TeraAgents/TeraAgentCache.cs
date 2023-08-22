@@ -5,16 +5,23 @@ using Splinter.NanoTypes.Default.Interfaces.Services.TeraAgents;
 
 namespace Splinter.NanoInstances.Default.Services.TeraAgents;
 
+/// <summary>
+/// The default implementation of the ITeraAgentCache interface.
+/// </summary>
 public class TeraAgentCache : ITeraAgentCache
 {
     private readonly TeraAgentCacheSettings _settings;
     private readonly MemoryCache _cache = new(new MemoryCacheOptions());
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraAgentCache(TeraAgentCacheSettings settings)
     {
         _settings = settings;
     }
 
+    /// <inheritdoc />
     public void RegisterTeraId(Guid teraId, long id)
     {
         var key = GetTeraAgentKey(teraId);
@@ -22,6 +29,7 @@ public class TeraAgentCache : ITeraAgentCache
         _cache.Set(key, id, GetDefaultOptions());
     }
 
+    /// <inheritdoc />
     public bool TryGetTeraId(Guid teraId, out long id)
     {
         var key = GetTeraAgentKey(teraId);

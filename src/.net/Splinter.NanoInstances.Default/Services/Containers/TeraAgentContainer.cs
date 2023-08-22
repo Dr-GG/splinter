@@ -13,6 +13,9 @@ using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Default.Services.Containers;
 
+/// <summary>
+/// The default implementation of the ITeraAgentContainer interface.
+/// </summary>
 public class TeraAgentContainer : ITeraAgentContainer
 {
     private bool _running;
@@ -28,6 +31,7 @@ public class TeraAgentContainer : ITeraAgentContainer
     private readonly ConcurrentQueue<ITeraAgent> _pendingTeraAgentRemovals = new();
     private readonly CancellationTokenSource _tokenSource = new();
 
+    /// <inheritdoc />
     public long NumberOfTeraAgents => _teraAgents.Count;
 
     private TeraAgentContainerExecutionParameters Parameters
@@ -43,6 +47,7 @@ public class TeraAgentContainer : ITeraAgentContainer
         }
     }
 
+    /// <inheritdoc />
     public Task Initialise(TeraAgentContainerExecutionParameters parameters)
     {
         _parameters = parameters;
@@ -50,6 +55,7 @@ public class TeraAgentContainer : ITeraAgentContainer
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task Register(ITeraAgent agent)
     {
         _pendingTeraAgentAdditions.Enqueue(agent);
@@ -57,6 +63,7 @@ public class TeraAgentContainer : ITeraAgentContainer
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task Dispose(ITeraAgent agent)
     {
         _pendingTeraAgentRemovals.Enqueue(agent);
@@ -64,7 +71,8 @@ public class TeraAgentContainer : ITeraAgentContainer
         return Task.CompletedTask;
     }
 
-    public Task Execute()
+    /// <inheritdoc />
+    public Task Start()
     {
         if (_parameters == null)
         {
@@ -86,19 +94,22 @@ public class TeraAgentContainer : ITeraAgentContainer
         return Task.CompletedTask;
     }
 
-    public Task Halt()
+    /// <inheritdoc />
+    public Task Stop()
     {
         Dispose();
 
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         _running = false;
         _tokenSource.Cancel();
     }
 
+    /// <inheritdoc />
     public ValueTask DisposeAsync()
     {
         Dispose();

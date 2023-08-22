@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.Services.Messaging;
@@ -64,7 +65,7 @@ public class TeraMessageDisposeServiceTests
 
         Thread.Sleep(1000);
 
-        disposer.DisposeMessages();
+        disposer.DisposeExpiredMessages();
 
         AssertMessageIsDisposed(dbContext, TestMessageId01);
         AssertMessageIsDisposed(dbContext, TestMessageId02);
@@ -103,7 +104,7 @@ public class TeraMessageDisposeServiceTests
 
         Thread.Sleep(1000);
 
-        disposer.DisposeMessages();
+        disposer.DisposeExpiredMessages();
 
         AssertMessageIsDisposed(dbContext, TestMessageId01);
         AssertMessageIsDisposed(dbContext, TestMessageId02);
@@ -140,8 +141,8 @@ public class TeraMessageDisposeServiceTests
 
         Thread.Sleep(1000);
 
-        disposer.DisposeMessages();
-        disposer.DisposeMessages();
+        disposer.DisposeExpiredMessages();
+        disposer.DisposeExpiredMessages();
 
         AssertMessageIsDisposed(dbContext, TestMessageId01);
         AssertMessageIsDisposed(dbContext, TestMessageId02);
@@ -186,14 +187,15 @@ public class TeraMessageDisposeServiceTests
     {
         var message = dbContext.TeraMessages.Single(m => m.Id == id);
         var pending = dbContext.PendingTeraMessages.SingleOrDefault(p => p.TeraMessageId == id);
-            
-        Assert.AreEqual(TeraMessageStatus.Cancelled, message.Status);
-        Assert.AreEqual(TeraMessageErrorCode.Disposed, message.ErrorCode);
-        Assert.IsNull(message.ErrorMessage);
-        Assert.IsNull(message.ErrorStackTrace);
-        Assert.IsTrue(message.CompletedTimestamp <= DateTime.UtcNow);
 
-        Assert.IsNull(pending);
+        message.Status.Should().Be(TeraMessageStatus.Cancelled);
+        message.ErrorCode.Should().Be(TeraMessageErrorCode.Disposed);
+        message.ErrorMessage.Should().BeNull();
+        message.ErrorStackTrace.Should().BeNull();
+
+        (message.CompletedTimestamp <= DateTime.UtcNow).Should().BeTrue();
+
+        pending.Should().BeNull();
     }
 
     private static void AssertMessage(
@@ -205,18 +207,26 @@ public class TeraMessageDisposeServiceTests
         var message = dbContext.TeraMessages.Single(m => m.Id == id);
         var pending = dbContext.PendingTeraMessages.SingleOrDefault(p => p.TeraMessageId == id);
 
-        Assert.IsTrue(hasPending ? pending != null : pending == null);
-        Assert.AreEqual(status, message.Status);
-        Assert.IsNull(message.ErrorCode);
-        Assert.IsNull(message.ErrorMessage);
-        Assert.IsNull(message.ErrorStackTrace);
+        if (hasPending)
+        {
+            pending.Should().NotBeNull();
+        }
+        else
+        {
+            pending.Should().BeNull();
+        }
+
+        message.Status.Should().Be(status);
+        message.ErrorCode.Should().BeNull();
+        message.ErrorMessage.Should().BeNull();
+        message.ErrorStackTrace.Should().BeNull();
     }
 
-    private static ITeraMessageDisposeService GetTeraMessageDisposer(TeraDbContext dbContext)
+    private static IExpiredTeraMessageDisposeService GetTeraMessageDisposer(TeraDbContext dbContext)
     {
-        return new TeraMessageDisposeService(new TeraMessagingSettings
+        return new ExpiredTeraMessageDisposeService(new TeraMessagingSettings
         {
-            Disposing = new TeraMessageDisposeSettings
+            ExpiredDisposing = new ExpiredTeraMessageDisposeSettings
             {
                 MaximumNumberOfMessagesToDispose = TestMaximumNumberOfMessagesToDispose
             }

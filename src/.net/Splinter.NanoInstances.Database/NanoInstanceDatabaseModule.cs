@@ -7,15 +7,22 @@ using Tenjin.Autofac.Extensions;
 
 namespace Splinter.NanoInstances.Database;
 
+/// <summary>
+/// The Autofac module for the Splinter database module.
+/// </summary>
 public class NanoInstanceDatabaseModule : Module
 {
     private readonly SplinterDatabaseSettings _settings;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public NanoInstanceDatabaseModule(SplinterDatabaseSettings settings)
     {
         _settings = settings;
     }
 
+    /// <inheritdoc />
     protected override void Load(ContainerBuilder builder)
     {
         var assembly = typeof(NanoInstanceDatabaseModule).Assembly;
@@ -24,7 +31,7 @@ public class NanoInstanceDatabaseModule : Module
         RegisterSettings(builder);
 
         builder.RegisterMappers(assembly);
-        builder.RegisterDatabaseServices();
+        builder.RegisterSplinterDatabaseServices();
     }
 
     private void RegisterSettings(ContainerBuilder builder)

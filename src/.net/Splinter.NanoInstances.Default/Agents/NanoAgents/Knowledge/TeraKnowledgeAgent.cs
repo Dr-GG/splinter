@@ -19,9 +19,19 @@ using Splinter.NanoTypes.Interfaces.Agents.NanoAgents.Knowledge;
 
 namespace Splinter.NanoInstances.Default.Agents.NanoAgents.Knowledge;
 
+/// <summary>
+/// The default and base implementation of the ITeraKnowledgeAgent interface.
+/// </summary>
 public class TeraKnowledgeAgent : NanoAgent, ITeraKnowledgeAgent
 {
+    /// <summary>
+    /// The Nano Type ID.
+    /// </summary>
     public static readonly SplinterId NanoTypeId = SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
+
+    /// <summary>
+    /// The Nano Instance ID.
+    /// </summary>
     public static readonly SplinterId NanoInstanceId = new()
     {
         Name = "Default Tera Knowledge Agent",
@@ -31,7 +41,14 @@ public class TeraKnowledgeAgent : NanoAgent, ITeraKnowledgeAgent
 
     private ITeraMessageQueue? _messageQueue;
 
+    /// <summary>
+    /// The flag indicating if it has no ITeraMessageQueue instance.
+    /// </summary>
     protected bool HasNoMessageQueue => _messageQueue == null;
+
+    /// <summary>
+    /// The referenced ITeraMessageQueue.
+    /// </summary>
     protected ITeraMessageQueue MessageQueue
     {
         get
@@ -45,20 +62,28 @@ public class TeraKnowledgeAgent : NanoAgent, ITeraKnowledgeAgent
         }
     }
 
+    /// <inheritdoc />
     public override SplinterId TypeId => SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
+
+    /// <inheritdoc />
     public override SplinterId InstanceId => NanoInstanceId;
 
+    /// <inheritdoc />
     public override async Task Initialise(NanoInitialisationParameters parameters)
     {
         await base.Initialise(parameters);
         await InitialiseTeraMessageQueue();
     }
 
+    /// <inheritdoc />
     public virtual async Task Execute(TeraAgentExecutionParameters parameters)
     {
         await ProcessTeraMessages();
     }
 
+    /// <summary>
+    /// Attempts to process a single TeraMessage instance.
+    /// </summary>
     protected virtual async Task<bool> ProcessTeraMessage(TeraMessage teraMessage)
     {
         var handled = true;

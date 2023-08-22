@@ -6,7 +6,7 @@
         "MaximumTeraAgentFetchCount": 20,
         "MaximumSyncRetryCount": 5,
         "MaximumDequeueRetryCount": 5,
-        "Disposing": {
+        "ExpiredDisposing": {
           "MaximumNumberOfMessagesToDispose": 100,
           "DefaultExpiryTimeSpan": "04:00:00",
           "MessageDisposalIntervalTimeSpan": "00:01:00"

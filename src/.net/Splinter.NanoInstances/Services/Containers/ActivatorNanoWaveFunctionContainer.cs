@@ -8,12 +8,18 @@ using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Services.Containers;
 
+/// <summary>
+/// The default implementation of the INanoWaveFunctionContainer interface.
+/// </summary>
 public class ActivatorNanoWaveFunctionContainer : INanoWaveFunctionContainer
 {
     private readonly ReaderWriterLock _rwLock = new();
     private readonly TimeSpan _lockTimeoutTimeSpan;
     private readonly IDictionary<Guid, Type> _nanoTypeMap;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public ActivatorNanoWaveFunctionContainer(
         TimeSpan lockTimeoutTimeSpan,
         IDictionary<Guid, Type> nanoTypeMap)
@@ -22,6 +28,7 @@ public class ActivatorNanoWaveFunctionContainer : INanoWaveFunctionContainer
         _nanoTypeMap = nanoTypeMap;
     }
 
+    /// <inheritdoc />
     public Task<INanoAgent?> Collapse(NanoCollapseParameters collapseParameters)
     {
         try
@@ -39,12 +46,12 @@ public class ActivatorNanoWaveFunctionContainer : INanoWaveFunctionContainer
         }
     }
 
+    /// <inheritdoc />
     public Task Synch(Guid nanoTypeId, Type type)
     {
         try
         {
             _rwLock.AcquireWriterLock(_lockTimeoutTimeSpan);
-
             _nanoTypeMap[nanoTypeId] = type;
         }
         finally

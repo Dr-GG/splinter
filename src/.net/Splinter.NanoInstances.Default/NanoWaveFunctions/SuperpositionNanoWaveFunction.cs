@@ -22,6 +22,9 @@ using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Default.NanoWaveFunctions;
 
+/// <summary>
+/// The default implementation of the ISuperpositionNanoWaveFunction interface.
+/// </summary>
 public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
 {
     private readonly SuperpositionSettings _settings;
@@ -31,6 +34,9 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
 
     private INanoWaveFunctionContainer? _nanoWaveFunctionContainer;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public SuperpositionNanoWaveFunction(
         SuperpositionSettings settings,
         ITeraAgent parent,
@@ -43,6 +49,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
         _singletonRegistry = singletonRegistry;
     }
 
+    /// <inheritdoc />
     public async Task Initialise(IEnumerable<SuperpositionMapping> superpositionMappings)
     {
         await using var scope = await _parent.Scope.Start();
@@ -60,6 +67,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
         _nanoWaveFunctionContainer = await waveBuilder.Build(_settings.RegistryTimeoutSpan);
     }
 
+    /// <inheritdoc />
     public async Task<INanoAgent?> Collapse(NanoCollapseParameters parameters)
     {
         if (_nanoWaveFunctionContainer == null)
@@ -90,6 +98,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
         return nanoAgent;
     }
 
+    /// <inheritdoc />
     public async Task<Guid?> Recollapse(NanoRecollapseParameters parameters)
     {
         if (_nanoWaveFunctionContainer == null)
@@ -127,7 +136,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
         if (newCollapseType == null)
         {
             throw new InvalidNanoInstanceException(
-                $"Could not find the nano instance type {newCollapseType}");
+                $"Could not find the nano instance type {newCollapseType}.");
         }
 
         await _nanoWaveFunctionContainer.Synch(nanoTypeId, newCollapseType);
@@ -171,13 +180,13 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
         if (mapping.Mode != SuperpositionMode.Recollapse)
         {
             throw new InvalidNanoTypeRecollapseOperationException(
-                $"The superposition mapping {mapping.NanoTypeId} does not support recollapse");
+                $"The superposition mapping {mapping.NanoTypeId} does not support recollapse.");
         }
 
         if (mapping.Scope == SuperpositionScope.Singleton)
         {
             throw new InvalidNanoTypeRecollapseOperationException(
-                "The recollapse of singletons are not supported");
+                "The recollapse of singletons are not supported.");
         }
 
         return mapping;
@@ -196,7 +205,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
         {
             SuperpositionScope.Request => await CollapseRequest(parameters),
             SuperpositionScope.Singleton => await CollapseSingleton(parameters),
-            _ => throw new NotSupportedException($"The scope {mapping.Scope} is not supported")
+            _ => throw new NotSupportedException($"The scope {mapping.Scope} is not supported.")
         };
     }
 

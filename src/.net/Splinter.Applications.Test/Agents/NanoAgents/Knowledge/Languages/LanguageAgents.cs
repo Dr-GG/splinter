@@ -59,7 +59,7 @@ public abstract class LanguageAgent : NanoAgent, ILanguageAgent
     {
         if (reference.IsNullOrEmpty())
         {
-            throw new InvalidOperationException("Language phrase agent not set");
+            throw new InvalidOperationException("Language phrase agent not set.");
         }
 
         return await reference.Typed<ILanguagePhraseAgent>().Speak();

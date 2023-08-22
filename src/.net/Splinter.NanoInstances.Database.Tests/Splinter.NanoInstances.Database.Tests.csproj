@@ -7,13 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.6" />
-    <PackageReference Include="Moq" Version="4.18.1" />
+    <PackageReference Include="FluentAssertions" Version="6.11.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.8" />
+    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
-    <PackageReference Include="Tenjin.Tests.AutoFixture.EntityFramework" Version="1.1.0.13" />
-    <PackageReference Include="Tenjin.Tests.EntityFramework.Sqlite" Version="1.1.0.7" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageReference Include="Tenjin.Tests.AutoFixture.EntityFramework" Version="1.2.0" />
+    <PackageReference Include="Tenjin.Tests.EntityFramework.Sqlite" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

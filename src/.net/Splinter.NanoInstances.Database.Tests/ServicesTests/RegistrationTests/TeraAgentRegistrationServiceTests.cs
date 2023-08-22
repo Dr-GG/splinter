@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
@@ -42,11 +43,11 @@ public class TeraAgentRegistrationServiceTests
         var teraId = await service.Register(TestTeraPlatformId, parameters);
         var teraAgent = dbContext.TeraAgents.Single();
 
-        Assert.AreEqual(TestNewTeraAgentId, teraAgent.Id);
-        Assert.AreEqual(TestNanoInstanceId, teraAgent.NanoInstanceId);
-        Assert.AreEqual(TestTeraPlatformId, teraAgent.TeraPlatformId);
-        Assert.AreEqual(teraId, teraAgent.TeraId);
-        Assert.AreEqual(TeraAgentStatus.Migrating, teraAgent.Status);
+        teraId.Should().Be(teraAgent.TeraId);
+        teraAgent.Id.Should().Be(TestNewTeraAgentId);
+        teraAgent.NanoInstanceId.Should().Be(TestNanoInstanceId);
+        teraAgent.TeraPlatformId.Should().Be(TestTeraPlatformId);
+        teraAgent.Status.Should().Be(TeraAgentStatus.Migrating);
     }
 
     [Test]
@@ -67,12 +68,12 @@ public class TeraAgentRegistrationServiceTests
         var teraId = await service.Register(TestTeraPlatformId, parameters);
         var teraAgent = dbContext.TeraAgents.Single();
 
-        Assert.AreEqual(TestTeraId, teraId);
-        Assert.AreEqual(TestNewTeraAgentId, teraAgent.Id);
-        Assert.AreEqual(TestNanoInstanceId, teraAgent.NanoInstanceId);
-        Assert.AreEqual(TestTeraPlatformId, teraAgent.TeraPlatformId);
-        Assert.AreEqual(TestTeraId, teraAgent.TeraId);
-        Assert.AreEqual(TeraAgentStatus.Disposed, teraAgent.Status);
+        teraId.Should().Be(TestTeraId);
+        teraAgent.Id.Should().Be(TestNewTeraAgentId);
+        teraAgent.TeraId.Should().Be(TestTeraId);
+        teraAgent.NanoInstanceId.Should().Be(TestNanoInstanceId);
+        teraAgent.TeraPlatformId.Should().Be(TestTeraPlatformId);
+        teraAgent.Status.Should().Be(TeraAgentStatus.Disposed);
     }
 
     [Test]
@@ -94,12 +95,12 @@ public class TeraAgentRegistrationServiceTests
         var teraId = await service.Register(TestTeraPlatformId, parameters);
         var teraAgent = dbContext.TeraAgents.Single();
 
-        Assert.AreEqual(TestTeraId, teraId);
-        Assert.AreEqual(TestExistingTeraAgentId, teraAgent.Id);
-        Assert.AreEqual(TestNanoInstanceId, teraAgent.NanoInstanceId);
-        Assert.AreEqual(TestTeraPlatformId, teraAgent.TeraPlatformId);
-        Assert.AreEqual(TestTeraId, teraAgent.TeraId);
-        Assert.AreEqual(TeraAgentStatus.Disposed, teraAgent.Status);
+        teraId.Should().Be(TestTeraId);
+        teraAgent.Id.Should().Be(TestExistingTeraAgentId);
+        teraAgent.TeraId.Should().Be(TestTeraId);
+        teraAgent.NanoInstanceId.Should().Be(TestNanoInstanceId);
+        teraAgent.TeraPlatformId.Should().Be(TestTeraPlatformId);
+        teraAgent.Status.Should().Be(TeraAgentStatus.Disposed);
     }
 
     private static void AddDefaultData(TeraDbContext teraDbContext)

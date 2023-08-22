@@ -11,8 +11,12 @@ using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition;
 
+/// <summary>
+/// The default implementation of the ISuperpositionMappingResolved interface based on a JSON file.
+/// </summary>
 public class JsonSuperpositionMappingResolver : ISuperpositionMappingResolver
 {
+    /// <inheritdoc />
     public Task<IEnumerable<InternalSuperpositionMapping>> Resolve(
         IEnumerable<SuperpositionMapping> superpositionMappings)
     {
@@ -21,19 +25,15 @@ public class JsonSuperpositionMappingResolver : ISuperpositionMappingResolver
 
     private static InternalSuperpositionMapping GetInternalMapping(SuperpositionMapping mapping)
     {
-        var type = Type.GetType(mapping.NanoInstanceType);
-
-        if (type == null)
-        {
-            throw new InvalidNanoTypeException($"Could not find the nano type {mapping.NanoInstanceType}");
-        }
+        var type = Type.GetType(mapping.NanoInstanceType) 
+                   ?? throw new InvalidNanoTypeException($"Could not find the nano type {mapping.NanoInstanceType}.");
 
         NanoTypeUtilities.GetSplinterIds(type, out var nanoTypeId, out _);
 
         if (nanoTypeId == null)
         {
             throw new InvalidNanoTypeException(
-                $"The nano type {type.FullName} does not consist of a static '{SplinterIdConstants.NanoTypeId}' field");
+                $"The nano type {type.FullName} does not consist of a static '{SplinterIdConstants.NanoTypeIdPropertyName}' field.");
         }
 
         return new InternalSuperpositionMapping

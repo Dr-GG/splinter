@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
@@ -30,7 +31,7 @@ public class TeraAgentManagerTests
             It.IsAny<Guid>(), out outputId), Times.Once);
         mockCache.VerifyNoOtherCalls();
 
-        Assert.IsNull(id);
+        id.Should().BeNull();
     }
 
     [Test]
@@ -46,7 +47,7 @@ public class TeraAgentManagerTests
 
         var id = await manager.GetTeraId(TestTeraId);
 
-        Assert.AreEqual(TestTeraAgentId, id);
+        id.Should().Be(TestTeraAgentId);
 
         mockCache.Verify(c => c.TryGetTeraId(
             It.IsAny<Guid>(), out outputId), Times.Once);
@@ -71,7 +72,7 @@ public class TeraAgentManagerTests
 
         var id = await manager.GetTeraId(TestTeraId);
 
-        Assert.AreEqual(TestTeraAgentId, id);
+        id.Should().Be(TestTeraAgentId);
 
         mockCache.Verify(c => c.TryGetTeraId(
             It.IsAny<Guid>(), out outputId), Times.Once);

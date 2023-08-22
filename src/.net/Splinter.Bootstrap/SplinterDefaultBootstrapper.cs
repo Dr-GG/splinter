@@ -33,11 +33,15 @@ using Tenjin.Configuration.Extensions;
 
 namespace Splinter.Bootstrap;
 
+/// <summary>
+/// The default implementation of the ISplinterBootstrapper interface.
+/// </summary>
 public class SplinterDefaultBootstrapper : ISplinterBootstrapper
 {
     private IContainer _container = null!;
     private IServiceScope _serviceScope = null!;
 
+    /// <inheritdoc />
     public async Task Initialise(NanoBootstrapParameters parameters)
     {
         var containerBuilder = new ContainerBuilder();
@@ -149,12 +153,8 @@ public class SplinterDefaultBootstrapper : ISplinterBootstrapper
         {
             NanoTypeId = nanoTypeId.Guid
         };
-        var agent = await SplinterEnvironment.SuperpositionAgent.Collapse(collapseParameters);
-
-        if (agent == null)
-        {
-            throw new InvalidNanoTypeException($"Could not load the core singleton nano type {nanoTypeId.Guid}");
-        }
+        var agent = await SplinterEnvironment.SuperpositionAgent.Collapse(collapseParameters) 
+                    ?? throw new InvalidNanoTypeException($"Could not load the core singleton nano type {nanoTypeId.Guid}.");
 
         await agent.Initialise(initParameters);
 

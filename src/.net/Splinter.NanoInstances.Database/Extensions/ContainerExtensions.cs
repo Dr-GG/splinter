@@ -16,9 +16,15 @@ using Splinter.NanoTypes.Default.Interfaces.Services.TeraPlatforms;
 
 namespace Splinter.NanoInstances.Database.Extensions;
 
+/// <summary>
+/// Autofac container extensions for the database managers, services and database context.
+/// </summary>
 public static class ContainerExtensions
 {
-    public static void RegisterDatabaseServices(this ContainerBuilder container)
+    /// <summary>
+    /// Registers all database services.
+    /// </summary>
+    public static void RegisterSplinterDatabaseServices(this ContainerBuilder container)
     {
         container
             .RegisterType<OperatingSystemManager>()
@@ -56,8 +62,8 @@ public static class ContainerExtensions
             .InstancePerLifetimeScope();
 
         container
-            .RegisterType<TeraMessageDisposeService>()
-            .As<ITeraMessageDisposeService>()
+            .RegisterType<ExpiredTeraMessageDisposeService>()
+            .As<IExpiredTeraMessageDisposeService>()
             .InstancePerLifetimeScope();
 
         container

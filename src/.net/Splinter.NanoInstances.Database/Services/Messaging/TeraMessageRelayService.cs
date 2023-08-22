@@ -15,11 +15,17 @@ using Splinter.NanoTypes.Domain.Parameters.Messaging;
 
 namespace Splinter.NanoInstances.Database.Services.Messaging;
 
+/// <summary>
+/// The default implementation of the ITeraMessageRelayService interface.
+/// </summary>
 public class TeraMessageRelayService : ITeraMessageRelayService
 {
     private readonly TeraMessagingSettings _settings;
     private readonly TeraDbContext _dbContext;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraMessageRelayService(
         TeraMessagingSettings settings, 
         TeraDbContext teraDbContext)
@@ -28,6 +34,7 @@ public class TeraMessageRelayService : ITeraMessageRelayService
         _dbContext = teraDbContext;
     }
 
+    /// <inheritdoc />
     public async Task<TeraMessageResponse> Relay(TeraMessageRelayParameters parameters)
     {
         var batchId = Guid.NewGuid();
@@ -75,7 +82,7 @@ public class TeraMessageRelayService : ITeraMessageRelayService
         IEnumerable<TeraMessageAgentRecipient> recipients)
     {
         var sourceAgentId = (await _dbContext.GetTeraAgent(parameters.SourceTeraId)).Id;
-        var absoluteExpiry = parameters.AbsoluteExpiryTimeSpan ?? _settings.Disposing.DefaultExpiryTimeSpan;
+        var absoluteExpiry = parameters.AbsoluteExpiryTimeSpan ?? _settings.ExpiredDisposing.DefaultExpiryTimeSpan;
         var absoluteExpiryTimestamp = DateTime.UtcNow.Add(absoluteExpiry);
 
         return recipients

@@ -7,6 +7,9 @@ using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 
 namespace Splinter.NanoInstances.Agents.TeraAgents;
 
+/// <summary>
+/// The base class for all Tera Agents that are singletons by default.
+/// </summary>
 public abstract class SingletonTeraAgent : TeraAgent
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
@@ -14,6 +17,7 @@ public abstract class SingletonTeraAgent : TeraAgent
     private bool _disposed;
     private bool _initialised;
 
+    /// <inheritdoc />
     public override async Task Initialise(NanoInitialisationParameters parameters)
     {
         if (_initialised)
@@ -38,6 +42,7 @@ public abstract class SingletonTeraAgent : TeraAgent
         }
     }
 
+    /// <inheritdoc />
     public override async Task Dispose(NanoDisposeParameters parameters)
     {
         if (parameters.Force || SplinterEnvironment.Status == SplinterEnvironmentStatus.Disposing)
@@ -46,6 +51,9 @@ public abstract class SingletonTeraAgent : TeraAgent
         }
     }
 
+    /// <summary>
+    /// Initialises the singleton based on specified parameters.
+    /// </summary>
     protected virtual async Task SingletonInitialise(NanoInitialisationParameters parameters)
     {
         await base.Initialise(parameters);
@@ -53,6 +61,9 @@ public abstract class SingletonTeraAgent : TeraAgent
         _initialised = true;
     }
 
+    /// <summary>
+    /// Disposes the single based on specified parameters.
+    /// </summary>
     protected virtual async Task SingletonDispose(NanoDisposeParameters parameters)
     {
         await base.Dispose(parameters);

@@ -5,16 +5,23 @@ using Splinter.NanoTypes.Domain.Core;
 
 namespace Splinter.NanoInstances.Default.Services.NanoTypes;
 
+/// <summary>
+/// The default implementation of the INanoTypeCache interface.
+/// </summary>
 public class NanoTypeCache : INanoTypeCache
 {
     private readonly NanoTypeCacheSettings _settings;
     private readonly MemoryCache _cache = new (new MemoryCacheOptions());
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public NanoTypeCache(NanoTypeCacheSettings settings)
     {
         _settings = settings;
     }
 
+    /// <inheritdoc />
     public void RegisterNanoTypeId(SplinterId nanoType, long id)
     {
         var key = GetNanoTypeIdCacheKey(nanoType);
@@ -22,6 +29,7 @@ public class NanoTypeCache : INanoTypeCache
         _cache.Set(key, id, GetDefaultOptions());
     }
 
+    /// <inheritdoc />
     public void RegisterNanoInstanceId(SplinterId nanoInstance, long id)
     {
         var key = GetNanoInstanceIdCacheKey(nanoInstance);
@@ -29,6 +37,7 @@ public class NanoTypeCache : INanoTypeCache
         _cache.Set(key, id, GetDefaultOptions());
     }
 
+    /// <inheritdoc />
     public bool TryGetNanoTypeId(SplinterId nanoType, out long id)
     {
         var key = GetNanoTypeIdCacheKey(nanoType);
@@ -36,6 +45,7 @@ public class NanoTypeCache : INanoTypeCache
         return _cache.TryGetValue(key, out id);
     }
 
+    /// <inheritdoc />
     public bool TryGetNanoInstanceId(SplinterId nanoInstance, out long id)
     {
         var key = GetNanoInstanceIdCacheKey(nanoInstance);

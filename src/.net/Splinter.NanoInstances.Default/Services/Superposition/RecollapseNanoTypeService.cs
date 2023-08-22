@@ -14,11 +14,15 @@ using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition;
 
+/// <summary>
+/// The default implementation of the IRecollapseNanoTypeService interface.
+/// </summary>
 public class RecollapseNanoTypeService : IRecollapseNanoTypeService
 {
+    /// <inheritdoc />
     public async Task<int> Recollapse(INanoAgent parent, TeraMessage recollapseMessage)
     {
-        if (parent.HolonType == HolonType.Nano && parent.HasNoTeraParent)
+        if (parent is {HolonType: HolonType.Nano, HasNoTeraParent: true})
         {
             return 0;
         }

@@ -8,18 +8,19 @@ using Splinter.NanoTypes.Domain.Exceptions.Data;
 
 namespace Splinter.NanoInstances.Database.Extensions;
 
+/// <summary>
+/// Collection of extension methods for the TeraDbContext instance.
+/// </summary>
 public static class DbContextExtensions
 {
+    /// <summary>
+    /// Attempts to get a TeraAgentModel based on the Tera Agent ID.
+    /// </summary>
     public static async Task<TeraAgentModel> GetTeraAgent(this TeraDbContext teraDbContext, Guid teraId)
     {
         var result = await teraDbContext.TeraAgents
             .SingleOrDefaultAsync(t => t.TeraId == teraId);
 
-        if (result == null)
-        {
-            throw new EntityNotFoundException(EntityNameConstants.TeraAgent, teraId);
-        }
-
-        return result;
+        return result ?? throw new SplinterEntityNotFoundException(EntityNameConstants.TeraAgent, teraId);
     }
 }

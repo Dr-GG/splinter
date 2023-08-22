@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Services.Superposition;
 using Splinter.NanoInstances.Tests.Agents;
@@ -14,8 +15,8 @@ public class NanoReferenceTests
     {
         var reference = new NanoReference();
 
-        Assert.IsTrue(reference.HasNoReference);
-        Assert.IsFalse(reference.HasReference);
+        reference.HasNoReference.Should().BeTrue();
+        reference.HasReference.Should().BeFalse();
     }
 
     [Test]
@@ -36,8 +37,8 @@ public class NanoReferenceTests
 
         await reference.Initialise(null);
 
-        Assert.IsTrue(reference.HasNoReference);
-        Assert.IsFalse(reference.HasReference);
+        reference.HasNoReference.Should().BeTrue();
+        reference.HasReference.Should().BeFalse();
     }
 
     [Test]
@@ -61,8 +62,8 @@ public class NanoReferenceTests
 
         await reference.Initialise(agent);
 
-        Assert.IsFalse(reference.HasNoReference);
-        Assert.IsTrue(reference.HasReference);
+        reference.HasNoReference.Should().BeFalse();
+        reference.HasReference.Should().BeTrue();
     }
 
     [Test]
@@ -73,6 +74,6 @@ public class NanoReferenceTests
 
         await reference.Initialise(agent);
 
-        Assert.AreEqual(agent, reference.Reference);
+        reference.Reference.Should().BeSameAs(agent);
     }
 }

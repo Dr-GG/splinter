@@ -10,15 +10,20 @@ using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Services.Builders;
 
+/// <summary>
+/// The default implementation of the INanoWaveFunctionBuilder.
+/// </summary>
 public class ActivatorNanoWaveFunctionBuilder : INanoWaveFunctionBuilder
 {
     private readonly IDictionary<Guid, Type> _nanoTypeMap = new Dictionary<Guid, Type>();
 
+    /// <inheritdoc />
     public Task Register<TNanoAgent>(SplinterId nanoTypeId) where TNanoAgent : INanoAgent
     {
         return Register(nanoTypeId, typeof(TNanoAgent));
     }
 
+    /// <inheritdoc />
     public Task Register(SplinterId nanoTypeId, Type nanoType)
     {
         if (!NanoTypeUtilities.IsNanoInstance(nanoType))
@@ -31,6 +36,7 @@ public class ActivatorNanoWaveFunctionBuilder : INanoWaveFunctionBuilder
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task<INanoWaveFunctionContainer> Build(TimeSpan lockTimeoutTimeSpan)
     {
         return Task.FromResult<INanoWaveFunctionContainer>(

@@ -4,8 +4,8 @@ using System.Linq;
 using Splinter.Applications.Test.Utilities;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Splinter.Applications.Test.Domain.Constants;
 using Splinter.Applications.Test.Interfaces.Agents.NanoAgents.Knowledge;
 using Splinter.NanoInstances.Database.DbContext;
@@ -155,8 +155,8 @@ public static class TeraMessageTests
             .Where(p => p.TeraMessage.RecipientTeraAgent.TeraId == recipient.TeraId)
             .ToListAsync();
 
-        Assert.AreEqual(numberOfMessages, messages.Count);
-        Assert.IsTrue(messages.All(m => m.TeraMessage.Status == TeraMessageStatus.Pending));
+        messages.Count.Should().Be(numberOfMessages);
+        messages.All(m => m.TeraMessage.Status == TeraMessageStatus.Pending).Should().BeTrue();
     }
 
     private static async Task AssertCompletedTeraMessages(ITeraAgent recipient, int numberOfMessages)
@@ -170,9 +170,9 @@ public static class TeraMessageTests
             .Where(p => p.TeraMessage.RecipientTeraAgent.TeraId == recipient.TeraId)
             .ToListAsync();
 
-        Assert.IsEmpty(pendingMessages);
-        Assert.AreEqual(numberOfMessages, messages.Count);
-        Assert.IsTrue(messages.All(m => m.Status == TeraMessageStatus.Completed));
+        pendingMessages.Should().BeEmpty();
+        messages.Should().HaveCount(numberOfMessages);
+        messages.All(m => m.Status == TeraMessageStatus.Completed).Should().BeTrue();
     }
 
     private static async Task SendTeraMessages(
@@ -194,8 +194,8 @@ public static class TeraMessageTests
     {
         var knowledge = (ITeraMessageKnowledgeAgent) recipient.Knowledge;
 
-        Assert.AreEqual(supportedCount, knowledge.SupportedProcessCount);
-        Assert.AreEqual(notSupportedCount, knowledge.NotSupportedProcessCount);
+        knowledge.SupportedProcessCount.Should().Be(supportedCount);
+        knowledge.NotSupportedProcessCount.Should().Be(notSupportedCount);
     }
 
     private static IEnumerable<TeraMessage> GetRandomTeraMessages(
@@ -232,13 +232,13 @@ public static class TeraMessageTests
             NanoTypeId = TeraMessageSplinterIds.TeraTypeId.Guid
         };
 
-        var result = await SplinterEnvironment.SuperpositionAgent.Collapse(collapse) as ITeraAgent;
+        var result = (await SplinterEnvironment.SuperpositionAgent.Collapse(collapse) as ITeraAgent)!;
 
-        Assert.IsNotNull(result!);
+        result.Should().NotBeNull();
 
         var init = new NanoInitialisationParameters();
 
-        await result!.Initialise(init);
+        await result.Initialise(init);
 
         return result;
     }

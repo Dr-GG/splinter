@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Services.Containers;
 using Splinter.NanoInstances.Default.Tests.Agents.TeraAgents;
@@ -25,8 +26,10 @@ public class TeraAgentContainerTests
     public void Execute_WhenContainerIsNotInitialised_ThrowsException()
     {
         using var container = GetContainer();
+        var errorMessage = Assert.ThrowsAsync<TeraAgentContainerNotInitialisedException>(() => container.Start())!;
 
-        Assert.ThrowsAsync<TeraAgentContainerNotInitialisedException>(() => container.Execute());
+        errorMessage.Should().NotBeNull();
+        errorMessage.Message.Should().Be("The Tera Agent container has not yet been initialised.");
     }
 
     [Test]
@@ -37,7 +40,7 @@ public class TeraAgentContainerTests
         var agents = GetTestAgents(executionLimit: 1);
 
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         foreach (var agent in agents)
         {
@@ -46,8 +49,8 @@ public class TeraAgentContainerTests
 
         Thread.Sleep(5000);
 
-        Assert.AreEqual(DefaultNumberOfTestAgents, container.NumberOfTeraAgents);
-        Assert.AreEqual(DefaultNumberOfTestAgents, TeraAgentContainerUnitTestAgent.ExecutionHit);
+        container.NumberOfTeraAgents.Should().Be(DefaultNumberOfTestAgents);
+        TeraAgentContainerUnitTestAgent.ExecutionHit.Should().Be(DefaultNumberOfTestAgents);
     }
 
     [Test]
@@ -63,7 +66,7 @@ public class TeraAgentContainerTests
         }
 
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         Thread.Sleep(1000);
 
@@ -73,8 +76,9 @@ public class TeraAgentContainerTests
         }
 
         Thread.Sleep(1000);
-        Assert.AreEqual(0, container.NumberOfTeraAgents);
-        Assert.IsTrue(TeraAgentContainerUnitTestAgent.ExecutionHit > 0);
+
+        container.NumberOfTeraAgents.Should().Be(0);
+        TeraAgentContainerUnitTestAgent.ExecutionHit.Should().BeGreaterThan(0);
     }
 
     [Test]
@@ -93,15 +97,15 @@ public class TeraAgentContainerTests
         }
 
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         Thread.Sleep(1000);
 
-        await container.Halt();
+        await container.Stop();
 
-        Assert.IsTrue(TeraAgentContainerUnitTestAgent.ExecutionHit > 0);
-        Assert.IsTrue(TeraAgentContainerUnitTestAgent.CompletedHit > 0);
-        Assert.IsTrue(TeraAgentContainerUnitTestAgent.CompletedHit < TestDisposeNumberOfTeraAgents);
+        TeraAgentContainerUnitTestAgent.ExecutionHit.Should().BeGreaterThan(0);
+        TeraAgentContainerUnitTestAgent.CompletedHit.Should().BeGreaterThan(0);
+        TeraAgentContainerUnitTestAgent.CompletedHit.Should().BeLessThan(TestDisposeNumberOfTeraAgents);
     }
 
     [TestCase(0)]
@@ -122,10 +126,10 @@ public class TeraAgentContainerTests
 
         await container.Register(agent);
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         Thread.Sleep(threadSleep);
-        await container.Halt();
+        await container.Stop();
 
         var stop = DateTime.UtcNow;
 
@@ -168,10 +172,10 @@ public class TeraAgentContainerTests
 
         await container.Register(agent);
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         Thread.Sleep(threadSleep);
-        await container.Halt();
+        await container.Stop();
 
         AssertExecutionParameters(
             agent,
@@ -213,10 +217,10 @@ public class TeraAgentContainerTests
 
         await container.Register(agent);
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         Thread.Sleep(threadSleep);
-        await container.Halt();
+        await container.Stop();
 
         AssertExecutionParameters(
             agent,
@@ -243,15 +247,15 @@ public class TeraAgentContainerTests
         }
 
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         Thread.Sleep(5000);
 
-        await container.Halt();
+        await container.Stop();
 
-        Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.ExecutionHit);
-        Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.CompletedHit);
-        Assert.AreEqual(1, TeraAgentContainerUnitTestAgent.ThreadIdCounter.Count);
+        TeraAgentContainerUnitTestAgent.ExecutionHit.Should().Be(TestDisposeThreadingNumberOfTeraAgents);
+        TeraAgentContainerUnitTestAgent.CompletedHit.Should().Be(TestDisposeThreadingNumberOfTeraAgents);
+        TeraAgentContainerUnitTestAgent.ThreadIdCounter.Should().HaveCount(1);
     }
 
     [Test]
@@ -271,15 +275,15 @@ public class TeraAgentContainerTests
         }
 
         await container.Initialise(parameters);
-        await container.Execute();
+        await container.Start();
 
         Thread.Sleep(5000);
 
-        await container.Halt();
+        await container.Stop();
 
-        Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.ExecutionHit);
-        Assert.AreEqual(TestDisposeThreadingNumberOfTeraAgents, TeraAgentContainerUnitTestAgent.CompletedHit);
-        Assert.GreaterOrEqual(TestExplicitMultiThreadCount, TeraAgentContainerUnitTestAgent.ThreadIdCounter.Count);
+        TeraAgentContainerUnitTestAgent.ExecutionHit.Should().Be(TestDisposeThreadingNumberOfTeraAgents);
+        TeraAgentContainerUnitTestAgent.CompletedHit.Should().Be(TestDisposeThreadingNumberOfTeraAgents);
+        TeraAgentContainerUnitTestAgent.ThreadIdCounter.Should().HaveCountLessOrEqualTo(TestExplicitMultiThreadCount);
     }
 
     private static void AssertExecutionParameters(
@@ -295,26 +299,23 @@ public class TeraAgentContainerTests
         {
             var current = executions[i];
 
-            Assert.IsTrue(current.AbsoluteTimestamp >= start 
-                          && current.AbsoluteTimestamp <= end);
-            Assert.IsTrue(current.RelativeTimestamp >= current.AbsoluteTimestamp);
-            Assert.IsTrue(current.RelativeTimestamp >= start
-                          && current.RelativeTimestamp <= end);
+            (current.AbsoluteTimestamp >= start && current.AbsoluteTimestamp <= end).Should().BeTrue();
+            (current.RelativeTimestamp >= current.AbsoluteTimestamp).Should().BeTrue();
+            (current.RelativeTimestamp >= start && current.RelativeTimestamp <= end).Should().BeTrue();
 
             if (i == 0)
             {
-                Assert.AreEqual(current.AbsoluteTimestamp, current.RelativeTimestamp);
-                Assert.AreEqual(TimeSpan.Zero, current.AbsoluteTimeElapsed);
-                Assert.AreEqual(TimeSpan.Zero, current.RelativeTimeElapsed);
+                current.RelativeTimestamp.Should().Be(current.AbsoluteTimestamp);
+                current.AbsoluteTimeElapsed.Should().Be(TimeSpan.Zero);
+                current.RelativeTimeElapsed.Should().Be(TimeSpan.Zero);
 
                 continue;
             }
 
             var previous = executions[i - 1];
 
-            Assert.IsTrue(current.AbsoluteTimestamp == previous.AbsoluteTimestamp);
-            Assert.IsTrue(current.RelativeTimeElapsed >= relativeStartTimeSpan
-                          && current.RelativeTimeElapsed <= relativeEndTimesSpan);
+            (current.AbsoluteTimestamp == previous.AbsoluteTimestamp).Should().BeTrue();
+            (current.RelativeTimeElapsed >= relativeStartTimeSpan && current.RelativeTimeElapsed <= relativeEndTimesSpan).Should().BeTrue();
         }
     }
 

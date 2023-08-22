@@ -11,12 +11,18 @@ using Splinter.NanoTypes.Domain.Enums;
 
 namespace Splinter.NanoInstances.Database.Services.Messaging;
 
-public class TeraMessageDisposeService : ITeraMessageDisposeService
+/// <summary>
+/// The default implementation of the IExpiredTeraMessageDisposeService
+/// </summary>
+public class ExpiredTeraMessageDisposeService : IExpiredTeraMessageDisposeService
 {
     private readonly TeraMessagingSettings _settings;
     private readonly TeraDbContext _dbContext;
 
-    public TeraMessageDisposeService(
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
+    public ExpiredTeraMessageDisposeService(
         TeraMessagingSettings settings,
         TeraDbContext dbContext)
     {
@@ -24,7 +30,8 @@ public class TeraMessageDisposeService : ITeraMessageDisposeService
         _dbContext = dbContext;
     }
 
-    public void DisposeMessages()
+    /// <inheritdoc />
+    public void DisposeExpiredMessages()
     {
         var messages = GetDisposingTeraMessages();
 
@@ -60,7 +67,7 @@ public class TeraMessageDisposeService : ITeraMessageDisposeService
             .Where(m => (m.Status == TeraMessageStatus.Dequeued
                          || m.Status == TeraMessageStatus.Pending)
                         && m.AbsoluteExpiryTimestamp < utcNow)
-            .Take(_settings.Disposing.MaximumNumberOfMessagesToDispose)
+            .Take(_settings.ExpiredDisposing.MaximumNumberOfMessagesToDispose)
             .ToList();
     }
 }

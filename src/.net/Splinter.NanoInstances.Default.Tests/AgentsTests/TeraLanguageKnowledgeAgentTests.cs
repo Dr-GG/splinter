@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Services.Messaging;
@@ -1192,12 +1193,12 @@ public class TeraLanguageKnowledgeAgentTests
     {
         var references = (await teraAgent.NanoTable.Fetch(nanoType.Guid)).ToList();
         var instance = references.First().Reference;
-
-        Assert.AreEqual(1, references.Count);
-        Assert.AreEqual(nanoType, instance.TypeId);
-        Assert.AreEqual(nanoInstance, instance.InstanceId);
-        Assert.IsTrue(instance.HasTeraParent);
-        Assert.IsTrue(instance.HasNanoTable);
+        
+        references.Should().HaveCount(1);
+        instance.TypeId.Should().Be(nanoType);
+        instance.InstanceId.Should().Be(nanoInstance);
+        instance.HasNanoTable.Should().BeTrue();
+        instance.HasTeraParent.Should().BeTrue();
     }
 
     private static async Task AssertNoNanoTableReference(
@@ -1207,8 +1208,8 @@ public class TeraLanguageKnowledgeAgentTests
     {
         var references = (await teraAgent.NanoTable.Fetch(nanoType.Guid)).ToList();
         var instances = references.Where(r => r.HasReference && r.Reference.InstanceId.Equals(nanoInstance));
-
-        Assert.IsEmpty(instances);
+        
+        instances.Should().BeEmpty();
     }
 
     private static void AssertDifferentHelloPhrases(
@@ -1265,9 +1266,7 @@ public class TeraLanguageKnowledgeAgentTests
         var knowledge = (ILanguageKnowledgeAgent) teraAgent.Knowledge;
         var phrases = knowledge.SaidPhrases.ToList();
 
-        Assert.AreEqual(hello, phrases[0]);
-        Assert.AreEqual(test, phrases[1]);
-        Assert.AreEqual(goodbye, phrases[2]);
+        phrases.Should().BeEquivalentTo(hello, test, goodbye);
     }
 
     private static void InitialiseSplinterEnvironment()
@@ -1432,13 +1431,8 @@ public class TeraLanguageKnowledgeAgentTests
             TeraAgentId = teraId,
             NanoTypeId = LanguageSplinterIds.TeraTypeId.Guid
         };
-        var result = await SplinterEnvironment.SuperpositionAgent.Collapse(parameters);
-
-        if (result == null)
-        {
-            throw new NotSupportedException($"Could not collapse tera id {teraId}");
-        }
-
+        var result = await SplinterEnvironment.SuperpositionAgent.Collapse(parameters) 
+                     ?? throw new NotSupportedException($"Could not collapse tera id {teraId}.");
         var init = new NanoInitialisationParameters
         {
             ServiceScope = GetScope(),

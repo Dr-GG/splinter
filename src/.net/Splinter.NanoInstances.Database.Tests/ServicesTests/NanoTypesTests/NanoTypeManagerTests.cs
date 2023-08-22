@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
@@ -107,7 +108,7 @@ public class TeraAgentManagerTests
 
         var nanoTypeId = await manager.GetNanoTypeId(TestNanoTypeId);
 
-        Assert.AreEqual(TestExistingNanoTypeId, nanoTypeId);
+        nanoTypeId.Should().Be(TestExistingNanoTypeId);
     }
 
     [Test]
@@ -126,7 +127,7 @@ public class TeraAgentManagerTests
 
         var nanoTypeId = await manager.GetNanoTypeId(TestNanoTypeId);
 
-        Assert.AreEqual(TestExistingNanoTypeId, nanoTypeId);
+        nanoTypeId.Should().Be(TestExistingNanoTypeId);
     }
 
     [Test]
@@ -138,7 +139,7 @@ public class TeraAgentManagerTests
         var manager = GetManager(dbContext, mockCache.Object);
         var nanoTypeId = await manager.GetNanoTypeId(TestNanoTypeId);
 
-        Assert.IsNull(nanoTypeId);
+        nanoTypeId.Should().BeNull();
     }
 
     [Test]
@@ -186,7 +187,7 @@ public class TeraAgentManagerTests
 
         var nanoInstance = dbContext.NanoInstances.Single();
 
-        AssertNanoInstance(nanoInstance, TestExistingNanoInstanceId);
+        AssertNanoInstance(nanoInstance);
 
         mockCache
             .Verify(m => m
@@ -214,7 +215,7 @@ public class TeraAgentManagerTests
 
         var nanoInstanceId = await manager.GetNanoInstanceId(TestNanoInstanceId);
 
-        Assert.AreEqual(TestExistingNanoInstanceId, nanoInstanceId);
+        nanoInstanceId.Should().Be(TestExistingNanoInstanceId);
     }
 
     [Test]
@@ -226,7 +227,7 @@ public class TeraAgentManagerTests
         var manager = GetManager(dbContext, mockCache.Object);
         var nanoInstanceId = await manager.GetNanoInstanceId(TestNanoTypeId);
 
-        Assert.IsNull(nanoInstanceId);
+        nanoInstanceId.Should().BeNull();
     }
 
     [Test]
@@ -245,7 +246,7 @@ public class TeraAgentManagerTests
 
         var nanoInstanceId = await manager.GetNanoInstanceId(TestNanoTypeId);
 
-        Assert.AreEqual(TestExistingNanoInstanceId, nanoInstanceId);
+        nanoInstanceId.Should().Be(TestExistingNanoInstanceId);
     }
 
     [Test]
@@ -271,7 +272,7 @@ public class TeraAgentManagerTests
 
         await manager.RegisterNanoType(agent);
 
-        Assert.IsEmpty(dbContext.NanoTypes);
+        dbContext.NanoTypes.Should().BeEmpty();
 
         mockCache
             .Verify(m => m
@@ -300,18 +301,18 @@ public class TeraAgentManagerTests
 
     private static void AssertNanoType(NanoTypeModel nanoType, long expectedId)
     {
-        Assert.AreEqual(expectedId, nanoType.Id);
-        Assert.AreEqual(TestNanoTypeId.Guid, nanoType.Guid);
-        Assert.AreEqual(TestNanoTypeId.Name, nanoType.Name);
-        Assert.AreEqual(TestNanoTypeId.Version, nanoType.Version);
+        nanoType.Id.Should().Be(expectedId);
+        nanoType.Guid.Should().Be(TestNanoTypeId.Guid);
+        nanoType.Name.Should().Be(TestNanoTypeId.Name);
+        nanoType.Version.Should().Be(TestNanoTypeId.Version);
     }
 
-    private static void AssertNanoInstance(NanoInstanceModel nanoInstance, long expectedId)
+    private static void AssertNanoInstance(NanoInstanceModel nanoInstance)
     {
-        Assert.AreEqual(expectedId, nanoInstance.Id);
-        Assert.AreEqual(TestNanoInstanceId.Guid, nanoInstance.Guid);
-        Assert.AreEqual(TestNanoInstanceId.Name, nanoInstance.Name);
-        Assert.AreEqual(TestNanoInstanceId.Version, nanoInstance.Version);
+        nanoInstance.Id.Should().Be(nanoInstance.Id);
+        nanoInstance.Guid.Should().Be(nanoInstance.Guid);
+        nanoInstance.Name.Should().Be(nanoInstance.Name);
+        nanoInstance.Version.Should().Be(nanoInstance.Version);
     }
 
     private static void AddNanoTypeData(TeraDbContext teraDbContext)

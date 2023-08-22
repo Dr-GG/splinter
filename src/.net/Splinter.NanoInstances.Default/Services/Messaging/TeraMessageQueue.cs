@@ -10,12 +10,18 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 
 namespace Splinter.NanoInstances.Default.Services.Messaging;
 
+/// <summary>
+/// The default implementation of the ITeraMessageQueue interface.
+/// </summary>
 public class TeraMessageQueue : ITeraMessageQueue
 {
     private readonly TeraMessagingSettings _settings;
     private readonly Queue<TeraMessage> _queue = new();
     private ITeraAgent? _teraAgent;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraMessageQueue(TeraMessagingSettings settings)
     {
         _settings = settings;
@@ -34,6 +40,7 @@ public class TeraMessageQueue : ITeraMessageQueue
         }
     }
 
+    /// <inheritdoc />
     public Task Initialise(ITeraAgent teraAgent)
     {
         _teraAgent = teraAgent;
@@ -41,6 +48,7 @@ public class TeraMessageQueue : ITeraMessageQueue
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasNext()
     {
         if (_queue.Count > 0)
@@ -51,16 +59,18 @@ public class TeraMessageQueue : ITeraMessageQueue
         return await GetTeraMessageBatch();
     }
 
+    /// <inheritdoc />
     public Task<TeraMessage> Next()
     {
         if (_queue.Count == 0)
         {
-            throw new InvalidNanoServiceOperationException("No new tera message could be dequeued");
+            throw new InvalidNanoServiceOperationException("No new tera message could be dequeued.");
         }
 
         return Task.FromResult(_queue.Dequeue());
     }
 
+    /// <inheritdoc />
     public async Task Dispose(TeraMessageSyncParameters parameters)
     {
         await SplinterEnvironment.TeraMessageAgent.Sync(parameters);

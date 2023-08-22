@@ -9,21 +9,31 @@ using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Utilities;
 
+/// <summary>
+/// A collection of utility methods used for Nano Type and Nano Instance ID manipulation.
+/// </summary>
 public static class NanoTypeUtilities
 {
+    /// <summary>
+    /// Determines if a Type is of an INanoAgent type.
+    /// </summary>
     public static bool IsNanoType(Type nanoType)
     {
         return nanoType.IsAssignableTo(typeof(INanoAgent));
     }
-
+    
+    /// <summary>
+    /// Determines if a Type is a potential Nano Instance.
+    /// </summary>
     public static bool IsNanoInstance(Type nanoInstance)
     {
-        return IsNanoType(nanoInstance)
-               && nanoInstance.IsClass
-               && !nanoInstance.IsAbstract
-               && !nanoInstance.IsInterface;
+        return IsNanoType(nanoInstance) && 
+               nanoInstance is {IsClass: true, IsAbstract: false, IsInterface: false};
     }
 
+    /// <summary>
+    /// Gets the Nano Type and Nano Instance ID from a Type.
+    /// </summary>
     public static void GetSplinterIds<TNanoType>(
         out SplinterId? nanoTypeId,
         out SplinterId? nanoInstanceId)
@@ -31,6 +41,9 @@ public static class NanoTypeUtilities
         GetSplinterIds(typeof(TNanoType), out nanoTypeId, out nanoInstanceId);
     }
 
+    /// <summary>
+    /// Gets the Nano Type and Nano Instance ID from a Type.
+    /// </summary>
     public static void GetSplinterIds(
         Type nanoType, 
         out SplinterId? nanoTypeId, 
@@ -41,10 +54,10 @@ public static class NanoTypeUtilities
                        | BindingFlags.Static
                        | BindingFlags.FlattenHierarchy);
 
-        nanoTypeId = GetSplinterId(nanoType, SplinterIdConstants.NanoTypeId, fields);
-        nanoInstanceId = GetSplinterId(nanoType, SplinterIdConstants.NanoInstanceId, fields);
+        nanoTypeId = GetSplinterId(nanoType, SplinterIdConstants.NanoTypeIdPropertyName, fields);
+        nanoInstanceId = GetSplinterId(nanoType, SplinterIdConstants.NanoInstanceIdPropertyName, fields);
     }
-
+    
     private static SplinterId? GetSplinterId(
         Type nanoType,
         string propertyName,

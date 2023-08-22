@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Extensions;
 using Splinter.NanoInstances.Default.Services.Superposition;
@@ -180,17 +181,17 @@ public class NanoTableTests
     {
         var collection = (await table.Fetch(nanoTypeId)).ToList();
 
-        Assert.AreEqual(expectedCount, collection.Count);
+        collection.Count.Should().Be(expectedCount);
 
         if (references.IsEmpty())
         {
             return;
         }
 
-        Assert.IsTrue(references.All(r =>
+        references.All(r => 
             collection.Any(c => 
                 ((NanoTableUnitTestAgent) c.Reference)
-                .IsReference(r))));
+                .IsReference(r))).Should().BeTrue();
     }
 
     private static INanoReference GetNanoReference(Guid? nanoTypeId = null)

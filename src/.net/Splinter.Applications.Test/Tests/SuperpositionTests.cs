@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Splinter.Applications.Test.Agents.NanoAgents.Knowledge;
 using Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages;
 using Splinter.Applications.Test.Agents.NanoAgents.Knowledge.Languages.Phrases;
@@ -627,9 +627,9 @@ public class SuperpositionTests
         var knowledge = (ILanguageKnowledgeAgent)teraAgent.Knowledge;
         var phrases = knowledge.SaidPhrases.ToList();
 
-        Assert.AreEqual(hello, phrases[0]);
-        Assert.AreEqual(test, phrases[1]);
-        Assert.AreEqual(goodbye, phrases[2]);
+        phrases[0].Should().Be(hello);
+        phrases[1].Should().Be(test);
+        phrases[2].Should().Be(goodbye);
     }
 
     private static async Task AssertRecollapseOperationCounts(Guid operationId, 
@@ -641,9 +641,9 @@ public class SuperpositionTests
         await using var dbContext = await scope.Resolve<TeraDbContext>();
         var operation = dbContext.NanoTypeRecollapseOperations.Single(o => o.Guid == operationId);
 
-        Assert.AreEqual(expectedCount, operation.NumberOfExpectedRecollapses);
-        Assert.AreEqual(successfulCount, operation.NumberOfSuccessfulRecollapses);
-        Assert.AreEqual(failedCount, operation.NumberOfFailedRecollapses);
+        operation.NumberOfExpectedRecollapses.Should().Be(expectedCount);
+        operation.NumberOfSuccessfulRecollapses.Should().Be(successfulCount);
+        operation.NumberOfFailedRecollapses.Should().Be(failedCount);
     }
 
     private static async Task AssertNanoTypeDependency(ITeraAgent teraAgent, SplinterId nanoTypeId, int expectedCount)
@@ -654,8 +654,9 @@ public class SuperpositionTests
             .SingleOrDefaultAsync(t => t.TeraAgent.TeraId == teraAgent.TeraId
                                        && t.NanoType.Guid == nanoTypeId.Guid);
 
-        Assert.IsTrue(expectedCount == 0 && (dependency == null || dependency.NumberOfDependencies == 0)
-                      || dependency != null && dependency.NumberOfDependencies == expectedCount);
+        (expectedCount == 0 && (dependency == null 
+                                || dependency.NumberOfDependencies == 0)
+         || dependency != null && dependency.NumberOfDependencies == expectedCount).Should().BeTrue();
     }
 
     private static async Task AssertNanoTypeDependenciesAreEmpty(ITeraAgent teraAgent)
@@ -665,7 +666,7 @@ public class SuperpositionTests
         var hasDependencies = await dbContext.TeraAgentNanoTypeDependencies
             .AnyAsync(t => t.TeraAgent.TeraId == teraAgent.TeraId && t.NumberOfDependencies > 0);
 
-        Assert.IsFalse(hasDependencies);
+        hasDependencies.Should().BeFalse();
     }
 
     private static async Task<ITeraAgent> GetTeraLanguageAgent()
@@ -675,13 +676,13 @@ public class SuperpositionTests
             NanoTypeId = LanguageSplinterIds.TeraTypeId.Guid
         };
 
-        var result = await SplinterEnvironment.SuperpositionAgent.Collapse(collapse) as ITeraAgent;
-            
-        Assert.IsNotNull(result!);
+        var result = (await SplinterEnvironment.SuperpositionAgent.Collapse(collapse) as ITeraAgent)!;
+
+        result.Should().NotBeNull();
 
         var init = new NanoInitialisationParameters();
 
-        await result!.Initialise(init);
+        await result.Initialise(init);
 
         return result;
     }

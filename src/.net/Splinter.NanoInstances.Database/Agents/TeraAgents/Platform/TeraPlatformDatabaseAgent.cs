@@ -11,11 +11,21 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Platform;
 
 namespace Splinter.NanoInstances.Database.Agents.TeraAgents.Platform;
 
+/// <summary>
+/// The default implementation of the ITeraPlatform agent using database implementations and services.
+/// </summary>
 public class TeraPlatformDatabaseAgent : SingletonTeraAgent, ITeraPlatformAgent
 {
     private long _operatingSystemId = -1;
 
+    /// <summary>
+    /// The Nano Type ID.
+    /// </summary>
     public static readonly SplinterId NanoTypeId = SplinterIdConstants.TeraPlatformAgentNanoTypeId;
+
+    /// <summary>
+    /// The Nano Instance ID.
+    /// </summary>
     public static readonly SplinterId NanoInstanceId = new()
     {
         Name = "Tera Platform Database Agent",
@@ -23,13 +33,22 @@ public class TeraPlatformDatabaseAgent : SingletonTeraAgent, ITeraPlatformAgent
         Guid = new Guid("{F33DEE7E-2673-4A76-94C8-5FBC7B8C02B7}")
     };
 
+    /// <inheritdoc />
     public override SplinterId TypeId => NanoTypeId;
+
+    /// <inheritdoc />
     public override SplinterId InstanceId => NanoInstanceId;
+
+    /// <inheritdoc />
     public long TeraPlatformId { get; private set; }
 
+    /// <inheritdoc />
     protected override bool RegisterInContainer => false;
+
+    /// <inheritdoc />
     protected override bool HasKnowledge => false;
 
+    /// <inheritdoc />
     protected override async Task SingletonInitialise(NanoInitialisationParameters parameters)
     {
         await base.SingletonInitialise(parameters);
@@ -38,6 +57,7 @@ public class TeraPlatformDatabaseAgent : SingletonTeraAgent, ITeraPlatformAgent
         await RegisterPlatform();
     }
 
+    /// <inheritdoc />
     protected override async Task SingletonDispose(NanoDisposeParameters parameters)
     {
         await DisablePlatform();

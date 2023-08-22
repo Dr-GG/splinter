@@ -21,9 +21,19 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Superposition;
 
 namespace Splinter.NanoInstances.Default.Agents.TeraAgents.Superposition;
 
+/// <summary>
+/// The default implementation of the ISuperpositionAgent interface.
+/// </summary>
 public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
 {
+    /// <summary>
+    /// The Tera Type ID.
+    /// </summary>
     public override SplinterId TypeId => SplinterIdConstants.SuperpositionAgentNanoTypeId;
+
+    /// <summary>
+    /// The Tera Instance ID.
+    /// </summary>
     public override SplinterId InstanceId => new()
     {
         Name = "Default Superposition Agent",
@@ -31,9 +41,13 @@ public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
         Guid = new Guid("{F253ADF7-6295-47B1-9DE2-5C7980AB125C}")
     };
 
+    /// <inheritdoc />
     protected override bool RegisterInContainer => false;
+
+    /// <inheritdoc />
     protected override bool HasKnowledge => false;
 
+    /// <inheritdoc />
     public override async Task Initialise(NanoInitialisationParameters parameters)
     {
         var initParameters = parameters.Cast<SuperpositionInitialisationParameters>();
@@ -43,6 +57,7 @@ public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
         await InitialiseSuperpositionWaveFunction(initParameters.SuperpositionMappings);
     }
 
+    /// <inheritdoc />
     public override async Task<INanoAgent?> Collapse(NanoCollapseParameters parameters)
     {
         var nanoAgent = await NanoWaveFunction.Collapse(parameters);
@@ -57,6 +72,7 @@ public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
         return nanoAgent;
     }
 
+    /// <inheritdoc />
     public async Task<Guid?> Recollapse(NanoRecollapseParameters parameters)
     {
         if (NanoWaveFunction is not ISuperpositionNanoWaveFunction superpositionNanoWaveFunction)
@@ -67,6 +83,7 @@ public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
         return await superpositionNanoWaveFunction.Recollapse(parameters);
     }
 
+    /// <inheritdoc />
     public async Task Sync(NanoTypeDependencyDisposeParameters parameters)
     {
         await using var scope = await NewScope();
@@ -75,6 +92,7 @@ public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
         await service.DecrementTeraAgentNanoTypeDependencies(parameters.TeraId, parameters.NanoType);
     }
 
+    /// <inheritdoc />
     public async Task Sync(NanoRecollapseOperationParameters parameters)
     {
         await using var scope = await NewScope();

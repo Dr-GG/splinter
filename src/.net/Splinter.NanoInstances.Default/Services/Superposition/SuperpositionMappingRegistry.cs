@@ -9,17 +9,24 @@ using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition;
 
+/// <summary>
+/// The default implementation of the ISuperpositionMappingRegistry interface.
+/// </summary>
 public class SuperpositionMappingRegistry : ISuperpositionMappingRegistry
 {
     private readonly ReaderWriterLock _rwLock = new();
     private readonly IDictionary<Guid, InternalSuperpositionMapping> _mappings = new Dictionary<Guid, InternalSuperpositionMapping>();
     private readonly SuperpositionSettings _settings;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public SuperpositionMappingRegistry(SuperpositionSettings settings)
     {
         _settings = settings;
     }
 
+    /// <inheritdoc />
     public Task Register(params InternalSuperpositionMapping[] mappings)
     {
         if (mappings.IsEmpty())
@@ -44,6 +51,7 @@ public class SuperpositionMappingRegistry : ISuperpositionMappingRegistry
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task<InternalSuperpositionMapping?> Fetch(Guid nanoTypeId)
     {
         try
@@ -60,6 +68,7 @@ public class SuperpositionMappingRegistry : ISuperpositionMappingRegistry
         }
     }
 
+    /// <inheritdoc />
     public Task Synch(InternalSuperpositionMapping superpositionMapping)
     {
         try

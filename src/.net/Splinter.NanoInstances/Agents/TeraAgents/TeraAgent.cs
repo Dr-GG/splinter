@@ -20,18 +20,36 @@ using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
 namespace Splinter.NanoInstances.Agents.TeraAgents;
 
+/// <summary>
+/// The default implementation of the ITeraAgent interface.
+/// </summary>
 public abstract class TeraAgent : NanoAgent, ITeraAgent
 {
     private INanoTable? _nanoTable;
     private INanoReference? _knowledgeReference;
 
+    /// <inheritdoc />
     public override bool HasNoTeraParent => true;
+
+    /// <inheritdoc />
     public override bool HasTeraParent => false;
+
+    /// <inheritdoc />
     public override bool HasNoNanoTable => _nanoTable == null;
+
+    /// <inheritdoc />
     public override bool HasNanoTable => _nanoTable != null;
+
+    /// <inheritdoc />
     public override HolonType HolonType => HolonType.Tera;
+
+    /// <inheritdoc />
     public override ITeraAgent TeraParent => this;
+
+    /// <inheritdoc />
     public Guid TeraId { get; protected set; }
+
+    /// <inheritdoc />
     public override INanoTable NanoTable
     {
         get
@@ -45,6 +63,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         }
     }
 
+    /// <inheritdoc />
     public ITeraKnowledgeAgent Knowledge
     {
         get
@@ -58,10 +77,22 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         }
     }
 
+    /// <summary>
+    /// The flag indicating if the TeraAgent instance should be registered in the ITeraAgentContainer instance.
+    /// </summary>
     protected virtual bool RegisterInContainer => true;
+
+    /// <summary>
+    /// The flag indicating if the TeraAgent instance has an ITeraKnowledgeAgent instance.
+    /// </summary>
     protected virtual bool HasKnowledge => true;
+
+    /// <summary>
+    /// The Nano Type ID of the ITeraKnowledgeAgent.
+    /// </summary>
     protected virtual SplinterId TeraKnowledgeNanoTypeId => SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
 
+    /// <inheritdoc />
     public override async Task Initialise(NanoInitialisationParameters parameters)
     {
         var validParameters = await ValidateServiceScope(parameters);
@@ -73,6 +104,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         await InternalInitialiseNanoReferences(validParameters);
     }
 
+    /// <inheritdoc />
     public async Task RegisterSelf(TeraAgentRegistrationParameters parameters)
     {
         var correctParameters = parameters with {NanoInstanceId = InstanceId};
@@ -83,6 +115,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         TeraId = await TeraRegistryAgent.Register(correctParameters);
     }
 
+    /// <inheritdoc />
     public virtual async Task Execute(TeraAgentExecutionParameters parameters)
     {
         if (_knowledgeReference == null || _knowledgeReference.HasNoReference)
@@ -93,6 +126,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         await _knowledgeReference.Typed<ITeraKnowledgeAgent>().Execute(parameters);
     }
 
+    /// <inheritdoc />
     public override async Task<INanoAgent?> Collapse(NanoCollapseParameters parameters)
     {
         var agent = await NanoWaveFunction.Collapse(parameters);
@@ -117,6 +151,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         return null;
     }
 
+    /// <inheritdoc />
     public override async Task Dispose(NanoDisposeParameters parameters)
     {
         await base.Dispose(parameters);
@@ -125,6 +160,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         await DisposeOnRegistry();
     }
 
+    /// <inheritdoc />
     protected override async Task InitialiseNanoReferences()
     {
         await base.InitialiseNanoReferences();
@@ -135,6 +171,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         }
     }
 
+    /// <inheritdoc />
     protected override async Task DisposeNanoReferences()
     {
         await base.DisposeNanoReferences();

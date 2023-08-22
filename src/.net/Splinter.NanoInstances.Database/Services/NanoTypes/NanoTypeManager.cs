@@ -12,17 +12,24 @@ using Tenjin.Data.Extensions;
 
 namespace Splinter.NanoInstances.Database.Services.NanoTypes;
 
+/// <summary>
+/// The default implementation of the INanoTypeManager interface.
+/// </summary>
 public class NanoTypeManager : INanoTypeManager
 {
     private readonly TeraDbContext _dbContext;
     private readonly INanoTypeCache _cache;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public NanoTypeManager(TeraDbContext teraDbContext, INanoTypeCache cache)
     {
         _dbContext = teraDbContext;
         _cache = cache;
     }
 
+    /// <inheritdoc />
     public async Task RegisterNanoType(INanoAgent agent)
     {
         var nanoTypeId = await RegisterNanoTypeId(agent.TypeId);
@@ -30,6 +37,7 @@ public class NanoTypeManager : INanoTypeManager
         await RegisterNanoInstanceId(nanoTypeId, agent.InstanceId);
     }
 
+    /// <inheritdoc />
     public async Task<long?> GetNanoTypeId(SplinterId nanoTypeId)
     {
         if (_cache.TryGetNanoTypeId(nanoTypeId, out var id))
@@ -42,6 +50,7 @@ public class NanoTypeManager : INanoTypeManager
         return model?.Id;
     }
 
+    /// <inheritdoc />
     public async Task<long?> GetNanoInstanceId(SplinterId nanoInstanceId)
     {
         if (_cache.TryGetNanoInstanceId(nanoInstanceId, out var id))
@@ -86,24 +95,14 @@ public class NanoTypeManager : INanoTypeManager
     {
         var result = await GetNullableNanoTypeFromDatabase(nanoTypeId);
 
-        if (result == null)
-        {
-            throw new EntityNotFoundException(EntityNameConstants.NanoTypeId, nanoTypeId);
-        }
-
-        return result;
+        return result ?? throw new SplinterEntityNotFoundException(EntityNameConstants.NanoTypeId, nanoTypeId);
     }
 
     private async Task<NanoInstanceModel> GetNonNullableNanoInstanceFromDatabase(SplinterId nanoInstanceId)
     {
         var result = await GetNullableNanoInstanceFromDatabase(nanoInstanceId);
 
-        if (result == null)
-        {
-            throw new EntityNotFoundException(EntityNameConstants.NanoInstanceId, nanoInstanceId);
-        }
-
-        return result;
+        return result ?? throw new SplinterEntityNotFoundException(EntityNameConstants.NanoInstanceId, nanoInstanceId);
     }
 
     private async Task<NanoTypeModel?> GetNullableNanoTypeFromDatabase(SplinterId nanoTypeId)

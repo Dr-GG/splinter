@@ -8,15 +8,22 @@ using Splinter.NanoTypes.Domain.Parameters.Superposition;
 
 namespace Splinter.NanoInstances.Database.Services.Superposition;
 
+/// <summary>
+/// The default implementation of the INanoTypeRecollapseOperationService interface.
+/// </summary>
 public class NanoTypeRecollapseOperationService : INanoTypeRecollapseOperationService
 {
     private readonly TeraDbContext _dbContext;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public NanoTypeRecollapseOperationService(TeraDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
+    /// <inheritdoc />
     public async Task Sync(NanoRecollapseOperationParameters parameters)
     {
         var operation = await GetOperation(parameters.NanoRecollapseOperationId);

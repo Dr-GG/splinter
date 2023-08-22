@@ -15,12 +15,18 @@ using Tenjin.Interfaces.Mappers;
 
 namespace Splinter.NanoInstances.Database.Services.Messaging;
 
+/// <summary>
+/// The default implementation of the ITeraMessageDequeueService interface.
+/// </summary>
 public class TeraMessageDequeueService : ITeraMessageDequeueService
 {
     private readonly TeraMessagingSettings _settings;
     private readonly TeraDbContext _dbContext;
     private readonly IUnaryMapper<TeraMessageModel, TeraMessage> _messageMapper;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraMessageDequeueService(
         TeraMessagingSettings settings, 
         TeraDbContext teraDbContext, 
@@ -31,6 +37,7 @@ public class TeraMessageDequeueService : ITeraMessageDequeueService
         _messageMapper = messageMapper;
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<TeraMessage>> Dequeue(TeraMessageDequeueParameters parameters)
     {
         if (parameters.MaximumNumberOfTeraMessages <= 0)
@@ -87,7 +94,7 @@ public class TeraMessageDequeueService : ITeraMessageDequeueService
         }
 
         teraMessage.Status = TeraMessageStatus.Cancelled;
-        teraMessage.ErrorCode = TeraMessageErrorCode.MaximumDequeueCountReached;
+        teraMessage.ErrorCode = TeraMessageErrorCode.MaximumDequeueRetryCountReached;
         teraMessage.CompletedTimestamp = DateTime.UtcNow;
 
         _dbContext.PendingTeraMessages.Remove(teraMessage.Pending);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Interfaces.Superposition;
 using Splinter.NanoInstances.Default.Models;
@@ -20,7 +21,7 @@ public class SuperpositionMappingRegistryTests
     [Test]
     public async Task Register_WhenRegisteringTheSameMappingConcurrently_SavesCorrectly()
     {
-        InternalSuperpositionMapping? lastMapping = null;
+        InternalSuperpositionMapping lastMapping = new();
         var randomMappings = GetRandomMappings();
         var registry = GetRegistry();
         var rootLock = new object();
@@ -36,20 +37,21 @@ public class SuperpositionMappingRegistryTests
 
         Task.WaitAll(tasks);
 
-        var mapping = await registry.Fetch(TestNanoTypeId);
+        var mapping = (await registry.Fetch(TestNanoTypeId))!;
 
-        Assert.IsNotNull(lastMapping);
-        Assert.IsNotNull(mapping);
-        Assert.AreEqual(lastMapping!.NanoTypeId, mapping!.NanoTypeId);
-        Assert.AreEqual(lastMapping.NanoInstanceType, mapping.NanoInstanceType);
-        Assert.AreEqual(lastMapping.Description, mapping.Description);
-        Assert.AreEqual(lastMapping.Mode, mapping.Mode);
+        mapping.Should().NotBeNull();
+
+        lastMapping.Should().NotBeNull();
+        lastMapping.NanoTypeId.Should().Be(mapping.NanoTypeId);
+        lastMapping.NanoInstanceType.Should().Be(mapping.NanoInstanceType);
+        lastMapping.Description.Should().Be(mapping.Description);
+        lastMapping.Mode.Should().Be(mapping.Mode);
     }
 
     [Test]
     public async Task Sync_WhenSyncingAnExistingMappingConcurrently_SyncsCorrectly()
     {
-        InternalSuperpositionMapping? lastMapping = null;
+        InternalSuperpositionMapping lastMapping = new();
         var randomMappings = GetRandomMappings().ToList();
         var firstMapping = randomMappings.First();
         var restOfMappings = randomMappings.Skip(1).ToList();
@@ -69,15 +71,16 @@ public class SuperpositionMappingRegistryTests
         }).ToArray();
 
         Task.WaitAll(tasks);
+        
+        var mapping = (await registry.Fetch(TestNanoTypeId))!;
 
-        var mapping = await registry.Fetch(TestNanoTypeId);
+        mapping.Should().NotBeNull();
 
-        Assert.IsNotNull(lastMapping);
-        Assert.IsNotNull(mapping);
-        Assert.AreEqual(lastMapping!.NanoTypeId, mapping!.NanoTypeId);
-        Assert.AreEqual(lastMapping.NanoInstanceType, mapping.NanoInstanceType);
-        Assert.AreEqual(lastMapping.Description, mapping.Description);
-        Assert.AreEqual(lastMapping.Mode, mapping.Mode);
+        lastMapping.Should().NotBeNull();
+        lastMapping.NanoTypeId.Should().Be(mapping.NanoTypeId);
+        lastMapping.NanoInstanceType.Should().Be(mapping.NanoInstanceType);
+        lastMapping.Description.Should().Be(mapping.Description);
+        lastMapping.Mode.Should().Be(mapping.Mode);
     }
 
     private static IEnumerable<InternalSuperpositionMapping> GetRandomMappings()

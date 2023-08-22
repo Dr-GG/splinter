@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Environment;
@@ -48,10 +49,10 @@ public class SingletonTeraAgentTests
 
         Task.WaitAll(tasks);
 
-        Assert.AreEqual(1, testAgent.InitCount);
-        Assert.AreEqual(NumberOfThreads, testAgent.AttemptInitCount);
-        Assert.AreEqual(0, testAgent.AttemptDisposeCount);
-        Assert.AreEqual(0, testAgent.DisposeCount);
+        testAgent.InitCount.Should().Be(1);
+        testAgent.AttemptInitCount.Should().Be(NumberOfThreads);
+        testAgent.AttemptDisposeCount.Should().Be(0);
+        testAgent.DisposeCount.Should().Be(0);
     }
 
     [Test]
@@ -78,10 +79,10 @@ public class SingletonTeraAgentTests
 
         Task.WaitAll(tasks);
 
-        Assert.AreEqual(1, testAgent.DisposeCount);
-        Assert.AreEqual(NumberOfThreads, testAgent.AttemptDisposeCount);
-        Assert.AreEqual(1, testAgent.InitCount);
-        Assert.AreEqual(1, testAgent.AttemptInitCount);
+        testAgent.DisposeCount.Should().Be(1);
+        testAgent.AttemptDisposeCount.Should().Be(NumberOfThreads);
+        testAgent.InitCount.Should().Be(1);
+        testAgent.AttemptInitCount.Should().Be(1);
     }
 
     [TestCase(SplinterEnvironmentStatus.Disposed)]
@@ -115,10 +116,10 @@ public class SingletonTeraAgentTests
 
         Task.WaitAll(tasks);
 
-        Assert.AreEqual(1, testAgent.DisposeCount);
-        Assert.AreEqual(NumberOfThreads, testAgent.AttemptDisposeCount);
-        Assert.AreEqual(1, testAgent.InitCount);
-        Assert.AreEqual(1, testAgent.AttemptInitCount);
+        testAgent.DisposeCount.Should().Be(1);
+        testAgent.AttemptDisposeCount.Should().Be(NumberOfThreads);
+        testAgent.InitCount.Should().Be(1);
+        testAgent.AttemptInitCount.Should().Be(1);
     }
 
     [TestCase(SplinterEnvironmentStatus.Disposed)]
@@ -148,9 +149,9 @@ public class SingletonTeraAgentTests
 
         Task.WaitAll(tasks);
 
-        Assert.AreEqual(0, testAgent.DisposeCount);
-        Assert.AreEqual(NumberOfThreads, testAgent.AttemptDisposeCount);
-        Assert.AreEqual(1, testAgent.InitCount);
-        Assert.AreEqual(1, testAgent.AttemptInitCount);
+        testAgent.DisposeCount.Should().Be(0);
+        testAgent.AttemptDisposeCount.Should().Be(NumberOfThreads);
+        testAgent.InitCount.Should().Be(1);
+        testAgent.AttemptInitCount.Should().Be(1);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Extensions;
 using Splinter.NanoInstances.Interfaces.WaveFunctions;
@@ -42,7 +43,7 @@ public class ActivatorNanoWaveFunctionContainerTests
         };
         var agent = await container.Collapse(parameters);
 
-        Assert.IsInstanceOf(expectedType, agent);
+        agent.Should().BeOfType(expectedType);
     }
 
     [Test]
@@ -55,7 +56,7 @@ public class ActivatorNanoWaveFunctionContainerTests
         };
         var agent = await container.Collapse(parameters);
 
-        Assert.IsNull(agent);
+        agent.Should().BeNull();
     }
 
     [Test]
@@ -68,7 +69,7 @@ public class ActivatorNanoWaveFunctionContainerTests
         };
         var agent = await container.Collapse(parameters);
 
-        Assert.IsInstanceOf(typeof(UnitTestNanoAgent), agent);
+        agent.Should().BeOfType<UnitTestNanoAgent>();
 
         parameters = parameters with {NanoTypeId = new Guid("{81CF32F3-FECF-42DD-B9A5-4765D00D4E20}")};
 
@@ -76,7 +77,7 @@ public class ActivatorNanoWaveFunctionContainerTests
 
         agent = await container.Collapse(parameters);
 
-        Assert.IsInstanceOf(typeof(UnitTestNanoAgentWithSplinterIds), agent);
+        agent.Should().BeOfType<UnitTestNanoAgentWithSplinterIds>();
     }
 
     private static async Task<INanoWaveFunctionContainer> GetDefaultContainer()

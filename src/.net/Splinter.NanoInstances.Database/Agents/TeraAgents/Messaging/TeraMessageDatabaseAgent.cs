@@ -16,11 +16,21 @@ using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Agents.TeraAgents.Messaging;
 
+/// <summary>
+/// The default implementation of the ITeraMessageAgent using database implementations and services.
+/// </summary>
 public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
+    /// <summary>
+    /// The Nano Type ID.
+    /// </summary>
     public static readonly SplinterId NanoTypeId = SplinterIdConstants.TeraMessageAgentNanoTypeId;
+    
+    /// <summary>
+    /// The Nano Instance ID.
+    /// </summary>
     public static readonly SplinterId NanoInstanceId = new()
     {
         Name = "Tera Agent Database Message",
@@ -28,12 +38,19 @@ public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
         Guid = new Guid("{807AA709-9838-4BFA-98AF-9D8E45ACBD4C}")
     };
 
+    /// <inheritdoc />
     public override SplinterId TypeId => NanoTypeId;
+
+    /// <inheritdoc />
     public override SplinterId InstanceId => NanoInstanceId;
 
+    /// <inheritdoc />
     protected override bool RegisterInContainer => false;
+
+    /// <inheritdoc />
     protected override bool HasKnowledge => false;
 
+    /// <inheritdoc />
     public async Task<TeraMessageResponse> Send(TeraMessageRelayParameters parameters)
     {
         await using var scope = await NewScope();
@@ -42,6 +59,7 @@ public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
         return await relayService.Relay(parameters);
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<TeraMessage>> Dequeue(TeraMessageDequeueParameters parameters)
     {
         await using var scope = await NewScope();
@@ -50,6 +68,7 @@ public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
         return await dequeueService.Dequeue(parameters);
     }
 
+    /// <inheritdoc />
     public async Task Sync(TeraMessageSyncParameters parameters)
     {
         await using var scope = await NewScope();
@@ -58,12 +77,14 @@ public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
         await syncService.Sync(parameters);
     }
 
+    /// <inheritdoc />
     protected override async Task SingletonInitialise(NanoInitialisationParameters parameters)
     {
         await base.SingletonInitialise(parameters);
         await RunMessageDisposeTask();
     }
 
+    /// <inheritdoc />
     protected override async Task SingletonDispose(NanoDisposeParameters parameters)
     {
         _cancellationTokenSource.Cancel();
@@ -83,7 +104,7 @@ public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
             {
                 DisposeTeraMessages();
 
-                Thread.Sleep(settings.Disposing.MessageDisposalIntervalTimeSpan);
+                Thread.Sleep(settings.ExpiredDisposing.MessageDisposalIntervalTimeSpan);
             }
 
         }).Start();
@@ -92,8 +113,8 @@ public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
     private void DisposeTeraMessages()
     {
         using var scope = Scope.StartSync();
-        var disposer = scope.ResolveSync<ITeraMessageDisposeService>();
+        var disposer = scope.ResolveSync<IExpiredTeraMessageDisposeService>();
 
-        disposer.DisposeMessages();
+        disposer.DisposeExpiredMessages();
     }
 }

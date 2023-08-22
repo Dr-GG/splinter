@@ -6,8 +6,12 @@ using Splinter.NanoTypes.Domain.Platforms;
 
 namespace Splinter.NanoInstances.Default.Services.OperatingSystems;
 
+/// <summary>
+/// The default implementation of the IOperatingSystemInformationProvider interface.
+/// </summary>
 public class OperatingSystemInformationProvider : IOperatingSystemInformationProvider
 {
+    /// <inheritdoc />
     public Task<OperatingSystemInformation> GetOperatingSystemInformation()
     {
         var osType = GetOperatingSystem();
@@ -22,6 +26,7 @@ public class OperatingSystemInformationProvider : IOperatingSystemInformationPro
         });
     }
 
+    /// <inheritdoc />
     public Task<string> GetFrameworkDescription()
     {
         return Task.FromResult(RuntimeInformation.FrameworkDescription);
@@ -31,11 +36,11 @@ public class OperatingSystemInformationProvider : IOperatingSystemInformationPro
     {
         return RuntimeInformation.ProcessArchitecture switch
         {
-            Architecture.Arm => ProcessorArchitecture.Arm,
+            Architecture.Arm => ProcessorArchitecture.Arm32,
             Architecture.Arm64 => ProcessorArchitecture.Arm64,
             Architecture.Wasm => ProcessorArchitecture.Wasm,
-            Architecture.X64 => ProcessorArchitecture.x64,
-            Architecture.X86 => ProcessorArchitecture.x86,
+            Architecture.X64 => ProcessorArchitecture.x86_64,
+            Architecture.X86 => ProcessorArchitecture.x86_32,
             _ => ProcessorArchitecture.Unknown
         };
     }

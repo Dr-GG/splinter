@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
 using Splinter.NanoInstances.Database.Services.Messaging;
@@ -92,25 +93,17 @@ public class TeraMessageRelayServiceTests
 
         var response = await service.Relay(parameters);
 
-        Assert.AreEqual(
-            TestDisposedTeraAgentIds.Count(),
-            response.TeraIdsDisposed.Count());
+        response.TeraIdsDisposed.Should().HaveCount(TestDisposedTeraAgentIds.Count());
+        response.TeraIdsNotFounds.Should().HaveCount(TestNotFoundTeraAgentIds.Count());
+        response.TeraIdsDisposed.All(id => TestDisposedTeraAgentIds.Contains(id)).Should().BeTrue();
+        response.TeraIdsNotFounds.All(id => TestNotFoundTeraAgentIds.Contains(id)).Should().BeTrue();
 
-        Assert.AreEqual(
-            TestNotFoundTeraAgentIds.Count(),
-            response.TeraIdsNotFounds.Count());
+        var migrationAndRunningCount = TestMigratingTeraAgentIds.Count() + TestRunningTeraAgentIds.Count();
 
-        Assert.IsTrue(response.TeraIdsDisposed
-            .All(id => TestDisposedTeraAgentIds.Contains(id)));
-
-        Assert.IsTrue(response.TeraIdsNotFounds
-            .All(id => TestNotFoundTeraAgentIds.Contains(id)));
+        dbContext.TeraMessages.Should().HaveCount(migrationAndRunningCount);
+        dbContext.PendingTeraMessages.Should().HaveCount(migrationAndRunningCount);
 
         AssertTeraMessages(response.TeraAgentMessageIds, dbContext);
-        Assert.AreEqual(TestMigratingTeraAgentIds.Count()
-                        + TestRunningTeraAgentIds.Count(), dbContext.TeraMessages.Count());
-        Assert.AreEqual(TestMigratingTeraAgentIds.Count()
-                        + TestRunningTeraAgentIds.Count(), dbContext.PendingTeraMessages.Count());
     }
 
     [Test]
@@ -136,6 +129,7 @@ public class TeraMessageRelayServiceTests
         foreach (var message in response.TeraAgentMessageIds)
         {
             AssertTeraMessageAbsoluteExpiry(dbContext, message.MessageId, absoluteTimespan);
+            AssertTeraMessages(response.TeraAgentMessageIds, dbContext);
         }
     }
 
@@ -160,6 +154,7 @@ public class TeraMessageRelayServiceTests
         foreach (var message in response.TeraAgentMessageIds)
         {
             AssertTeraMessageAbsoluteExpiry(dbContext, message.MessageId, DefaultAbsoluteExpiryTimeSpan);
+            AssertTeraMessages(response.TeraAgentMessageIds, dbContext);
         }
     }
 
@@ -179,7 +174,7 @@ public class TeraMessageRelayServiceTests
         var from = now.AddMinutes(-1);
         var to = now.Add(expiryTimeSpan).AddMinutes(1);
 
-        Assert.IsTrue(expiryTimestamp >= from && expiryTimestamp <= to);
+        (expiryTimestamp >= from && expiryTimestamp <= to).Should().BeTrue();
     }
 
     private static void AssertTeraMessages(
@@ -203,18 +198,16 @@ public class TeraMessageRelayServiceTests
             .Single(p => p.TeraMessageId == response.MessageId
                          && p.TeraAgent.TeraId == response.TeraId);
 
-        Assert.AreEqual(TestMessage, teraMessage.Message);
-        Assert.AreEqual(TestPriority, teraMessage.Priority);
-        Assert.AreEqual(SenderTeraAgentId, teraMessage.SourceTeraAgent.TeraId);
-        Assert.AreEqual(TeraMessageStatus.Pending, teraMessage.Status);
-
-        Assert.IsNull(teraMessage.CompletedTimestamp);
-        Assert.IsNull(teraMessage.DequeuedTimestamp);
-        Assert.IsNull(teraMessage.ErrorCode);
-        Assert.IsNull(teraMessage.ErrorMessage);
-        Assert.IsNull(teraMessage.ErrorStackTrace);
-
-        Assert.AreEqual(teraMessage.RecipientTeraAgentId, pendingMessage.TeraAgentId);
+        teraMessage.Message.Should().Be(TestMessage);
+        teraMessage.Priority.Should().Be(TestPriority);
+        teraMessage.SourceTeraAgent.TeraId.Should().Be(SenderTeraAgentId);
+        teraMessage.Status.Should().Be(TeraMessageStatus.Pending);
+        teraMessage.CompletedTimestamp.Should().BeNull();
+        teraMessage.DequeuedTimestamp.Should().BeNull();
+        teraMessage.ErrorCode.Should().BeNull();
+        teraMessage.ErrorMessage.Should().BeNull();
+        teraMessage.ErrorStackTrace.Should().BeNull();
+        teraMessage.RecipientTeraAgentId.Should().Be(pendingMessage.TeraAgentId);
     }
 
     private static void AddDefaultData(TeraDbContext teraDbContext)
@@ -260,7 +253,7 @@ public class TeraMessageRelayServiceTests
         return new TeraMessageRelayService(
             new TeraMessagingSettings
             {
-                Disposing = new TeraMessageDisposeSettings
+                ExpiredDisposing = new ExpiredTeraMessageDisposeSettings
                 {
                     DefaultExpiryTimeSpan = DefaultAbsoluteExpiryTimeSpan
                 }

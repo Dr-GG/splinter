@@ -12,6 +12,9 @@ using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Services.Messaging;
 
+/// <summary>
+/// The default implementation of the ITeraMessageSyncService interface.
+/// </summary>
 public class TeraMessageSyncService : ITeraMessageSyncService
 {
     private readonly TeraMessagingSettings _settings;
@@ -25,6 +28,7 @@ public class TeraMessageSyncService : ITeraMessageSyncService
         _dbContext = dbContext;
     }
 
+    /// <inheritdoc />
     public async Task Sync(TeraMessageSyncParameters parameters)
     {
         var messages = await GetMessages(parameters);

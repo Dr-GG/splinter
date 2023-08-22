@@ -6,11 +6,15 @@ using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition;
 
+/// <summary>
+/// The default implementation of the INanoTable interface.
+/// </summary>
 public class NanoTable : INanoTable
 {
     private readonly object _lock = new();
     private readonly IDictionary<Guid, IList<INanoReference>> _references = new Dictionary<Guid, IList<INanoReference>>();
 
+    /// <inheritdoc />
     public Task Register(INanoReference reference)
     {
         if (reference.HasNoReference)
@@ -26,6 +30,7 @@ public class NanoTable : INanoTable
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<INanoReference>> Fetch(Guid nanoTypeId)
     {
         var collection = GetCollection(nanoTypeId);
@@ -33,6 +38,7 @@ public class NanoTable : INanoTable
         return Task.FromResult(GetNanoReferences(collection, nanoTypeId));
     }
 
+    /// <inheritdoc />
     public Task Dispose(INanoReference reference)
     {
         if (reference.HasNoReference)

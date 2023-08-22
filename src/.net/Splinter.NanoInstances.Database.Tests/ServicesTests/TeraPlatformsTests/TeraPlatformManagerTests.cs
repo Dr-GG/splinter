@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
@@ -103,11 +104,11 @@ public class TeraPlatformManagerTests
     {
         var platform = teraDbContext.TeraPlatforms.Single();
 
-        Assert.AreEqual(platformId, platform.Id);
-        Assert.AreEqual(TestPlatformTeraId, platform.TeraId);
-        Assert.AreEqual(TestOperatingSystemId, platform.OperatingSystemId);
-        Assert.AreEqual(TestFrameworkDescription, platform.FrameworkDescription);
-        Assert.AreEqual(expectedStatus, platform.Status);
+        platform.Id.Should().Be(platformId);
+        platform.TeraId.Should().Be(TestPlatformTeraId);
+        platform.OperatingSystemId.Should().Be(TestOperatingSystemId);
+        platform.FrameworkDescription.Should().Be(TestFrameworkDescription);
+        platform.Status.Should().Be(expectedStatus);
     }
 
     private static IOperatingSystemInformationProvider GetDefaultOsProvider()

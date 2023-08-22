@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoInstances.Utilities;
@@ -18,7 +19,7 @@ public class NanoTypeUtilitiesTests
     [TestCase(typeof(NanoTypeUtilitiesTests))]
     public void IsNanoType_WhenProvidedWithANonNanoType_ReturnsFalse(Type type)
     {
-        Assert.IsFalse(NanoTypeUtilities.IsNanoType(type));
+        NanoTypeUtilities.IsNanoType(type).Should().BeFalse();
     }
 
     [TestCase(typeof(INanoAgent))]
@@ -28,7 +29,7 @@ public class NanoTypeUtilitiesTests
     [TestCase(typeof(UnitTestNanoAgent))]
     public void IsNanoType_WhenProvidedWithNanoTypes_ReturnsTrue(Type type)
     {
-        Assert.IsTrue(NanoTypeUtilities.IsNanoType(type));
+        NanoTypeUtilities.IsNanoType(type).Should().BeTrue();
     }
 
     [TestCase(typeof(object))]
@@ -38,7 +39,7 @@ public class NanoTypeUtilitiesTests
     [TestCase(typeof(NanoTypeUtilitiesTests))]
     public void IsNanoInstance_WhenProvidedWithANonNanoType_ReturnsFalse(Type type)
     {
-        Assert.IsFalse(NanoTypeUtilities.IsNanoInstance(type));
+        NanoTypeUtilities.IsNanoInstance(type).Should().BeFalse();
     }
 
     [TestCase(typeof(INanoAgent))]
@@ -47,13 +48,13 @@ public class NanoTypeUtilitiesTests
     [TestCase(typeof(UnitTestAbstractNanoAgent))]
     public void IsNanoInstance_WhenProvidedWithNanoTypes_ReturnsFalse(Type type)
     {
-        Assert.IsFalse(NanoTypeUtilities.IsNanoInstance(type));
+        NanoTypeUtilities.IsNanoInstance(type).Should().BeFalse();
     }
 
     [TestCase(typeof(UnitTestNanoAgent))]
     public void IsNanoInstance_WhenProvidedWithNanoInstances_ReturnsTrue(Type type)
     {
-        Assert.IsTrue(NanoTypeUtilities.IsNanoInstance(type));
+        NanoTypeUtilities.IsNanoInstance(type).Should().BeTrue();
     }
 
     [TestCase(typeof(object))]
@@ -65,8 +66,8 @@ public class NanoTypeUtilitiesTests
     {
         NanoTypeUtilities.GetSplinterIds(type, out var nanoTypeId, out var nanoInstanceId);
 
-        Assert.IsNull(nanoTypeId);
-        Assert.IsNull(nanoInstanceId);
+        nanoTypeId.Should().BeNull();
+        nanoInstanceId.Should().BeNull();
     }
 
     [TestCase(typeof(INanoAgent))]
@@ -77,8 +78,8 @@ public class NanoTypeUtilitiesTests
     {
         NanoTypeUtilities.GetSplinterIds(type, out var nanoTypeId, out var nanoInstanceId);
 
-        Assert.IsNull(nanoTypeId);
-        Assert.IsNull(nanoInstanceId);
+        nanoTypeId.Should().BeNull();
+        nanoInstanceId.Should().BeNull();
     }
 
     [TestCase(typeof(UnitTestNanoAgent))]
@@ -86,8 +87,8 @@ public class NanoTypeUtilitiesTests
     {
         NanoTypeUtilities.GetSplinterIds(type, out var nanoTypeId, out var nanoInstanceId);
 
-        Assert.IsNull(nanoTypeId);
-        Assert.IsNull(nanoInstanceId);
+        nanoTypeId.Should().BeNull();
+        nanoInstanceId.Should().BeNull();
     }
         
     [Test]
@@ -97,11 +98,11 @@ public class NanoTypeUtilitiesTests
             out var nanoTypeId, 
             out var nanoInstanceId);
 
-        Assert.IsNotNull(nanoTypeId);
-        Assert.IsNotNull(nanoInstanceId);
+        nanoTypeId.Should().NotBeNull();
+        nanoInstanceId.Should().NotBeNull();
 
-        Assert.IsTrue(nanoTypeId!.Equals(UnitTestNanoAgentWithSplinterIds.NanoTypeId));
-        Assert.IsTrue(nanoInstanceId!.Equals(UnitTestNanoAgentWithSplinterIds.NanoInstanceId));
+        nanoTypeId!.Should().Be(UnitTestNanoAgentWithSplinterIds.NanoTypeId);
+        nanoInstanceId!.Should().Be(UnitTestNanoAgentWithSplinterIds.NanoInstanceId);
     }
 
     [Test]
@@ -111,10 +112,10 @@ public class NanoTypeUtilitiesTests
             out var nanoTypeId,
             out var nanoInstanceId);
 
-        Assert.IsNotNull(nanoTypeId);
-        Assert.IsNull(nanoInstanceId);
+        nanoTypeId.Should().NotBeNull();
+        nanoInstanceId.Should().BeNull();
 
-        Assert.IsTrue(nanoTypeId!.Equals(UnitTestNanoAgentWithOneSplinterId.NanoTypeId));
+        nanoTypeId!.Should().Be(UnitTestNanoAgentWithOneSplinterId.NanoTypeId);
     }
 
     [Test]
@@ -124,11 +125,11 @@ public class NanoTypeUtilitiesTests
             out var nanoTypeId,
             out var nanoInstanceId);
 
-        Assert.IsNotNull(nanoTypeId);
-        Assert.IsNotNull(nanoInstanceId);
+        nanoTypeId.Should().NotBeNull();
+        nanoInstanceId.Should().NotBeNull();
 
-        Assert.IsTrue(nanoTypeId!.Equals(UnitTestNanoAgentWithOneSplinterId.NanoTypeId));
-        Assert.IsTrue(nanoInstanceId!.Equals(UnitTestNanoAgentWithInheritedSplinterIds.NanoInstanceId));
+        nanoTypeId!.Should().Be(UnitTestNanoAgentWithOneSplinterId.NanoTypeId);
+        nanoInstanceId!.Should().Be(UnitTestNanoAgentWithInheritedSplinterIds.NanoInstanceId);
     }
 
     [Test]
@@ -138,11 +139,11 @@ public class NanoTypeUtilitiesTests
             out var nanoTypeId,
             out var nanoInstanceId);
 
-        Assert.IsNotNull(nanoTypeId);
-        Assert.IsNotNull(nanoInstanceId);
+        nanoTypeId.Should().NotBeNull();
+        nanoInstanceId.Should().NotBeNull();
 
-        Assert.IsTrue(nanoTypeId!.Equals(UnitTestNanoAgentWithNewSplinterIds.NanoTypeId));
-        Assert.IsTrue(nanoInstanceId!.Equals(UnitTestNanoAgentWithNewSplinterIds.NanoInstanceId));
+        nanoTypeId!.Should().Be(UnitTestNanoAgentWithNewSplinterIds.NanoTypeId);
+        nanoInstanceId!.Should().Be(UnitTestNanoAgentWithNewSplinterIds.NanoInstanceId);
     }
 
     [Test]
@@ -152,11 +153,11 @@ public class NanoTypeUtilitiesTests
             out var nanoTypeId,
             out var nanoInstanceId);
 
-        Assert.IsNotNull(nanoTypeId);
-        Assert.IsNotNull(nanoInstanceId);
+        nanoTypeId.Should().NotBeNull();
+        nanoInstanceId.Should().NotBeNull();
 
-        Assert.IsTrue(nanoTypeId!.Equals(UnitTestNanoAgentWithNewButNotOverridingSplinterIds.NanoTypeId));
-        Assert.IsTrue(nanoInstanceId!.Equals(UnitTestNanoAgentWithNewButNotOverridingSplinterIds.NanoInstanceId));
+        nanoTypeId!.Should().Be(UnitTestNanoAgentWithNewButNotOverridingSplinterIds.NanoTypeId);
+        nanoInstanceId!.Should().Be(UnitTestNanoAgentWithNewButNotOverridingSplinterIds.NanoInstanceId);
     }
 
     [Test]
@@ -166,10 +167,10 @@ public class NanoTypeUtilitiesTests
             out var nanoTypeId,
             out var nanoInstanceId);
 
-        Assert.IsNotNull(nanoTypeId);
-        Assert.IsNotNull(nanoInstanceId);
+        nanoTypeId.Should().NotBeNull();
+        nanoInstanceId.Should().NotBeNull();
 
-        Assert.IsTrue(nanoTypeId!.Equals(UnitTestNanoAgentWithNewNewSplinterIds.NanoTypeId));
-        Assert.IsTrue(nanoInstanceId!.Equals(UnitTestNanoAgentWithNewNewSplinterIds.NanoInstanceId));
+        nanoTypeId!.Should().Be(UnitTestNanoAgentWithNewNewSplinterIds.NanoTypeId);
+        nanoInstanceId!.Should().Be(UnitTestNanoAgentWithNewNewSplinterIds.NanoInstanceId);
     }
 }

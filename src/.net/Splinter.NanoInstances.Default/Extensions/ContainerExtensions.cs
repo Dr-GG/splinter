@@ -16,8 +16,14 @@ using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
 namespace Splinter.NanoInstances.Default.Extensions;
 
+/// <summary>
+/// The collection of Autofac container extensions.
+/// </summary>
 public static class ContainerExtensions
 {
+    /// <summary>
+    /// Registers all default Splinter services.
+    /// </summary>
     public static void RegisterDefaultServices(this ContainerBuilder container)
     {
         container

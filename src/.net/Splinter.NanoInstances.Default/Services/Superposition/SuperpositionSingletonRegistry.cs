@@ -9,17 +9,24 @@ using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition;
 
+/// <summary>
+/// The default implementation of the ISuperpositionSingletonRegistry interface.
+/// </summary>
 public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
 {
     private readonly ReaderWriterLock _rwLock = new();
     private readonly IDictionary<Guid, INanoAgent> _singletonMap = new Dictionary<Guid, INanoAgent>();
     private readonly SuperpositionSettings _settings;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public SuperpositionSingletonRegistry(SuperpositionSettings settings)
     {
         _settings = settings;
     }
 
+    /// <inheritdoc />
     public async Task<INanoAgent> Register(Guid nanoTypeId, INanoAgent singleton)
     {
         try
@@ -46,6 +53,7 @@ public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
         }
     }
 
+    /// <inheritdoc />
     public Task<INanoAgent?> Fetch(Guid nanoTypeId)
     {
         try

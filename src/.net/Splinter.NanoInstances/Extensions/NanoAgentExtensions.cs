@@ -7,8 +7,14 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 
 namespace Splinter.NanoInstances.Extensions;
 
+/// <summary>
+/// A collection of extension methods for the INanoAgent interface.
+/// </summary>
 public static class NanoAgentExtensions
 {
+    /// <summary>
+    /// Disposes an INanoAgent instance.
+    /// </summary>
     public static async Task Dispose(this INanoAgent nanoAgent)
     {
         var disposeParameters = new NanoDisposeParameters();
@@ -16,6 +22,9 @@ public static class NanoAgentExtensions
         await nanoAgent.Dispose(disposeParameters);
     }
 
+    /// <summary>
+    /// Executes an ITeraAgent using default execution parameters.
+    /// </summary>
     public static async Task Execute(this ITeraAgent teraAgent)
     {
         var now = DateTime.UtcNow;

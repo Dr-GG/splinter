@@ -8,11 +8,17 @@ using Splinter.NanoTypes.Domain.Platforms;
 
 namespace Splinter.NanoInstances.Database.Services.OperatingSystems;
 
+/// <summary>
+/// Gets the default implementation of the IOperatingSystemManager interface.
+/// </summary>
 public class OperatingSystemManager : IOperatingSystemManager
 {
     private readonly TeraDbContext _dbContext;
     private readonly IOperatingSystemInformationProvider _osProvider;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public OperatingSystemManager(
         TeraDbContext teraDbContext, 
         IOperatingSystemInformationProvider osProvider)
@@ -21,6 +27,7 @@ public class OperatingSystemManager : IOperatingSystemManager
         _osProvider = osProvider;
     }
 
+    /// <inheritdoc />
     public async Task<long> RegisterOperatingSystemInformation()
     {
         var osInformation = await _osProvider.GetOperatingSystemInformation();

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Services.Messaging;
@@ -23,8 +24,10 @@ public class TeraMessageQueueTests
     public void HasNext_WhenNotInitialised_ThrowsException()
     {
         var queue = GetDefaultQueue();
+        var errorMessage = Assert.ThrowsAsync<NanoServiceNotInitialisedException>(() => queue.HasNext())!;
 
-        Assert.ThrowsAsync<NanoServiceNotInitialisedException>(() => queue.HasNext());
+        errorMessage.Should().NotBeNull();
+        errorMessage.Message.Should().Be($"The nano service '{typeof(TeraMessageQueue).FullName}' has not yet been initialised.");
     }
 
     [Test]
@@ -34,7 +37,10 @@ public class TeraMessageQueueTests
 
         DefaultInitialise(queue);
 
-        Assert.ThrowsAsync<InvalidNanoServiceOperationException>(() => queue.Next());
+        var errorMessage = Assert.ThrowsAsync<InvalidNanoServiceOperationException>(() => queue.Next())!;
+
+        errorMessage.Should().NotBeNull();
+        errorMessage.Message.Should().Be("No new tera message could be dequeued.");
     }
 
     [Test]
@@ -58,8 +64,7 @@ public class TeraMessageQueueTests
             AssertTeraMessage(message, ++index);
         }
 
-        Assert.AreEqual(TestMaximumNumberOfMessages, dequeuedMessages);
-
+        dequeuedMessages.Should().Be(TestMaximumNumberOfMessages);
         mockMessageAgent.Verify(
             m => m.Dequeue(It.IsAny<TeraMessageDequeueParameters>()),
             Times.Exactly(TestMaximumNumberOfMessages / 2 + 1));
@@ -76,8 +81,8 @@ public class TeraMessageQueueTests
 
     private static void AssertTeraMessage(TeraMessage message, int index)
     {
-        Assert.AreEqual(index, message.Id);
-        Assert.AreEqual($"Message {index}", message.Message);
+        message.Id.Should().Be(index);
+        message.Message.Should().Be($"Message {index}");
     }
 
     private static Mock<ITeraMessageAgent> GetDefaultTeraMessageAgent()

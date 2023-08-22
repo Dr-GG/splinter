@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Database.DbContext;
@@ -87,8 +88,8 @@ public class TeraAgentNanoTypeDependencyServiceTests
         var service = GetService(dbContext, teraManager, nanoManager);
 
         await service.IncrementTeraAgentNanoTypeDependencies(TestTeraId, TestNanoType);
-
-        Assert.IsEmpty(dbContext.TeraAgentNanoTypeDependencies);
+        
+        dbContext.TeraAgentNanoTypeDependencies.Should().BeEmpty();
     }
 
     [TestCase(0, 0)]
@@ -127,7 +128,7 @@ public class TeraAgentNanoTypeDependencyServiceTests
 
         await service.DecrementTeraAgentNanoTypeDependencies(TestTeraId, TestNanoType);
 
-        Assert.IsEmpty(dbContext.TeraAgentNanoTypeDependencies);
+        dbContext.TeraAgentNanoTypeDependencies.Should().BeEmpty();
     }
 
     [Test]
@@ -143,8 +144,8 @@ public class TeraAgentNanoTypeDependencyServiceTests
         AddDefaultData(dbContext);
 
         await service.DecrementTeraAgentNanoTypeDependencies(TestTeraId, TestNanoType);
-
-        Assert.IsEmpty(dbContext.TeraAgentNanoTypeDependencies);
+        
+        dbContext.TeraAgentNanoTypeDependencies.Should().BeEmpty();
     }
 
     [TestCase(0, 0, 0)]
@@ -181,8 +182,8 @@ public class TeraAgentNanoTypeDependencyServiceTests
         var service = GetService(dbContext, teraManager, nanoManager);
 
         await service.DisposeTeraAgentNanoTypeDependencies(TestTeraId);
-
-        Assert.IsEmpty(dbContext.TeraAgentNanoTypeDependencies);
+        
+        dbContext.TeraAgentNanoTypeDependencies.Should().BeEmpty();
     }
 
     [Test]
@@ -197,8 +198,8 @@ public class TeraAgentNanoTypeDependencyServiceTests
         AddDefaultData(dbContext);
 
         await service.DisposeTeraAgentNanoTypeDependencies(TestTeraId);
-
-        Assert.IsEmpty(dbContext.TeraAgentNanoTypeDependencies);
+        
+        dbContext.TeraAgentNanoTypeDependencies.Should().BeEmpty();
     }
 
     [Test]
@@ -213,8 +214,8 @@ public class TeraAgentNanoTypeDependencyServiceTests
         AddDefaultData(dbContext, 100);
 
         await service.DisposeTeraAgentNanoTypeDependencies(TestTeraId);
-
-        Assert.IsEmpty(dbContext.TeraAgentNanoTypeDependencies);
+        
+        dbContext.TeraAgentNanoTypeDependencies.Should().BeEmpty();
     }
 
     [Test]
@@ -230,9 +231,9 @@ public class TeraAgentNanoTypeDependencyServiceTests
 
         var operation = await service.SignalNanoTypeRecollapses(
             TestSourceTeraId, TestRecollapseNanoType.Guid, null);
-
-        Assert.IsNull(operation);
-        Assert.IsEmpty(dbContext.NanoTypeRecollapseOperations);
+        
+        operation.Should().BeNull();
+        dbContext.NanoTypeRecollapseOperations.Should().BeEmpty();
     }
 
     [Test]
@@ -248,9 +249,9 @@ public class TeraAgentNanoTypeDependencyServiceTests
 
         var operation = await service.SignalNanoTypeRecollapses(
             TestSourceTeraId, TestRecollapseNanoType.Guid, null);
-
-        Assert.IsNull(operation);
-        Assert.IsEmpty(dbContext.NanoTypeRecollapseOperations);
+        
+        operation.Should().BeNull();
+        dbContext.NanoTypeRecollapseOperations.Should().BeEmpty();
     }
 
     [Test]
@@ -267,15 +268,15 @@ public class TeraAgentNanoTypeDependencyServiceTests
         var operationId = await service.SignalNanoTypeRecollapses(
             TestSourceTeraId, TestRecollapseNanoType.Guid, null);
         var operation = dbContext.NanoTypeRecollapseOperations.Single();
+        
+        operationId.Should().NotBeNull();
+        operation.Guid.Should().Be(operationId!.Value);
 
-        Assert.IsNotNull(operationId);
-        Assert.AreEqual(operation.Guid, operationId);
+        var numberOfDependencies = AssertRecollapseSignals(dbContext, operationId.Value, TestRecollapseTestTeraAgentIds);
 
-        var numberOfDependencies = AssertRecollapseSignals(dbContext, operationId!.Value, TestRecollapseTestTeraAgentIds);
-
-        Assert.AreEqual(numberOfDependencies, operation.NumberOfExpectedRecollapses);
-        Assert.AreEqual(0, operation.NumberOfFailedRecollapses);
-        Assert.AreEqual(0, operation.NumberOfSuccessfulRecollapses);
+        operation.NumberOfExpectedRecollapses.Should().Be(numberOfDependencies);
+        operation.NumberOfFailedRecollapses.Should().Be(0);
+        operation.NumberOfSuccessfulRecollapses.Should().Be(0);
     }
 
     [Test]
@@ -295,14 +296,14 @@ public class TeraAgentNanoTypeDependencyServiceTests
             TestSourceTeraId, TestRecollapseNanoType.Guid, teraIds);
         var operation = dbContext.NanoTypeRecollapseOperations.Single();
 
-        Assert.IsNotNull(operationId);
-        Assert.AreEqual(operation.Guid, operationId);
+        operationId.Should().NotBeNull();
+        operation.Guid.Should().Be(operationId!.Value);
 
-        var numberOfDependencies = AssertRecollapseSignals(dbContext, operationId!.Value, teraAgentIds);
+        var numberOfDependencies = AssertRecollapseSignals(dbContext, operationId.Value, teraAgentIds);
 
-        Assert.AreEqual(numberOfDependencies, operation.NumberOfExpectedRecollapses);
-        Assert.AreEqual(0, operation.NumberOfFailedRecollapses);
-        Assert.AreEqual(0, operation.NumberOfSuccessfulRecollapses);
+        operation.NumberOfExpectedRecollapses.Should().Be(numberOfDependencies);
+        operation.NumberOfFailedRecollapses.Should().Be(0);
+        operation.NumberOfSuccessfulRecollapses.Should().Be(0);
     }
 
     private static void AddDefaultData(
@@ -354,9 +355,9 @@ public class TeraAgentNanoTypeDependencyServiceTests
     {
         var dependency = dbContext.TeraAgentNanoTypeDependencies.First();
 
-        Assert.AreEqual(TestTeraAgentId, dependency.TeraAgentId);
-        Assert.AreEqual(TestNanoTypeId, dependency.NanoTypeId);
-        Assert.AreEqual(numberOfDependencies, dependency.NumberOfDependencies);
+        dependency.TeraAgentId.Should().Be(TestTeraAgentId);
+        dependency.NanoTypeId.Should().Be(TestNanoTypeId);
+        dependency.NumberOfDependencies.Should().Be(numberOfDependencies);
     }
 
     private static long AssertRecollapseSignals(TeraDbContext dbContext, Guid operationId, IEnumerable<long> teraIds)
@@ -370,11 +371,11 @@ public class TeraAgentNanoTypeDependencyServiceTests
         var dependency = dbContext.TeraAgentNanoTypeDependencies.SingleOrDefault(d => d.TeraAgentId == teraId);
         var data = JsonSerializer.Deserialize<RecollapseTeraMessageData>(message.Message!, JsonConstants.DefaultOptions)!;
 
-        Assert.IsNotNull(dependency);
-        Assert.AreEqual(TeraMessageCodeConstants.Recollapse, message.Code);
-        Assert.AreEqual(int.MaxValue, message.Priority);
-        Assert.AreEqual(operationId, data.NanoTypeRecollapseOperationId);
-        Assert.AreEqual(TestRecollapseNanoType.Guid, data.NanoTypeId);
+        dependency.Should().NotBeNull();
+        message.Code.Should().Be(TeraMessageCodeConstants.Recollapse);
+        message.Priority.Should().Be(int.MaxValue);
+        data.NanoTypeRecollapseOperationId.Should().Be(operationId);
+        data.NanoTypeId.Should().Be(TestRecollapseNanoType.Guid);
 
         return 1;
     }

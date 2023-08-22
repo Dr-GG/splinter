@@ -9,12 +9,18 @@ using Splinter.NanoTypes.Domain.Enums;
 
 namespace Splinter.NanoInstances.Database.Services.TeraPlatforms;
 
+/// <summary>
+/// The default implementation of the ITeraPlatformManager interface.
+/// </summary>
 public class TeraPlatformManager : ITeraPlatformManager
 {
     private readonly TeraPlatformSettings _settings;
     private readonly TeraDbContext _dbContext;
     private readonly IOperatingSystemInformationProvider _osProvider;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraPlatformManager(
         TeraPlatformSettings settings,
         TeraDbContext teraDbContext, 
@@ -25,6 +31,7 @@ public class TeraPlatformManager : ITeraPlatformManager
         _osProvider = osProvider;
     }
 
+    /// <inheritdoc />
     public async Task<long> RegisterTeraPlatform(long operatingSystemId)
     {
         var platform = await GetTeraPlatform();
@@ -41,6 +48,7 @@ public class TeraPlatformManager : ITeraPlatformManager
         return platform.Id;
     }
 
+    /// <inheritdoc />
     public async Task DisableTeraPlatform()
     {
         var platform = await GetTeraPlatform();

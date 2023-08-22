@@ -14,6 +14,9 @@ using Splinter.NanoTypes.Domain.Parameters.Registration;
 
 namespace Splinter.NanoInstances.Database.Services.Registration;
 
+/// <summary>
+/// The default implementation of the ITeraAgentRegistrationService interface.
+/// </summary>
 public class TeraAgentRegistrationService : ITeraAgentRegistrationService
 {
     private readonly TeraDbContext _dbContext;
@@ -21,6 +24,9 @@ public class TeraAgentRegistrationService : ITeraAgentRegistrationService
     private readonly ITeraAgentManager _teraAgentManager;
     private readonly ITeraAgentNanoTypeDependencyService _teraAgentNanoTypeDependencyService;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraAgentRegistrationService(
         TeraDbContext teraDbContext,
         INanoTypeManager nanoTypeManager, 
@@ -33,6 +39,7 @@ public class TeraAgentRegistrationService : ITeraAgentRegistrationService
         _teraAgentNanoTypeDependencyService = teraAgentNanoTypeDependencyService;
     }
 
+    /// <inheritdoc />
     public async Task<Guid> Register(long teraPlatformId, TeraAgentRegistrationParameters parameters)
     {
         if (parameters.TeraId == null)
@@ -45,6 +52,7 @@ public class TeraAgentRegistrationService : ITeraAgentRegistrationService
         return parameters.TeraId.Value;
     }
 
+    /// <inheritdoc />
     public async Task Dispose(TeraAgentDisposeParameters parameters)
     {
         var agent = await GetTeraAgent(parameters.TeraId);
@@ -108,14 +116,10 @@ public class TeraAgentRegistrationService : ITeraAgentRegistrationService
         TeraAgentModel model, 
         TeraAgentRegistrationParameters parameters)
     {
-        var nanoInstanceId = await _nanoTypeManager.GetNanoInstanceId(parameters.NanoInstanceId);
+        var nanoInstanceId = await _nanoTypeManager.GetNanoInstanceId(parameters.NanoInstanceId) 
+                             ?? throw new SplinterEntityNotFoundException(EntityNameConstants.NanoInstanceId, parameters.NanoInstanceId);
 
-        if (nanoInstanceId == null)
-        {
-            throw new EntityNotFoundException(EntityNameConstants.NanoInstanceId, parameters.NanoInstanceId);
-        }
-
-        model.NanoInstanceId = nanoInstanceId.Value;
+        model.NanoInstanceId = nanoInstanceId;
         model.Status = parameters.TeraAgentStatus;
     }
 

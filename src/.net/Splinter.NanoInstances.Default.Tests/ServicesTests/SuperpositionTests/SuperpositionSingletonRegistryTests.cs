@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Interfaces.Superposition;
 using Splinter.NanoInstances.Default.Services.Superposition;
+using Splinter.NanoInstances.Default.Tests.Agents.NanoAgents;
 using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
@@ -23,7 +25,7 @@ public class SuperpositionSingletonRegistryTests
     [Test]
     public async Task Register_WhenRegisteringDifferentNanoInstances_RegistersTheLatestInstance()
     {
-        INanoAgent? lastNanoAgent = null;
+        INanoAgent lastNanoAgent = new UnitTestNanoAgent();
         var registry = GetRegistry();
         var singletons = GetRandomSingleton();
         var rootLock = new object();
@@ -41,11 +43,12 @@ public class SuperpositionSingletonRegistryTests
 
         Task.WaitAll(tasks);
 
-        var nanoAgent = await registry.Fetch(TestNanoTypeId);
+        var nanoAgent = (await registry.Fetch(TestNanoTypeId))!;
 
-        Assert.IsNotNull(nanoAgent);
-        Assert.IsNotNull(lastNanoAgent);
-        Assert.AreEqual(lastNanoAgent!.InstanceId, nanoAgent!.InstanceId);
+        nanoAgent.Should().NotBeNull();
+
+        lastNanoAgent.Should().NotBeNull();
+        lastNanoAgent.InstanceId.Should().Be(nanoAgent.InstanceId);
     }
 
     [Test]
@@ -60,11 +63,11 @@ public class SuperpositionSingletonRegistryTests
 
         Task.WaitAll(tasks);
 
-        var nanoAgent = await registry.Fetch(TestNanoTypeId);
+        var nanoAgent = (await registry.Fetch(TestNanoTypeId))!;
 
-        Assert.IsNotNull(nanoAgent);
-        Assert.IsNotNull(originalSingleton);
-        Assert.AreEqual(originalSingleton.InstanceId.Guid, nanoAgent!.InstanceId.Guid);
+        nanoAgent.Should().NotBeNull();
+        originalSingleton.Should().NotBeNull();
+        originalSingleton.InstanceId.Guid.Should().Be(nanoAgent.InstanceId.Guid);
     }
 
     private static IEnumerable<INanoAgent> GetRandomSingleton(Guid? nanoInstanceId = null)

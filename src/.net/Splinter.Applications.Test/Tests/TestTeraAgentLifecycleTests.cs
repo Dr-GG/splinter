@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Splinter.Applications.Test.Domain.Constants;
 using Splinter.Applications.Test.Utilities;
 using Splinter.NanoInstances.Database.DbContext;
@@ -43,7 +43,7 @@ public static class TestTeraAgentLifecycleTests
             await AssertAsDisposed(agent.TeraId);
         }
 
-        Assert.AreEqual(NumberOfTeraAgents, teraIds.Distinct().Count());
+        teraIds.Distinct().Should().HaveCount(NumberOfTeraAgents);
     }
 
     private static async Task TestFixedGuidTeraAgentLifecycle()
@@ -64,20 +64,20 @@ public static class TestTeraAgentLifecycleTests
     {
         await using var scope = await SplinterEnvironment.SuperpositionAgent.Scope.Start();
         await using var dbContext = await scope.Resolve<TeraDbContext>();
-        var teraAgent = await dbContext.TeraAgents.SingleOrDefaultAsync(a => a.TeraId == teraId);
+        var teraAgent = (await dbContext.TeraAgents.SingleOrDefaultAsync(a => a.TeraId == teraId))!;
 
-        Assert.IsNotNull(teraAgent);
-        Assert.AreEqual(TeraAgentStatus.Running, teraAgent!.Status);
+        teraAgent.Should().NotBeNull();
+        teraAgent.Status.Should().Be(TeraAgentStatus.Running);
     }
 
     private static async Task AssertAsDisposed(Guid teraId)
     {
         await using var scope = await SplinterEnvironment.SuperpositionAgent.Scope.Start();
         await using var dbContext = await scope.Resolve<TeraDbContext>();
-        var teraAgent = await dbContext.TeraAgents.SingleOrDefaultAsync(a => a.TeraId == teraId);
+        var teraAgent = (await dbContext.TeraAgents.SingleOrDefaultAsync(a => a.TeraId == teraId))!;
 
-        Assert.IsNotNull(teraAgent);
-        Assert.AreEqual(TeraAgentStatus.Disposed, teraAgent!.Status);
+        teraAgent.Should().NotBeNull();
+        teraAgent.Status.Should().Be(TeraAgentStatus.Disposed);
     }
 
     private static async Task<ITeraAgent> InitialiseTeraAgent(Guid? teraId = null)
@@ -87,14 +87,13 @@ public static class TestTeraAgentLifecycleTests
             NanoTypeId = TeraMessageSplinterIds.TeraTypeId.Guid,
             TeraAgentId = teraId
         };
+        var result = (await SplinterEnvironment.SuperpositionAgent.Collapse(collapse) as ITeraAgent)!;
 
-        var result = await SplinterEnvironment.SuperpositionAgent.Collapse(collapse) as ITeraAgent;
-
-        Assert.IsNotNull(result!);
+        result.Should().NotBeNull();
 
         var init = new NanoInitialisationParameters();
 
-        await result!.Initialise(init);
+        await result.Initialise(init);
 
         return result;
     }

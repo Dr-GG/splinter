@@ -21,6 +21,9 @@ using Tenjin.Extensions;
 
 namespace Splinter.NanoInstances.Database.Services.Superposition;
 
+/// <summary>
+/// The default implementation of the ITeraAgentNanoTypeDependencyService interface.
+/// </summary>
 public class TeraAgentNanoTypeDependencyService : ITeraAgentNanoTypeDependencyService
 {
     private readonly TeraDbContext _dbContext;
@@ -28,6 +31,9 @@ public class TeraAgentNanoTypeDependencyService : ITeraAgentNanoTypeDependencySe
     private readonly ITeraAgentManager _teraAgentManager;
     private readonly ITeraMessageRelayService _teraMessageRelayService;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraAgentNanoTypeDependencyService(
         TeraDbContext dbContext, 
         INanoTypeManager nanoTypeManager, 
@@ -40,6 +46,7 @@ public class TeraAgentNanoTypeDependencyService : ITeraAgentNanoTypeDependencySe
         _teraMessageRelayService = teraMessageRelayService;
     }
 
+    /// <inheritdoc />
     public async Task IncrementTeraAgentNanoTypeDependencies(
         Guid teraId, 
         SplinterId nanoType, 
@@ -61,6 +68,7 @@ public class TeraAgentNanoTypeDependencyService : ITeraAgentNanoTypeDependencySe
         await _dbContext.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task DecrementTeraAgentNanoTypeDependencies(
         Guid teraId, 
         SplinterId nanoType, 
@@ -93,6 +101,7 @@ public class TeraAgentNanoTypeDependencyService : ITeraAgentNanoTypeDependencySe
         await _dbContext.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task DisposeTeraAgentNanoTypeDependencies(Guid teraId)
     {
         var teraAgentId = await _teraAgentManager.GetTeraId(teraId);
@@ -113,6 +122,7 @@ public class TeraAgentNanoTypeDependencyService : ITeraAgentNanoTypeDependencySe
         await _dbContext.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task<Guid?> SignalNanoTypeRecollapses(Guid sourceTeraId, Guid nanoTypeId, IEnumerable<Guid>? teraIds)
     {
         var operation = await GetInitialiseRecollapseOperation(nanoTypeId);

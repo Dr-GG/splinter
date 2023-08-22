@@ -7,11 +7,17 @@ using Splinter.NanoTypes.Default.Interfaces.Services.TeraAgents;
 
 namespace Splinter.NanoInstances.Database.Services.TeraAgents;
 
+/// <summary>
+/// The default implementation of the ITeraAgentManager interface.
+/// </summary>
 public class TeraAgentManager : ITeraAgentManager
 {
     private readonly TeraDbContext _dbContext;
     private readonly ITeraAgentCache _cache;
 
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public TeraAgentManager(
         TeraDbContext dbContext, 
         ITeraAgentCache cache)
@@ -20,6 +26,7 @@ public class TeraAgentManager : ITeraAgentManager
         _cache = cache;
     }
 
+    /// <inheritdoc />
     public async Task<long?> GetTeraId(Guid teraId)
     {
         if (_cache.TryGetTeraId(teraId, out var result))
@@ -37,6 +44,7 @@ public class TeraAgentManager : ITeraAgentManager
         return id;
     }
 
+    /// <inheritdoc />
     public Task RegisterTeraId(Guid teraId, long id)
     {
         _cache.RegisterTeraId(teraId, id);

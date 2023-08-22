@@ -4,8 +4,12 @@ using Tenjin.Interfaces.Mappers;
 
 namespace Splinter.NanoInstances.Database.Mappers;
 
+/// <summary>
+/// Mapper between TeraMessage and TeraMessageModel.
+/// </summary>
 public class TeraMessageMapper : IUnaryMapper<TeraMessageModel, TeraMessage>
 {
+    /// <inheritdoc />
     public TeraMessage Map(TeraMessageModel source)
     {
         return new TeraMessage

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Default.Interfaces.NanoWaveFunctions;
@@ -61,7 +62,7 @@ public class SuperpositionNanoWaveFunctionTests
         var parameters = GetCollapseParameters(UnitTestNanoAgentAlternative1.NanoTypeId.Guid);
         var result = await waveFunction.Collapse(parameters);
 
-        Assert.IsNull(result);
+        result.Should().BeNull();
     }
 
     [Test]
@@ -71,7 +72,7 @@ public class SuperpositionNanoWaveFunctionTests
         var parameters = GetCollapseParameters(NonExistentNanoTypeId);
         var result = await waveFunction.Collapse(parameters);
 
-        Assert.IsNull(result);
+        result.Should().BeNull();
     }
 
     [Test]
@@ -81,7 +82,7 @@ public class SuperpositionNanoWaveFunctionTests
         var parameters = GetRecollapseParameters(UnitTestNanoAgentAlternative1.NanoTypeId.Guid);
         var result = await waveFunction.Recollapse(parameters);
 
-        Assert.IsNull(result);
+        result.Should().BeNull();
     }
 
     [Test]
@@ -91,7 +92,7 @@ public class SuperpositionNanoWaveFunctionTests
         var parameters = GetRecollapseParameters(NonExistentNanoTypeId);
         var result = await waveFunction.Recollapse(parameters);
 
-        Assert.IsNull(result);
+        result.Should().BeNull();
     }
 
     [TestCase(UnitTestNanoAgentAlternativeNanoTypeIds.NanoTypeId1)]
@@ -101,8 +102,9 @@ public class SuperpositionNanoWaveFunctionTests
     {
         var waveFunction = await GetWaveFunction(true);
         var parameters = GetRecollapseParameters(new Guid(nanoTypeId));
-            
-        Assert.ThrowsAsync<InvalidNanoTypeRecollapseOperationException>(() => waveFunction.Recollapse(parameters));
+        var errorMessage = Assert.ThrowsAsync<InvalidNanoTypeRecollapseOperationException>(() => waveFunction.Recollapse(parameters))!;
+
+        errorMessage.Should().NotBeNull();
     }
 
     private static NanoCollapseParameters GetCollapseParameters(Guid nanoTypeId)

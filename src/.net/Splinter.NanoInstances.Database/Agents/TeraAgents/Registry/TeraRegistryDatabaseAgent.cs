@@ -9,9 +9,19 @@ using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Registry;
 
 namespace Splinter.NanoInstances.Database.Agents.TeraAgents.Registry;
 
+/// <summary>
+/// The default implementation of the ITeraRegistryAgent using database implementations and services.
+/// </summary>
 public class TeraRegistryDatabaseAgent : SingletonTeraAgent, ITeraRegistryAgent
 {
+    /// <summary>
+    /// The Nano Type ID.
+    /// </summary>
     public static readonly SplinterId NanoTypeId = SplinterIdConstants.TeraRegistryAgentNanoTypeId;
+
+    /// <summary>
+    /// The Nano Instance ID.
+    /// </summary>
     public static readonly SplinterId NanoInstanceId = new()
     {
         Name = "Tera Registry Database Tera Instance",
@@ -19,12 +29,19 @@ public class TeraRegistryDatabaseAgent : SingletonTeraAgent, ITeraRegistryAgent
         Guid = new Guid("{4DE29985-1A6B-4C86-A32E-AE769A6BEC0D}")
     };
 
+    /// <inheritdoc />
     public override SplinterId TypeId => NanoTypeId;
+
+    /// <inheritdoc />
     public override SplinterId InstanceId => NanoInstanceId;
 
+    /// <inheritdoc />
     protected override bool RegisterInContainer => false;
+
+    /// <inheritdoc />
     protected override bool HasKnowledge => false;
 
+    /// <inheritdoc />
     public async Task<Guid> Register(TeraAgentRegistrationParameters parameters)
     {
         await using var scope = await NewScope();
@@ -34,6 +51,7 @@ public class TeraRegistryDatabaseAgent : SingletonTeraAgent, ITeraRegistryAgent
         return await service.Register(teraPlatformId, parameters);
     }
 
+    /// <inheritdoc />
     public async Task Dispose(TeraAgentDisposeParameters parameters)
     {
         await using var scope = await NewScope();

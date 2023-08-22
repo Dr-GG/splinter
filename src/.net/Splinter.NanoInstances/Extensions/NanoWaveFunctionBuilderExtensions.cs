@@ -9,26 +9,35 @@ using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Extensions;
 
+/// <summary>
+/// A collection of extension methods for the INanoWaveFunctionBuilder interface.
+/// </summary>
 public static class NanoWaveFunctionBuilderExtensions
 {
+    /// <summary>
+    /// Registers a Type as a Nano Type based on the fully qualified path name of a Type.
+    /// </summary>
     public static Task Register(this INanoWaveFunctionBuilder builder, string typeUrl)
     {
         var type = Type.GetType(typeUrl);
 
-        if (type == null)
-        {
-            throw new InvalidNanoTypeException($"Could not find nano type {typeUrl}");
-        }
-
-        return builder.Register(type);
+        return type == null 
+            ? throw new InvalidNanoTypeException($"Could not find nano type {typeUrl}.") 
+            : builder.Register(type);
     }
 
+    /// <summary>
+    /// Registers an INanoAgent type as a Nano Type.
+    /// </summary>
     public static Task Register<TNanoType>(this INanoWaveFunctionBuilder builder)
         where TNanoType : INanoAgent
     {
         return builder.Register(typeof(TNanoType));
     }
 
+    /// <summary>
+    /// Registers a Type that represents an INanoAgent as a Nano Type.
+    /// </summary>
     public static async Task Register(
         this INanoWaveFunctionBuilder builder,
         Type nanoType)
@@ -45,7 +54,7 @@ public static class NanoWaveFunctionBuilderExtensions
         if (nanoTypeId == null)
         {
             throw new InvalidNanoTypeException(
-                $"Could not find the static '{typeof(SplinterId).FullName}' with the name '{SplinterIdConstants.NanoTypeId}'");
+                $"Could not find the static '{typeof(SplinterId).FullName}' with the name '{SplinterIdConstants.NanoTypeIdPropertyName}'.");
         }
 
         await builder.Register(nanoTypeId, nanoType);

@@ -24,21 +24,40 @@ using Splinter.NanoTypes.Interfaces.WaveFunctions;
 
 namespace Splinter.NanoInstances.Agents.NanoAgents;
 
+/// <summary>
+/// The default implementation of the INanoAgent interface.
+/// </summary>
 public abstract class NanoAgent : INanoAgent
 {
     private ITeraAgent? _parent;
 
     private readonly SemaphoreSlim _lock = new(1, 1);
 
+    /// <inheritdoc />
     public abstract SplinterId TypeId { get; }
+
+    /// <inheritdoc />
     public abstract SplinterId InstanceId { get; }
 
+    /// <inheritdoc />
     public virtual bool HasNoTeraParent => _parent == null;
+
+    /// <inheritdoc />
     public virtual bool HasTeraParent => _parent != null;
+
+    /// <inheritdoc />
     public virtual bool HasNoNanoTable => HasNoTeraParent || TeraParent.HasNoNanoTable;
+
+    /// <inheritdoc />
     public virtual bool HasNanoTable => HasTeraParent && TeraParent.HasNanoTable;
+
+    /// <inheritdoc />
     public virtual HolonType HolonType => HolonType.Nano;
+
+    /// <inheritdoc />
     public IServiceScope Scope { get; protected set; } = null!;
+
+    /// <inheritdoc />
     public virtual ITeraAgent TeraParent
     {
         get
@@ -52,6 +71,8 @@ public abstract class NanoAgent : INanoAgent
         }
         set => _parent = value;
     }
+
+    /// <inheritdoc />
     public virtual INanoTable NanoTable
     {
         get
@@ -64,11 +85,22 @@ public abstract class NanoAgent : INanoAgent
             throw new NanoTableNotInitialisedException();
         }
     }
-    public ISuperpositionAgent SuperpositionAgent => SplinterEnvironment.SuperpositionAgent;
-    public ITeraPlatformAgent TeraPlatformAgent => SplinterEnvironment.TeraPlatformAgent;
-    public ITeraRegistryAgent TeraRegistryAgent => SplinterEnvironment.TeraRegistryAgent;
-    public ITeraMessageAgent TeraMessageAgent => SplinterEnvironment.TeraMessageAgent;
 
+    /// <inheritdoc />
+    public ISuperpositionAgent SuperpositionAgent => SplinterEnvironment.SuperpositionAgent;
+
+    /// <inheritdoc />
+    public ITeraPlatformAgent TeraPlatformAgent => SplinterEnvironment.TeraPlatformAgent;
+
+    /// <inheritdoc />
+    public ITeraRegistryAgent TeraRegistryAgent => SplinterEnvironment.TeraRegistryAgent;
+
+    /// <inheritdoc />
+    public ITeraMessageAgent TeraMessageAgent => SplinterEnvironment.TeraMessageAgent;
+    
+    /// <summary>
+    /// The possible ID of the Tera Parent associated with this agent.
+    /// </summary>
     protected Guid? TeraParentTeraId
     {
         get
@@ -86,8 +118,13 @@ public abstract class NanoAgent : INanoAgent
             return null;
         }
     }
+
+    /// <summary>
+    /// The INanoWaveFunction to be used for collapsing purposes of a Nano Type.
+    /// </summary>
     protected INanoWaveFunction NanoWaveFunction { get; set; } = new EmptyNanoWaveFunction();
 
+    /// <inheritdoc />
     public virtual async Task Initialise(NanoInitialisationParameters parameters)
     {
         Scope = parameters.ServiceScope;
@@ -95,6 +132,7 @@ public abstract class NanoAgent : INanoAgent
         await InternalInitialiseNanoReferences(parameters);
     }
 
+    /// <inheritdoc />
     public virtual async Task<INanoAgent?> Collapse(NanoCollapseParameters parameters)
     {
         var collapseParameters = ConfigureCollapseParameters(parameters);
@@ -130,11 +168,13 @@ public abstract class NanoAgent : INanoAgent
         return null;
     }
 
+    /// <inheritdoc />
     public async Task Lock()
     {
         await _lock.WaitAsync();
     }
 
+    /// <inheritdoc />
     public Task Unlock()
     {
         _lock.Release();
@@ -142,11 +182,13 @@ public abstract class NanoAgent : INanoAgent
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task Synch(INanoAgent nanoAgent)
     {
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public virtual async Task Dispose(NanoDisposeParameters parameters)
     {
         await DisposeNanoTypeDependency();
@@ -154,16 +196,25 @@ public abstract class NanoAgent : INanoAgent
         await InternalDisposeNanoReferences();
     }
 
+    /// <summary>
+    /// Gets a new IServiceScope instance.
+    /// </summary>
     protected async Task<IServiceScope> NewScope()
     {
         return await Scope.Start();
     }
 
+    /// <summary>
+    /// Collapses a Nano Type ID.
+    /// </summary>
     protected async Task<INanoReference> CollapseNanoReference(SplinterId nanoTypeId)
     {
         return await CollapseNanoReference(nanoTypeId.Guid);
     }
 
+    /// <summary>
+    /// Collapses a Nano Type ID.
+    /// </summary>
     protected async Task<INanoReference> CollapseNanoReference(Guid nanoTypeId)
     {
         var parameters = new NanoCollapseParameters
@@ -174,6 +225,9 @@ public abstract class NanoAgent : INanoAgent
         return await CollapseNanoReference(parameters);
     }
 
+    /// <summary>
+    /// Collapses a Nano Type ID based on specified collapse parameters.
+    /// </summary>
     protected async Task<INanoReference> CollapseNanoReference(NanoCollapseParameters parameters)
     {
         var collapseParameters = parameters with
@@ -194,6 +248,9 @@ public abstract class NanoAgent : INanoAgent
         return nanoReference;
     }
 
+    /// <summary>
+    /// Initialises an INanoAgent instance that was collapsed.
+    /// </summary>
     protected virtual async Task<bool> InitialiseNanoAgent(
         NanoCollapseParameters parameters,
         INanoAgent? nanoAgent)
@@ -221,11 +278,17 @@ public abstract class NanoAgent : INanoAgent
         return true;
     }
 
+    /// <summary>
+    /// Initialises all Nano Type references of the agent.
+    /// </summary>
     protected virtual Task InitialiseNanoReferences()
     {
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Initialises the Nano Agent contained within an INanoReference instance.
+    /// </summary>
     protected virtual async Task InitialiseNanoReference(
         NanoCollapseParameters parameters,
         INanoReference reference)
@@ -243,11 +306,18 @@ public abstract class NanoAgent : INanoAgent
         await InitialiseNanoAgent(parameters, reference.Reference);
     }
 
+    /// <summary>
+    /// Disposes of all INanoReferences of the agent.
+    /// </summary>
+    /// <returns></returns>
     protected virtual Task DisposeNanoReferences()
     {
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Disposes of an INanoReference instance.
+    /// </summary>
     protected virtual async Task DisposeNanoReference(INanoReference? reference)
     {
         if (reference == null)
