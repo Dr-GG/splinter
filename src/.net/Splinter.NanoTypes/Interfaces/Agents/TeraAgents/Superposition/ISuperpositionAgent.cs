@@ -15,9 +15,9 @@ public interface ISuperpositionAgent : ITeraAgent
     Task<Guid?> Recollapse(NanoRecollapseParameters parameters);
 
     /// <summary>
-    /// Synchronises the disposal of Nano Type references with regards to a Tera Type.
+    /// Synchronises the termination of Nano Type references with regards to a Tera Type.
     /// </summary>
-    Task Sync(NanoTypeDependencyDisposeParameters parameters);
+    Task Sync(NanoTypeDependencyTerminationParameters parameters);
 
     /// <summary>
     /// Synchronises the operational status and progress of recollapsing Nano Types to Nano Instances.

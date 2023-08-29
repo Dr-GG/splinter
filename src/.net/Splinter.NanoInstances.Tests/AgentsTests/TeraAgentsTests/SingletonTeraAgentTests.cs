@@ -6,8 +6,8 @@ using NUnit.Framework;
 using Splinter.NanoInstances.Environment;
 using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoTypes.Domain.Enums;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Registry;
 using Splinter.NanoTypes.Interfaces.Services.Containers;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
@@ -74,7 +74,7 @@ public class SingletonTeraAgentTests
         await testAgent.Initialise(nanoInitParameters);
 
         var tasks = range
-            .Select(_ => testAgent.Dispose(new NanoDisposeParameters()))
+            .Select(_ => testAgent.Terminate(new NanoTerminationParameters()))
             .ToArray();
 
         Task.WaitAll(tasks);
@@ -90,7 +90,7 @@ public class SingletonTeraAgentTests
     [TestCase(SplinterEnvironmentStatus.Initialised)]
     [TestCase(SplinterEnvironmentStatus.Initialising)]
     [TestCase(SplinterEnvironmentStatus.Uninitialised)]
-    public async Task Initialise_WhenSetToForceDispose_AlwaysDisposes(SplinterEnvironmentStatus status)
+    public async Task Initialise_WhenSetToForceTerminate_AlwaysTerminates(SplinterEnvironmentStatus status)
     {
         SplinterEnvironment.Status = status;
 
@@ -108,7 +108,7 @@ public class SingletonTeraAgentTests
         await testAgent.Initialise(nanoInitParameters);
 
         var tasks = range
-            .Select(_ => testAgent.Dispose(new NanoDisposeParameters
+            .Select(_ => testAgent.Terminate(new NanoTerminationParameters
             {
                 Force = true
             }))
@@ -126,7 +126,7 @@ public class SingletonTeraAgentTests
     [TestCase(SplinterEnvironmentStatus.Initialised)]
     [TestCase(SplinterEnvironmentStatus.Initialising)]
     [TestCase(SplinterEnvironmentStatus.Uninitialised)]
-    public async Task Initialise_WhenConcurrentThreadsDisposeAndEnvironmentIsNotDisposing_NeverDisposes(SplinterEnvironmentStatus status)
+    public async Task Initialise_WhenConcurrentThreadsDisposeAndEnvironmentIsNotTerminating_NeverDisposes(SplinterEnvironmentStatus status)
     {
         SplinterEnvironment.Status = status;
 
@@ -144,7 +144,7 @@ public class SingletonTeraAgentTests
         await testAgent.Initialise(nanoInitParameters);
 
         var tasks = range
-            .Select(_ => testAgent.Dispose(new NanoDisposeParameters()))
+            .Select(_ => testAgent.Terminate(new NanoTerminationParameters()))
             .ToArray();
 
         Task.WaitAll(tasks);

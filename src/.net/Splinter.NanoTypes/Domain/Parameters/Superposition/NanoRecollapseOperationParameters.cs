@@ -5,7 +5,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Superposition;
 /// <summary>
 /// The nano parameters used to sync the state of a recollapse operation.
 /// </summary>
-public record NanoRecollapseOperationParameters : NanoParameters
+public record NanoRecollapseOperationParameters : INanoParameters
 {
     /// <summary>
     /// The flag indicating if the recollapse was successful or not.

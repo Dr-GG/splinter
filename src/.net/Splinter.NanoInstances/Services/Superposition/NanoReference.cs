@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
@@ -19,18 +20,8 @@ public class NanoReference : INanoReference
     public bool HasReference => _reference != null;
 
     /// <inheritdoc />
-    public INanoAgent Reference
-    {
-        get
-        {
-            if (_reference == null)
-            {
-                throw new InvalidNanoInstanceException("No nano instance reference initialised.");
-            }
-
-            return _reference;
-        }
-    }
+    public INanoAgent Reference => _reference.AssertReturnGetterValue(
+        () => new InvalidNanoInstanceException("No nano instance reference initialised."));
 
     /// <inheritdoc />
     public Task Initialise(INanoAgent? reference)

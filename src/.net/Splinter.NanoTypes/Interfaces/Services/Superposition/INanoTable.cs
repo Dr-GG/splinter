@@ -22,5 +22,5 @@ public interface INanoTable
     /// <summary>
     /// Removes a single INanoReference instance.
     /// </summary>
-    Task Dispose(INanoReference reference);
+    Task Deregister(INanoReference reference);
 }

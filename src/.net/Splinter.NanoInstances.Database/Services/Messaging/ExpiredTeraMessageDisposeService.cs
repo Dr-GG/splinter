@@ -37,11 +37,11 @@ public class ExpiredTeraMessageDisposeService : IExpiredTeraMessageDisposeServic
 
         foreach (var message in messages)
         {
-            Dispose(message);
+            DisposeExpiredMessage(message);
         }
     }
 
-    private void Dispose(TeraMessageModel teraMessage)
+    private void DisposeExpiredMessage(TeraMessageModel teraMessage)
     {
         try
         {

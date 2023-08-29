@@ -38,18 +38,17 @@ namespace Splinter.Bootstrap;
 /// </summary>
 public class SplinterDefaultBootstrapper : ISplinterBootstrapper
 {
-    private IContainer _container = null!;
     private IServiceScope _serviceScope = null!;
 
     /// <inheritdoc />
-    public async Task Initialise(NanoBootstrapParameters parameters)
+    public async Task Initialise(INanoBootstrapParameters parameters)
     {
         var containerBuilder = new ContainerBuilder();
         var defaultParams = parameters.Cast<NanoDefaultBootstrapParameters>();
         var configuration = GetConfiguration(defaultParams.JsonSettingFileNames);
+        var container = AddDefaultModules(configuration, containerBuilder);
 
-        _container = AddDefaultModules(configuration, containerBuilder);
-        _serviceScope = new AutofacServiceScope(_container);
+        _serviceScope = new AutofacServiceScope(container);
 
         await InitialiseSplinterEnvironment();
     }

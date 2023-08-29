@@ -52,11 +52,11 @@ public class TeraRegistryDatabaseAgent : SingletonTeraAgent, ITeraRegistryAgent
     }
 
     /// <inheritdoc />
-    public async Task Dispose(TeraAgentDisposeParameters parameters)
+    public async Task Deregister(TeraAgentDeregistrationParameters parameters)
     {
         await using var scope = await NewScope();
         var service = await scope.Resolve<ITeraAgentRegistrationService>();
 
-        await service.Dispose(parameters);
+        await service.Deregister(parameters);
     }
 }

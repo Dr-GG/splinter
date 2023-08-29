@@ -9,10 +9,10 @@ using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents;
 using Splinter.NanoTypes.Domain.Exceptions.Superposition;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
 using Splinter.NanoTypes.Domain.Parameters.Registration;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents.Knowledge;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
@@ -50,32 +50,11 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
     public Guid TeraId { get; protected set; }
 
     /// <inheritdoc />
-    public override INanoTable NanoTable
-    {
-        get
-        {
-            if (_nanoTable == null)
-            {
-                throw new NanoTableNotInitialisedException();
-            }
-
-            return _nanoTable;
-        }
-    }
+    public override INanoTable NanoTable => _nanoTable.AssertReturnGetterValue<INanoTable, NanoTableNotInitialisedException>();
 
     /// <inheritdoc />
-    public ITeraKnowledgeAgent Knowledge
-    {
-        get
-        {
-            if (_knowledgeReference.IsNullOrEmpty())
-            {
-                throw new TeraKnowledgeNotInitialisedException();
-            }
-
-            return _knowledgeReference.Typed<ITeraKnowledgeAgent>();
-        }
-    }
+    public ITeraKnowledgeAgent Knowledge => _knowledgeReference.AssertReturnGetterValue
+        <INanoReference, TeraKnowledgeNotInitialisedException>().Typed<ITeraKnowledgeAgent>();
 
     /// <summary>
     /// The flag indicating if the TeraAgent instance should be registered in the ITeraAgentContainer instance.
@@ -152,12 +131,12 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
     }
 
     /// <inheritdoc />
-    public override async Task Dispose(NanoDisposeParameters parameters)
+    public override async Task Terminate(NanoTerminationParameters parameters)
     {
-        await base.Dispose(parameters);
-        await DisposeNanoReferences();
-        await SplinterEnvironment.TeraAgentContainer.Dispose(this);
-        await DisposeOnRegistry();
+        await base.Terminate(parameters);
+        await TerminateNanoReferences();
+        await SplinterEnvironment.TeraAgentContainer.Deregister(this);
+        await DeregisterOnTermination();
     }
 
     /// <inheritdoc />
@@ -172,10 +151,10 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
     }
 
     /// <inheritdoc />
-    protected override async Task DisposeNanoReferences()
+    protected override async Task TerminateNanoReferences()
     {
-        await base.DisposeNanoReferences();
-        await DisposeNanoReference(_knowledgeReference);
+        await base.TerminateNanoReferences();
+        await TerminateNanoReference(_knowledgeReference);
     }
 
     private async Task<NanoInitialisationParameters> ValidateServiceScope(
@@ -234,13 +213,13 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
         }
     }
 
-    private async Task DisposeOnRegistry()
+    private async Task DeregisterOnTermination()
     {
-        var disposeParameters = new TeraAgentDisposeParameters
+        var deregisterParameters = new TeraAgentDeregistrationParameters
         {
             TeraId = TeraId
         };
 
-        await TeraRegistryAgent.Dispose(disposeParameters);
+        await TeraRegistryAgent.Deregister(deregisterParameters);
     }
 }

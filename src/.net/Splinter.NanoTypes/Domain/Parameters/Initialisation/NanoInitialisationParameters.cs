@@ -6,7 +6,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Initialisation;
 /// <summary>
 /// The nano parameters used to initialise a Nano Type.
 /// </summary>
-public record NanoInitialisationParameters : NanoParameters
+public record NanoInitialisationParameters : INanoParameters
 {
     /// <summary>
     /// The flag indicating if the Nano Type should be registered.

@@ -54,7 +54,7 @@ public class SuperpositionTests
 
         AssertSaidPhrases(afrikaansAgent, LanguageConstants.Afrikaans);
 
-        await afrikaansAgent.Dispose();
+        await afrikaansAgent.Terminate();
     }
 
     public static async Task TestRecollapseToFrenchHelloAgent()
@@ -80,7 +80,7 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent, SayTestPhraseAgent.NanoTypeId, 1);
         await AssertNanoTypeDependency(agent, SayGoodbyePhraseAgent.NanoTypeId, 1);
 
-        await agent.Dispose();
+        await agent.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent);
     }
@@ -111,7 +111,7 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent, SayTestPhraseAgent.NanoTypeId, 1);
         await AssertNanoTypeDependency(agent, SayGoodbyePhraseAgent.NanoTypeId, 1);
 
-        await agent.Dispose();
+        await agent.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent);
     }
@@ -139,7 +139,7 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent, SayTestPhraseAgent.NanoTypeId, 1);
         await AssertNanoTypeDependency(agent, SayGoodbyePhraseAgent.NanoTypeId, 1);
 
-        await agent.Dispose();
+        await agent.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent);
     }
@@ -170,7 +170,7 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent, SayTestPhraseAgent.NanoTypeId, 1);
         await AssertNanoTypeDependency(agent, SayGoodbyePhraseAgent.NanoTypeId, 1);
 
-        await agent.Dispose();
+        await agent.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent);
     }
@@ -195,7 +195,7 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent, SayTestPhraseAgent.NanoTypeId, 0);
         await AssertNanoTypeDependency(agent, SayGoodbyePhraseAgent.NanoTypeId, 0);
 
-        await agent.Dispose();
+        await agent.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent);
     }
@@ -221,7 +221,7 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent, SayTestPhraseAgent.NanoTypeId, 0);
         await AssertNanoTypeDependency(agent, SayGoodbyePhraseAgent.NanoTypeId, 0);
 
-        await agent.Dispose();
+        await agent.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent);
     }
@@ -253,7 +253,7 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent, SayTestPhraseAgent.NanoTypeId, 1);
         await AssertNanoTypeDependency(agent, SayGoodbyePhraseAgent.NanoTypeId, 1);
 
-        await agent.Dispose();
+        await agent.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent);
     }
@@ -345,11 +345,11 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agentToBeJapaneseKnowledge, SayTestPhraseAgent.NanoTypeId, 0);
         await AssertNanoTypeDependency(agentToBeJapaneseKnowledge, SayGoodbyePhraseAgent.NanoTypeId, 0);
 
-        await agentToBeFrenchHelloPhrased.Dispose();
-        await agentToBeEnglishTestPhrased.Dispose();
-        await agentToBeGermanGoodbyePhrased.Dispose();
-        await agentToBeGibberishLanguage.Dispose();
-        await agentToBeJapaneseKnowledge.Dispose();
+        await agentToBeFrenchHelloPhrased.Terminate();
+        await agentToBeEnglishTestPhrased.Terminate();
+        await agentToBeGermanGoodbyePhrased.Terminate();
+        await agentToBeGibberishLanguage.Terminate();
+        await agentToBeJapaneseKnowledge.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agentToBeFrenchHelloPhrased);
         await AssertNanoTypeDependenciesAreEmpty(agentToBeEnglishTestPhrased);
@@ -443,11 +443,11 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent5, SayTestPhraseAgent.NanoTypeId, 1);
         await AssertNanoTypeDependency(agent5, SayGoodbyePhraseAgent.NanoTypeId, 1);
 
-        await agent1.Dispose();
-        await agent2.Dispose();
-        await agent3.Dispose();
-        await agent4.Dispose();
-        await agent5.Dispose();
+        await agent1.Terminate();
+        await agent2.Terminate();
+        await agent3.Terminate();
+        await agent4.Terminate();
+        await agent5.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent1);
         await AssertNanoTypeDependenciesAreEmpty(agent2);
@@ -565,11 +565,11 @@ public class SuperpositionTests
         await AssertNanoTypeDependency(agent5, SayTestPhraseAgent.NanoTypeId, 1);
         await AssertNanoTypeDependency(agent5, SayGoodbyePhraseAgent.NanoTypeId, 1);
 
-        await agent1.Dispose();
-        await agent2.Dispose();
-        await agent3.Dispose();
-        await agent4.Dispose();
-        await agent5.Dispose();
+        await agent1.Terminate();
+        await agent2.Terminate();
+        await agent3.Terminate();
+        await agent4.Terminate();
+        await agent5.Terminate();
 
         await AssertNanoTypeDependenciesAreEmpty(agent1);
         await AssertNanoTypeDependenciesAreEmpty(agent2);

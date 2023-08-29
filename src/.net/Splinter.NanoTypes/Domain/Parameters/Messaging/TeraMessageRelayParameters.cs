@@ -7,7 +7,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Messaging;
 /// <summary>
 /// The nano parameters used to relay a TeraMessage.
 /// </summary>
-public record TeraMessageRelayParameters : NanoParameters
+public record TeraMessageRelayParameters : INanoParameters
 {
     /// <summary>
     /// The code of the TeraMessage.

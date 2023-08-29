@@ -4,18 +4,18 @@ using Splinter.NanoTypes.Domain.Parameters;
 namespace Splinter.NanoInstances.Extensions;
 
 /// <summary>
-/// A collection of extension methods for a NanoParameters instances.
+/// A collection of extension methods for a INanoParameters instances.
 /// </summary>
 public static class NanoParameterExtensions
 {
     /// <summary>
-    /// Casts a NanoParameters instance to another NanoParameters type.
+    /// Casts a INanoParameters instance to another INanoParameters type.
     /// </summary>
     /// <exception cref="InvalidNanoParametersException">
-    /// Thrown when the NanoParameters instance could not be successfully cast.
+    /// Thrown when the INanoParameters instance could not be successfully cast.
     /// </exception>
-    public static TNanoParameters Cast<TNanoParameters>(this NanoParameters parameters)
-        where TNanoParameters : NanoParameters
+    public static TNanoParameters Cast<TNanoParameters>(this INanoParameters parameters)
+        where TNanoParameters : INanoParameters
     {
         if (parameters is not TNanoParameters result)
         {

@@ -46,13 +46,13 @@ public abstract class LanguageAgent : NanoAgent, ILanguageAgent
         _goodbyePhraseAgent = await CollapseNanoReference(LanguageSplinterIds.SayGoodbyeNanoTypeId);
     }
 
-    protected override async Task DisposeNanoReferences()
+    protected override async Task TerminateNanoReferences()
     {
-        await base.DisposeNanoReferences();
+        await base.TerminateNanoReferences();
 
-        await DisposeNanoReference(_helloPhraseAgent);
-        await DisposeNanoReference(_testPhraseAgent);
-        await DisposeNanoReference(_goodbyePhraseAgent);
+        await TerminateNanoReference(_helloPhraseAgent);
+        await TerminateNanoReference(_testPhraseAgent);
+        await TerminateNanoReference(_goodbyePhraseAgent);
     }
 
     private static async Task<string> SayPhrase(INanoReference? reference)

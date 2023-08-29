@@ -3,4 +3,5 @@
 /// <summary>
 /// Nano parameters for bootstrapping a Splinter environment.
 /// </summary>
-public record NanoBootstrapParameters : NanoParameters;
+public interface INanoBootstrapParameters : INanoParameters
+{ }

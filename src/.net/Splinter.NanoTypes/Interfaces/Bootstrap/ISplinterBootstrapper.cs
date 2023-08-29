@@ -11,5 +11,5 @@ public interface ISplinterBootstrapper
     /// <summary>
     /// Initialises the Splinter environment with specified parameters.
     /// </summary>
-    Task Initialise(NanoBootstrapParameters parameters);
+    Task Initialise(INanoBootstrapParameters parameters);
 }

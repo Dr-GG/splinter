@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Environment;
+using Splinter.NanoInstances.Extensions;
 using Splinter.NanoInstances.NanoWaveFunctions;
 using Splinter.NanoInstances.Services.Superposition;
 using Splinter.NanoTypes.Domain.Core;
@@ -9,9 +10,9 @@ using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents;
 using Splinter.NanoTypes.Domain.Exceptions.Superposition;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 using Splinter.NanoTypes.Domain.Parameters.Superposition;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Messaging;
@@ -60,31 +61,14 @@ public abstract class NanoAgent : INanoAgent
     /// <inheritdoc />
     public virtual ITeraAgent TeraParent
     {
-        get
-        {
-            if (_parent == null)
-            {
-                throw new TeraParentNotInitialisedException();
-            }
-
-            return _parent;
-        }
+        get => _parent.AssertReturnGetterValue<ITeraAgent, TeraParentNotInitialisedException>();
         set => _parent = value;
     }
 
     /// <inheritdoc />
-    public virtual INanoTable NanoTable
-    {
-        get
-        {
-            if (HasTeraParent && TeraParent.HasNanoTable)
-            {
-                return TeraParent.NanoTable;
-            }
-
-            throw new NanoTableNotInitialisedException();
-        }
-    }
+    public virtual INanoTable NanoTable => this.AssertReturnGetterValue<INanoTable, NanoTableNotInitialisedException>(
+        () => HasTeraParent && TeraParent.HasNanoTable,
+        () => TeraParent.NanoTable);
 
     /// <inheritdoc />
     public ISuperpositionAgent SuperpositionAgent => SplinterEnvironment.SuperpositionAgent;
@@ -189,11 +173,11 @@ public abstract class NanoAgent : INanoAgent
     }
 
     /// <inheritdoc />
-    public virtual async Task Dispose(NanoDisposeParameters parameters)
+    public virtual async Task Terminate(NanoTerminationParameters parameters)
     {
-        await DisposeNanoTypeDependency();
+        await TerminateNanoTypeDependency();
         await Scope.DisposeAsync();
-        await InternalDisposeNanoReferences();
+        await InternalTerminateNanoReferences();
     }
 
     /// <summary>
@@ -307,18 +291,17 @@ public abstract class NanoAgent : INanoAgent
     }
 
     /// <summary>
-    /// Disposes of all INanoReferences of the agent.
+    /// Terminates all INanoReferences of the agent.
     /// </summary>
-    /// <returns></returns>
-    protected virtual Task DisposeNanoReferences()
+    protected virtual Task TerminateNanoReferences()
     {
         return Task.CompletedTask;
     }
 
     /// <summary>
-    /// Disposes of an INanoReference instance.
+    /// Terminates an INanoReference instance.
     /// </summary>
-    protected virtual async Task DisposeNanoReference(INanoReference? reference)
+    protected virtual async Task TerminateNanoReference(INanoReference? reference)
     {
         if (reference == null)
         {
@@ -327,7 +310,7 @@ public abstract class NanoAgent : INanoAgent
 
         if (HasNanoTable)
         {
-            await NanoTable.Dispose(reference);
+            await NanoTable.Deregister(reference);
         }
 
         if (reference.HasNoReference)
@@ -335,9 +318,9 @@ public abstract class NanoAgent : INanoAgent
             return;
         }
 
-        var disposeParameters = new NanoDisposeParameters();
+        var terminateParameters = new NanoTerminationParameters();
 
-        await reference.Reference.Dispose(disposeParameters);
+        await reference.Reference.Terminate(terminateParameters);
         await reference.Initialise(null);
     }
 
@@ -356,14 +339,14 @@ public abstract class NanoAgent : INanoAgent
         await InitialiseNanoReferences();
     }
 
-    private async Task InternalDisposeNanoReferences()
+    private async Task InternalTerminateNanoReferences()
     {
         if (HolonType != HolonType.Nano)
         {
             return;
         }
 
-        await DisposeNanoReferences();
+        await TerminateNanoReferences();
     }
 
     private NanoCollapseParameters ConfigureCollapseParameters(NanoCollapseParameters parameters)
@@ -389,7 +372,7 @@ public abstract class NanoAgent : INanoAgent
         return result;
     }
 
-    private async Task DisposeNanoTypeDependency()
+    private async Task TerminateNanoTypeDependency()
     {
         if (HolonType != HolonType.Nano
             || HasNoTeraParent)
@@ -397,12 +380,12 @@ public abstract class NanoAgent : INanoAgent
             return;
         }
 
-        var disposeParameters = new NanoTypeDependencyDisposeParameters
+        var terminateParameters = new NanoTypeDependencyTerminationParameters
         {
             TeraId = TeraParent.TeraId,
             NanoType = TypeId
         };
 
-        await SuperpositionAgent.Sync(disposeParameters);
+        await SuperpositionAgent.Sync(terminateParameters);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Environment;
+using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Default.Interfaces.Services.Messaging;
 using Splinter.NanoTypes.Domain.Exceptions.Services;
@@ -27,18 +28,7 @@ public class TeraMessageQueue : ITeraMessageQueue
         _settings = settings;
     }
 
-    private ITeraAgent Parent
-    {
-        get
-        {
-            if (_teraAgent == null)
-            {
-                throw new NanoServiceNotInitialisedException(typeof(TeraMessageQueue));
-            }
-
-            return _teraAgent;
-        }
-    }
+    private ITeraAgent Parent => _teraAgent.AssertReturnGetterValue(() => new NanoServiceNotInitialisedException(typeof(TeraMessageQueue)));
 
     /// <inheritdoc />
     public Task Initialise(ITeraAgent teraAgent)
@@ -71,7 +61,7 @@ public class TeraMessageQueue : ITeraMessageQueue
     }
 
     /// <inheritdoc />
-    public async Task Dispose(TeraMessageSyncParameters parameters)
+    public async Task Terminate(TeraMessageSyncParameters parameters)
     {
         await SplinterEnvironment.TeraMessageAgent.Sync(parameters);
     }

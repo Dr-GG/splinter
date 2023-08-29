@@ -7,7 +7,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Superposition;
 /// <summary>
 /// The nano parameters used to recollapse Nano Types.
 /// </summary>
-public record NanoRecollapseParameters : NanoParameters
+public record NanoRecollapseParameters : INanoParameters
 {
     /// <summary>
     /// The ID of the Tera Agent which initiated the recollapse.

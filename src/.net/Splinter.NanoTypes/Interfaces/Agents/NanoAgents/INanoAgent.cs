@@ -2,8 +2,8 @@
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Messaging;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Platform;
@@ -117,5 +117,5 @@ public interface INanoAgent
     /// <summary>
     /// Disposes the agent.
     /// </summary>
-    Task Dispose(NanoDisposeParameters parameters);
+    Task Terminate(NanoTerminationParameters parameters);
 }

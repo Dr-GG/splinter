@@ -7,7 +7,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Registration;
 /// <summary>
 /// The nano parameters used to register the activation of a Tera Agent.
 /// </summary>
-public record TeraAgentRegistrationParameters : NanoParameters
+public record TeraAgentRegistrationParameters : INanoParameters
 {
     /// <summary>
     /// The ID of the Tera Agent.

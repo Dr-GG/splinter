@@ -39,7 +39,7 @@ public class NanoTable : INanoTable
     }
 
     /// <inheritdoc />
-    public Task Dispose(INanoReference reference)
+    public Task Deregister(INanoReference reference)
     {
         if (reference.HasNoReference)
         {

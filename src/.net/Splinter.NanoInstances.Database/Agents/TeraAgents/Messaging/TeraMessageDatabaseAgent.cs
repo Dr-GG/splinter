@@ -8,9 +8,9 @@ using Splinter.NanoTypes.Default.Domain.Settings.Messaging;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Messaging;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 using Splinter.NanoTypes.Domain.Parameters.Messaging;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Messaging;
 using Tenjin.Extensions;
 
@@ -85,12 +85,12 @@ public class TeraMessageDatabaseAgent : SingletonTeraAgent, ITeraMessageAgent
     }
 
     /// <inheritdoc />
-    protected override async Task SingletonDispose(NanoDisposeParameters parameters)
+    protected override async Task SingletonTerminate(NanoTerminationParameters parameters)
     {
         _cancellationTokenSource.Cancel();
         _cancellationTokenSource.Dispose();
 
-        await base.SingletonDispose(parameters);
+        await base.SingletonTerminate(parameters);
     }
 
     private async Task RunMessageDisposeTask()

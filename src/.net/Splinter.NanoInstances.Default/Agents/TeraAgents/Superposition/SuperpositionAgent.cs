@@ -84,7 +84,7 @@ public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
     }
 
     /// <inheritdoc />
-    public async Task Sync(NanoTypeDependencyDisposeParameters parameters)
+    public async Task Sync(NanoTypeDependencyTerminationParameters parameters)
     {
         await using var scope = await NewScope();
         var service = await scope.Resolve<ITeraAgentNanoTypeDependencyService>();

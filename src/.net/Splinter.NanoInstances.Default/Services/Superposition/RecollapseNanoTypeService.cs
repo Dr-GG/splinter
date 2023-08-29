@@ -7,8 +7,8 @@ using Splinter.NanoTypes.Default.Interfaces.Services.Superposition;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Messaging;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
@@ -73,10 +73,10 @@ public class RecollapseNanoTypeService : IRecollapseNanoTypeService
         }
         finally
         {
-            var disposeParameters = new NanoDisposeParameters();
+            var terminateParameters = new NanoTerminationParameters();
 
             await oldReference.Unlock();
-            await oldReference.Dispose(disposeParameters);
+            await oldReference.Terminate(terminateParameters);
         }
     }
 

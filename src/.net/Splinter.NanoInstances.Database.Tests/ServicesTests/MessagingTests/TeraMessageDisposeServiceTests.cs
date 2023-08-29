@@ -63,7 +63,7 @@ public class TeraMessageDisposeServiceTests
         AddTeraMessage(dbContext, TestMessageId11, TeraMessageStatus.Completed, ExpiryTwoMinutes);
         AddTeraMessage(dbContext, TestMessageId12, TeraMessageStatus.Failed, ExpiryThreeMinutes);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         disposer.DisposeExpiredMessages();
 
@@ -102,7 +102,7 @@ public class TeraMessageDisposeServiceTests
         AddTeraMessage(dbContext, TestMessageId09, TeraMessageStatus.Pending, 200);
         AddTeraMessage(dbContext, TestMessageId10, TeraMessageStatus.Dequeued, 100);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         disposer.DisposeExpiredMessages();
 
@@ -138,8 +138,8 @@ public class TeraMessageDisposeServiceTests
         AddTeraMessage(dbContext, TestMessageId08, TeraMessageStatus.Pending, 25);
         AddTeraMessage(dbContext, TestMessageId09, TeraMessageStatus.Pending, 200);
         AddTeraMessage(dbContext, TestMessageId10, TeraMessageStatus.Dequeued, 100);
-
-        Thread.Sleep(1000);
+        
+        await Task.Delay(1000);
 
         disposer.DisposeExpiredMessages();
         disposer.DisposeExpiredMessages();

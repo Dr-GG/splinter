@@ -46,9 +46,9 @@ public abstract class LanguageKnowledgeAgent : TeraKnowledgeAgent, ILanguageKnow
         _languageReference = await CollapseNanoReference(LanguageSplinterIds.LanguageNanoTypeId);
     }
 
-    protected override async Task DisposeNanoReferences()
+    protected override async Task TerminateNanoReferences()
     {
-        await DisposeNanoReference(_languageReference);
+        await TerminateNanoReference(_languageReference);
     }
 }
 

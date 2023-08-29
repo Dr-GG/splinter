@@ -6,7 +6,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Messaging;
 /// <summary>
 /// The nano parameters used to synchronise multiple TeraMessage instances.
 /// </summary>
-public record TeraMessageSyncParameters : NanoParameters
+public record TeraMessageSyncParameters : INanoParameters
 {
     /// <summary>
     /// The collection of TeraMessageSyncParameters to be synchronised.

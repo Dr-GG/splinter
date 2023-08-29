@@ -55,8 +55,8 @@ public static class TeraMessageTests
         await AssertCompletedTeraMessages(agentSource, 0);
         await AssertCompletedTeraMessages(agentDestination, 5);
 
-        await agentSource.Dispose();
-        await agentDestination.Dispose();
+        await agentSource.Terminate();
+        await agentDestination.Terminate();
     }
 
     private static async Task TestMultipleTeraMessageRelay()
@@ -105,12 +105,12 @@ public static class TeraMessageTests
         await AssertCompletedTeraMessages(agentDestination4, 2);
         await AssertCompletedTeraMessages(agentDestination5, 1);
 
-        await agentSource.Dispose();
-        await agentDestination1.Dispose();
-        await agentDestination2.Dispose();
-        await agentDestination3.Dispose();
-        await agentDestination4.Dispose();
-        await agentDestination5.Dispose();
+        await agentSource.Terminate();
+        await agentDestination1.Terminate();
+        await agentDestination2.Terminate();
+        await agentDestination3.Terminate();
+        await agentDestination4.Terminate();
+        await agentDestination5.Terminate();
     }
 
     private static async Task TestBulkTeraMessagesBetweenAgents()
@@ -142,8 +142,8 @@ public static class TeraMessageTests
         await AssertCompletedTeraMessages(agentSource, 0);
         await AssertCompletedTeraMessages(agentDestination, messages.Count);
 
-        await agentSource.Dispose();
-        await agentDestination.Dispose();
+        await agentSource.Terminate();
+        await agentDestination.Terminate();
     }
 
     private static async Task AssertPendingTeraMessages(ITeraAgent recipient, int numberOfMessages)

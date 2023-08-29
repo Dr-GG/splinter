@@ -49,18 +49,8 @@ public class TeraKnowledgeAgent : NanoAgent, ITeraKnowledgeAgent
     /// <summary>
     /// The referenced ITeraMessageQueue.
     /// </summary>
-    protected ITeraMessageQueue MessageQueue
-    {
-        get
-        {
-            if (_messageQueue == null)
-            {
-                throw new NanoServiceNotInitialisedException(typeof(ITeraMessageQueue));
-            }
-
-            return _messageQueue;
-        }
-    }
+    protected ITeraMessageQueue MessageQueue => _messageQueue.AssertReturnGetterValue(
+        () => new NanoServiceNotInitialisedException(typeof(ITeraMessageQueue)));
 
     /// <inheritdoc />
     public override SplinterId TypeId => SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;

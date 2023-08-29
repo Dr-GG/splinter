@@ -6,7 +6,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Collapse;
 /// <summary>
 /// The parameters used to collapse a Nano Type to a Nano Instance.
 /// </summary>
-public record NanoCollapseParameters : NanoParameters
+public record NanoCollapseParameters : INanoParameters
 {
     /// <summary>
     /// The flag indicating if the Nano Type should be initialised.

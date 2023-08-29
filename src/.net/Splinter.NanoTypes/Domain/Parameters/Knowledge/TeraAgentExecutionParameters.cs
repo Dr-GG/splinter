@@ -5,7 +5,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Knowledge;
 /// <summary>
 /// The nano parameters used when executing a cycle in a Tera Agent.
 /// </summary>
-public record TeraAgentExecutionParameters : NanoParameters
+public record TeraAgentExecutionParameters : INanoParameters
 {
     /// <summary>
     /// The current execution count.

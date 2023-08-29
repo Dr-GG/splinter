@@ -26,7 +26,7 @@ public interface ITeraMessageQueue
     Task<TeraMessage> Next();
 
     /// <summary>
-    /// Disposes of one or more TeraMessage instances.
+    /// Terminates one or more TeraMessage instances.
     /// </summary>
-    Task Dispose(TeraMessageSyncParameters parameters);
+    Task Terminate(TeraMessageSyncParameters parameters);
 }

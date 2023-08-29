@@ -15,7 +15,7 @@ public interface ITeraRegistryAgent : ITeraAgent
     Task<Guid> Register(TeraAgentRegistrationParameters parameters);
 
     /// <summary>
-    /// Disposes an ITeraAgent instance based on specified disposal parameters.
+    /// Deregisters an ITeraAgent instance based on specified deregistration parameters.
     /// </summary>
-    Task Dispose(TeraAgentDisposeParameters parameters);
+    Task Deregister(TeraAgentDeregistrationParameters parameters);
 }

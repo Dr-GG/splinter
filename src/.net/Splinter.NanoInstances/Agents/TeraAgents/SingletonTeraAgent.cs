@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Environment;
 using Splinter.NanoTypes.Domain.Enums;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 
 namespace Splinter.NanoInstances.Agents.TeraAgents;
 
@@ -14,7 +14,7 @@ public abstract class SingletonTeraAgent : TeraAgent
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
 
-    private bool _disposed;
+    private bool _terminated;
     private bool _initialised;
 
     /// <inheritdoc />
@@ -43,11 +43,11 @@ public abstract class SingletonTeraAgent : TeraAgent
     }
 
     /// <inheritdoc />
-    public override async Task Dispose(NanoDisposeParameters parameters)
+    public override async Task Terminate(NanoTerminationParameters parameters)
     {
         if (parameters.Force || SplinterEnvironment.Status == SplinterEnvironmentStatus.Disposing)
         {
-            await InternalDispose(parameters);
+            await InternalTerminate(parameters);
         }
     }
 
@@ -64,16 +64,16 @@ public abstract class SingletonTeraAgent : TeraAgent
     /// <summary>
     /// Disposes the single based on specified parameters.
     /// </summary>
-    protected virtual async Task SingletonDispose(NanoDisposeParameters parameters)
+    protected virtual async Task SingletonTerminate(NanoTerminationParameters parameters)
     {
-        await base.Dispose(parameters);
+        await base.Terminate(parameters);
 
-        _disposed = true;
+        _terminated = true;
     }
 
-    private async Task InternalDispose(NanoDisposeParameters parameters)
+    private async Task InternalTerminate(NanoTerminationParameters parameters)
     {
-        if (_disposed)
+        if (_terminated)
         {
             return;
         }
@@ -82,12 +82,12 @@ public abstract class SingletonTeraAgent : TeraAgent
         {
             await _lock.WaitAsync();
 
-            if (_disposed)
+            if (_terminated)
             {
                 return;
             }
 
-            await SingletonDispose(parameters);
+            await SingletonTerminate(parameters);
         }
         finally
         {

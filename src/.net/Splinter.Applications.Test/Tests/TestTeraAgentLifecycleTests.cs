@@ -39,7 +39,7 @@ public static class TestTeraAgentLifecycleTests
             teraIds.Add(agent.TeraId);
 
             await AssertAsRunning(agent.TeraId);
-            await agent.Dispose();
+            await agent.Terminate();
             await AssertAsDisposed(agent.TeraId);
         }
 
@@ -55,7 +55,7 @@ public static class TestTeraAgentLifecycleTests
             var agent = await InitialiseTeraAgent(teraId);
 
             await AssertAsRunning(agent.TeraId);
-            await agent.Dispose();
+            await agent.Terminate();
             await AssertAsDisposed(agent.TeraId);
         }
     }

@@ -6,7 +6,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Messaging;
 /// <summary>
 /// Synchronises or updates the state of an existing TeraMessage.
 /// </summary>
-public record TeraMessageSyncParameter : NanoParameters
+public record TeraMessageSyncParameter : INanoParameters
 {
     /// <summary>
     /// The ID of the TeraMessage to be synced.

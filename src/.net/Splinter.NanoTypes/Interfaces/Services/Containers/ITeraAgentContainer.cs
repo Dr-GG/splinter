@@ -28,7 +28,7 @@ public interface ITeraAgentContainer : IDisposable, IAsyncDisposable
     /// <summary>
     /// Removes a single ITeraAgent instance.
     /// </summary>
-    Task Dispose(ITeraAgent agent);
+    Task Deregister(ITeraAgent agent);
 
     /// <summary>
     /// Starts with the execution of registered ITeraAgent instances.

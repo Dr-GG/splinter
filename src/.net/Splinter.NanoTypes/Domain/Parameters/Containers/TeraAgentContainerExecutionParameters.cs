@@ -5,7 +5,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Containers;
 /// <summary>
 /// The nano parameters when executing an ITeraAgentContainer.
 /// </summary>
-public record TeraAgentContainerExecutionParameters : NanoParameters
+public record TeraAgentContainerExecutionParameters : INanoParameters
 {
     /// <summary>
     /// The number of concurrent threads to be used.

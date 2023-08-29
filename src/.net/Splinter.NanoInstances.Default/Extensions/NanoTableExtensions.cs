@@ -22,15 +22,15 @@ public static class NanoTableExtensions
     }
 
     /// <summary>
-    /// Removes or disposes a collection of INanoReference instances.
+    /// Removes or deregisters a collection of INanoReference instances.
     /// </summary>
-    public static async Task Dispose(
+    public static async Task Deregister(
         this INanoTable table,
         params INanoReference[] references)
     {
         foreach (var reference in references)
         {
-            await table.Dispose(reference);
+            await table.Deregister(reference);
         }
     }
 }

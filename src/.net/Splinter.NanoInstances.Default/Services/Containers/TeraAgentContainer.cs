@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Domain.Exceptions.Containers;
 using Splinter.NanoTypes.Domain.Parameters.Containers;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
@@ -34,18 +35,8 @@ public class TeraAgentContainer : ITeraAgentContainer
     /// <inheritdoc />
     public long NumberOfTeraAgents => _teraAgents.Count;
 
-    private TeraAgentContainerExecutionParameters Parameters
-    {
-        get
-        {
-            if (_parameters == null)
-            {
-                throw new TeraAgentContainerNotInitialisedException();
-            }
-
-            return _parameters;
-        }
-    }
+    private TeraAgentContainerExecutionParameters Parameters => _parameters.AssertReturnGetterValue
+        <TeraAgentContainerExecutionParameters, TeraAgentContainerNotInitialisedException>();
 
     /// <inheritdoc />
     public Task Initialise(TeraAgentContainerExecutionParameters parameters)
@@ -64,7 +55,7 @@ public class TeraAgentContainer : ITeraAgentContainer
     }
 
     /// <inheritdoc />
-    public Task Dispose(ITeraAgent agent)
+    public Task Deregister(ITeraAgent agent)
     {
         _pendingTeraAgentRemovals.Enqueue(agent);
 
@@ -105,16 +96,23 @@ public class TeraAgentContainer : ITeraAgentContainer
     /// <inheritdoc />
     public void Dispose()
     {
-        _running = false;
-        _tokenSource.Cancel();
+        InternalDispose();
+        GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc />
     public ValueTask DisposeAsync()
     {
-        Dispose();
+        InternalDispose();
+        GC.SuppressFinalize(this);
 
         return ValueTask.CompletedTask;
+    }
+
+    private void InternalDispose()
+    {
+        _running = false;
+        _tokenSource.Cancel();
     }
 
     private Task InternalExecute(CancellationToken cancellationToken)

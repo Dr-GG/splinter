@@ -53,7 +53,7 @@ public class TeraAgentRegistrationService : ITeraAgentRegistrationService
     }
 
     /// <inheritdoc />
-    public async Task Dispose(TeraAgentDisposeParameters parameters)
+    public async Task Deregister(TeraAgentDeregistrationParameters parameters)
     {
         var agent = await GetTeraAgent(parameters.TeraId);
 

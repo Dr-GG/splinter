@@ -47,7 +47,7 @@ public class TeraAgentContainerTests
             await container.Register(agent);
         }
 
-        Thread.Sleep(5000);
+        await Task.Delay(5000);
 
         container.NumberOfTeraAgents.Should().Be(DefaultNumberOfTestAgents);
         TeraAgentContainerUnitTestAgent.ExecutionHit.Should().Be(DefaultNumberOfTestAgents);
@@ -68,14 +68,14 @@ public class TeraAgentContainerTests
         await container.Initialise(parameters);
         await container.Start();
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         foreach (var agent in agents)
         {
-            await container.Dispose(agent);
+            await container.Deregister(agent);
         }
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         container.NumberOfTeraAgents.Should().Be(0);
         TeraAgentContainerUnitTestAgent.ExecutionHit.Should().BeGreaterThan(0);
@@ -99,7 +99,7 @@ public class TeraAgentContainerTests
         await container.Initialise(parameters);
         await container.Start();
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         await container.Stop();
 
@@ -127,8 +127,8 @@ public class TeraAgentContainerTests
         await container.Register(agent);
         await container.Initialise(parameters);
         await container.Start();
-
-        Thread.Sleep(threadSleep);
+        
+        await Task.Delay(threadSleep);
         await container.Stop();
 
         var stop = DateTime.UtcNow;
@@ -173,8 +173,8 @@ public class TeraAgentContainerTests
         await container.Register(agent);
         await container.Initialise(parameters);
         await container.Start();
-
-        Thread.Sleep(threadSleep);
+        
+        await Task.Delay(threadSleep);
         await container.Stop();
 
         AssertExecutionParameters(
@@ -219,7 +219,7 @@ public class TeraAgentContainerTests
         await container.Initialise(parameters);
         await container.Start();
 
-        Thread.Sleep(threadSleep);
+        await Task.Delay(threadSleep);
         await container.Stop();
 
         AssertExecutionParameters(
@@ -249,8 +249,7 @@ public class TeraAgentContainerTests
         await container.Initialise(parameters);
         await container.Start();
 
-        Thread.Sleep(5000);
-
+        await Task.Delay(5000);
         await container.Stop();
 
         TeraAgentContainerUnitTestAgent.ExecutionHit.Should().Be(TestDisposeThreadingNumberOfTeraAgents);
@@ -276,9 +275,8 @@ public class TeraAgentContainerTests
 
         await container.Initialise(parameters);
         await container.Start();
-
-        Thread.Sleep(5000);
-
+        
+        await Task.Delay(5000);
         await container.Stop();
 
         TeraAgentContainerUnitTestAgent.ExecutionHit.Should().Be(TestDisposeThreadingNumberOfTeraAgents);

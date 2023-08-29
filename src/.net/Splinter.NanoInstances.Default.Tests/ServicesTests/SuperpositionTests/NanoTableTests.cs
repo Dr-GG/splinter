@@ -65,7 +65,7 @@ public class NanoTableTests
     }
 
     [Test]
-    public async Task Register_WhenDisposingOfReferences_RegistersAllReferencesCorrectly()
+    public async Task Register_WhenDeregisteringOfReferences_RegistersAllReferencesCorrectly()
     {
         var table = new NanoTable();
         var ref11 = GetNanoReference1();
@@ -86,7 +86,7 @@ public class NanoTableTests
             ref21, ref22, ref23, ref24,
             ref31, ref32, ref33);
 
-        await table.Dispose(ref13, ref21, ref33);
+        await table.Deregister(ref13, ref21, ref33);
 
         await AssertNonNullableReferences(table, TestNanoTypeId1, 4, ref11, ref12, ref14, ref15);
         await AssertNonNullableReferences(table, TestNanoTypeId2, 3, ref22, ref23, ref24);
@@ -129,7 +129,7 @@ public class NanoTableTests
     }
 
     [Test]
-    public async Task Register_WhenMultipleThreadsDisposeAReference_ThrowsNoErrorsAndNoReferencesExist()
+    public async Task Register_WhenMultipleThreadsDeregisterAReference_ThrowsNoErrorsAndNoReferencesExist()
     {
         var table = new NanoTable();
         var ref1 = GetNanoReference1();
@@ -141,9 +141,9 @@ public class NanoTableTests
 
         for (var i = 0; i < NumberOfThreads; i++)
         {
-            result.Add(Task.Run(() => table.Dispose(ref1)));
-            result.Add(Task.Run(() => table.Dispose(ref2)));
-            result.Add(Task.Run(() => table.Dispose(ref3)));
+            result.Add(Task.Run(() => table.Deregister(ref1)));
+            result.Add(Task.Run(() => table.Deregister(ref2)));
+            result.Add(Task.Run(() => table.Deregister(ref3)));
         }
 
         Task.WaitAll(result.ToArray());

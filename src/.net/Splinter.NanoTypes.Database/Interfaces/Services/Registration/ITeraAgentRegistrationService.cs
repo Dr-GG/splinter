@@ -15,7 +15,7 @@ public interface ITeraAgentRegistrationService
     Task<Guid> Register(long teraPlatformId, TeraAgentRegistrationParameters parameters);
 
     /// <summary>
-    /// Disposes a single Tera Agent based on specified parameters.
+    /// Deregisters a single Tera Agent based on specified parameters.
     /// </summary>
-    Task Dispose(TeraAgentDisposeParameters parameters);
+    Task Deregister(TeraAgentDeregistrationParameters parameters);
 }

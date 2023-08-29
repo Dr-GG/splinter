@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Splinter.NanoInstances.Agents.TeraAgents;
 using Splinter.NanoTypes.Domain.Core;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 
 namespace Splinter.NanoInstances.Tests.Agents;
 
@@ -27,14 +27,14 @@ public class SingletonUnitTestTeraAgent : SingletonTeraAgent
         return base.Initialise(parameters);
     }
 
-    public override Task Dispose(NanoDisposeParameters parameters)
+    public override Task Terminate(NanoTerminationParameters parameters)
     {
         lock (_lock)
         {
             AttemptDisposeCount++;
         }
 
-        return base.Dispose(parameters);
+        return base.Terminate(parameters);
     }
 
     protected override Task SingletonInitialise(NanoInitialisationParameters parameters)
@@ -47,13 +47,13 @@ public class SingletonUnitTestTeraAgent : SingletonTeraAgent
         return base.SingletonInitialise(parameters);
     }
 
-    protected override Task SingletonDispose(NanoDisposeParameters parameters)
+    protected override Task SingletonTerminate(NanoTerminationParameters parameters)
     {
         lock (_lock)
         {
             DisposeCount++;
         }
 
-        return base.SingletonDispose(parameters);
+        return base.SingletonTerminate(parameters);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 
@@ -13,13 +13,13 @@ namespace Splinter.NanoInstances.Extensions;
 public static class NanoAgentExtensions
 {
     /// <summary>
-    /// Disposes an INanoAgent instance.
+    /// Terminates an INanoAgent instance.
     /// </summary>
-    public static async Task Dispose(this INanoAgent nanoAgent)
+    public static async Task Terminate(this INanoAgent nanoAgent)
     {
-        var disposeParameters = new NanoDisposeParameters();
+        var disposeParameters = new NanoTerminationParameters();
 
-        await nanoAgent.Dispose(disposeParameters);
+        await nanoAgent.Terminate(disposeParameters);
     }
 
     /// <summary>

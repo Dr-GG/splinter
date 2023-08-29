@@ -5,7 +5,7 @@ namespace Splinter.NanoTypes.Domain.Parameters.Messaging;
 /// <summary>
 /// The nano parameters when retrieving a number of TeraMessages.
 /// </summary>
-public record TeraMessageDequeueParameters : NanoParameters
+public record TeraMessageDequeueParameters : INanoParameters
 {
     /// <summary>
     /// The ID of the Tera Agent that acts as the recipient.

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Autofac;
 using Splinter.NanoTypes.Domain.Exceptions.ServiceScope;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
@@ -51,11 +52,15 @@ public class AutofacServiceScope : IServiceScope
     public async ValueTask DisposeAsync()
     {
         await _scope.DisposeAsync();
+
+        GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
         _scope.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }

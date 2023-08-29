@@ -5,8 +5,8 @@ using Splinter.NanoTypes.Database.Interfaces.Services.OperatingSystems;
 using Splinter.NanoTypes.Default.Interfaces.Services.TeraPlatforms;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Core;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents.Platform;
 
 namespace Splinter.NanoInstances.Database.Agents.TeraAgents.Platform;
@@ -58,11 +58,11 @@ public class TeraPlatformDatabaseAgent : SingletonTeraAgent, ITeraPlatformAgent
     }
 
     /// <inheritdoc />
-    protected override async Task SingletonDispose(NanoDisposeParameters parameters)
+    protected override async Task SingletonTerminate(NanoTerminationParameters parameters)
     {
         await DisablePlatform();
 
-        await base.SingletonDispose(parameters);
+        await base.SingletonTerminate(parameters);
     }
 
     private async Task RegisterOperatingSystemInformation()

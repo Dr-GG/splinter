@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Default.Interfaces.Superposition;
 using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
-using Splinter.NanoTypes.Domain.Parameters.Dispose;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Default.Services.Superposition;
@@ -40,7 +40,7 @@ public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
                     return reference;
                 }
 
-                await DisposeSingletonReference(reference);
+                await TerminateSingletonReference(reference);
             }
 
             _singletonMap[nanoTypeId] = singleton;
@@ -70,14 +70,14 @@ public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
         }
     }
 
-    private static async Task DisposeSingletonReference(INanoAgent nanoAgent)
+    private static async Task TerminateSingletonReference(INanoAgent nanoAgent)
     {
-        var parameters = new NanoDisposeParameters
+        var parameters = new NanoTerminationParameters
         {
             Force = true
         };
 
-        await nanoAgent.Dispose(parameters);
+        await nanoAgent.Terminate(parameters);
     }
 
     public async ValueTask DisposeAsync()
@@ -88,7 +88,7 @@ public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
 
             foreach (var singleton in _singletonMap)
             {
-                await DisposeSingletonReference(singleton.Value);
+                await TerminateSingletonReference(singleton.Value);
             }
 
             _singletonMap.Clear();
