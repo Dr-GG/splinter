@@ -49,18 +49,25 @@ public class AutofacServiceScope : IServiceScope
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await _scope.DisposeAsync();
+        Dispose(true);
 
         GC.SuppressFinalize(this);
+
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
-        _scope.Dispose();
+        Dispose(true);
 
         GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        _scope.Dispose();
     }
 }

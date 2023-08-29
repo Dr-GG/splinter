@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http.Headers;
 using Splinter.NanoTypes.Domain.Exceptions;
 
 namespace Splinter.NanoInstances.Extensions;
@@ -18,7 +17,7 @@ public static class ObjectExtensions
         where TValue : class
         where TException : SplinterException, new()
     {
-        return value.AssertReturnGetterValue<TValue, TException> (() => new TException());
+        return value.AssertReturnGetterValue (() => new TException());
     }
 
     /// <summary>

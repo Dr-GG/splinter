@@ -96,20 +96,20 @@ public class TeraAgentContainer : ITeraAgentContainer
     /// <inheritdoc />
     public void Dispose()
     {
-        InternalDispose();
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc />
     public ValueTask DisposeAsync()
     {
-        InternalDispose();
+        Dispose(true);
         GC.SuppressFinalize(this);
 
         return ValueTask.CompletedTask;
     }
 
-    private void InternalDispose()
+    protected virtual void Dispose(bool disposing)
     {
         _running = false;
         _tokenSource.Cancel();
