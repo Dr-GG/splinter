@@ -170,7 +170,7 @@ public class TeraAgentContainer : ITeraAgentContainer
     {
         if (_currentRelativeTimestamp == null)
         {
-            _currentRelativeTimestamp ??= GetAbsoluteDateTime();
+            _currentRelativeTimestamp = GetAbsoluteDateTime();
             _previousRelativeTimestamp = _currentRelativeTimestamp;
 
             return _previousRelativeTimestamp.Value;
