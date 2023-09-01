@@ -143,7 +143,7 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
     {
         await base.InitialiseNanoReferences();
 
-        if (HasKnowledge)
+        if (HasKnowledge && (_knowledgeReference?.HasNoReference ?? true))
         {
             _knowledgeReference = await CollapseNanoReference(TeraKnowledgeNanoTypeId);
         }
@@ -173,6 +173,11 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
     private async Task InitialiseNanoTable(NanoInitialisationParameters? parameters = null) 
     {
         if (!parameters?.RegisterNanoTable ?? false)
+        {
+            return;
+        }
+
+        if (_nanoTable != null)
         {
             return;
         }

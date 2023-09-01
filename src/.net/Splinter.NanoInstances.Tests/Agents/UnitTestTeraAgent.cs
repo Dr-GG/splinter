@@ -1,6 +1,9 @@
 ﻿using Splinter.NanoInstances.Agents.TeraAgents;
 using Splinter.NanoTypes.Domain.Core;
 using System;
+using Splinter.NanoTypes.Domain.Constants;
+using Splinter.NanoTypes.Interfaces.ServiceScope;
+using Splinter.NanoTypes.Interfaces.WaveFunctions;
 
 namespace Splinter.NanoInstances.Tests.Agents;
 
@@ -8,7 +11,25 @@ public class UnitTestTeraAgent : TeraAgent
 {
     public bool OverrideHasKnowledge { get; set; } = true;
 
+    public bool OverrideRegisterInContainer { get; set; } = true;
+
+    public SplinterId OverrideTeraAgentNanoTypeId { get; set; } = SplinterIdConstants.TeraDefaultKnowledgeNanoTypeId;
+
     protected override bool HasKnowledge => OverrideHasKnowledge;
+
+    protected override bool RegisterInContainer => OverrideRegisterInContainer;
+
+    protected override SplinterId TeraKnowledgeNanoTypeId => OverrideTeraAgentNanoTypeId;
+
+    public void OverrideScope(IServiceScope scope)
+    {
+        Scope = scope;
+    }
+
+    public void OverrideWaveFunction(INanoWaveFunction waveFunction)
+    {
+        NanoWaveFunction = waveFunction;
+    }
 
     public override SplinterId TypeId => new()
     {
