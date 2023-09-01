@@ -3,9 +3,10 @@ using Moq;
 using NUnit.Framework;
 using Splinter.NanoInstances.Tests.Agents;
 using Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents;
-using Splinter.NanoTypes.Domain.Exceptions.Superposition;
+using Splinter.NanoTypes.Domain.Exceptions.Services;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
+using Splinter.NanoTypes.Interfaces.Services.Superposition;
 
 namespace Splinter.NanoInstances.Tests.AgentsTests.NanoAgentTests;
 
@@ -113,7 +114,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent();
 
-        Assert.Throws<NanoTableNotInitialisedException>(() => _ = result.NanoTable);
+        Assert.Throws<NanoServiceNotInitialiseException<INanoTable>>(() => _ = result.NanoTable);
     }
 
     [Test]
@@ -121,7 +122,7 @@ public class NanoAgentTests
     {
         var result = GetNanoAgent(true);
 
-        Assert.Throws<NanoTableNotInitialisedException>(() => _ = result.NanoTable);
+        Assert.Throws<NanoServiceNotInitialiseException<INanoTable>>(() => _ = result.NanoTable);
     }
 
     [Test]

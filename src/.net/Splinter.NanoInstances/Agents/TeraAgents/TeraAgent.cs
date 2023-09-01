@@ -6,8 +6,7 @@ using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Domain.Constants;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Enums;
-using Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents;
-using Splinter.NanoTypes.Domain.Exceptions.Superposition;
+using Splinter.NanoTypes.Domain.Exceptions.Services;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 using Splinter.NanoTypes.Domain.Parameters.Knowledge;
@@ -50,11 +49,11 @@ public abstract class TeraAgent : NanoAgent, ITeraAgent
     public Guid TeraId { get; protected set; }
 
     /// <inheritdoc />
-    public override INanoTable NanoTable => _nanoTable.AssertReturnGetterValue<INanoTable, NanoTableNotInitialisedException>();
+    public override INanoTable NanoTable => _nanoTable.AssertNanoServiceReturnGetterValue();
 
     /// <inheritdoc />
     public ITeraKnowledgeAgent Knowledge => _knowledgeReference.AssertReturnGetterValue
-        <INanoReference, TeraKnowledgeNotInitialisedException>().Typed<ITeraKnowledgeAgent>();
+        <INanoReference, NanoTypeNotInitialiseException<ITeraKnowledgeAgent>>().Typed<ITeraKnowledgeAgent>();
 
     /// <summary>
     /// The flag indicating if the TeraAgent instance should be registered in the ITeraAgentContainer instance.

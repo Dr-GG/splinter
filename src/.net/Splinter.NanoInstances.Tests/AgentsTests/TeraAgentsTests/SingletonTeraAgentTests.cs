@@ -32,10 +32,15 @@ public class SingletonTeraAgentTests
         SplinterEnvironment.TeraAgentContainer = null!;
     }
 
-    [Test]
-    public void Initialise_WhenConcurrentThreadsInitialise_InitialisesOnlyOnce()
+    [TestCase(0)]
+    [TestCase(100)]
+    public void Initialise_WhenConcurrentThreadsInitialise_InitialisesOnlyOnce(int threadSleep)
     {
-        var testAgent = new SingletonUnitTestTeraAgent();
+        var testAgent = new SingletonUnitTestTeraAgent
+        {
+            ThreadSleep = threadSleep
+        };
+
         var range = Enumerable.Range(0, NumberOfThreads);
         var mockScope = new Mock<IServiceScope>().Object;
         var tasks = range.Select(_ => testAgent.Initialise(new NanoInitialisationParameters
@@ -55,12 +60,17 @@ public class SingletonTeraAgentTests
         testAgent.DisposeCount.Should().Be(0);
     }
 
-    [Test]
-    public async Task Initialise_WhenConcurrentThreadsDispose_DisposeOnlyOnce()
+    [TestCase(0)]
+    [TestCase(100)]
+    public async Task Initialise_WhenConcurrentThreadsDispose_DisposeOnlyOnce(int threadSleep)
     {
         SplinterEnvironment.Status = SplinterEnvironmentStatus.Disposing;
 
-        var testAgent = new SingletonUnitTestTeraAgent();
+        var testAgent = new SingletonUnitTestTeraAgent
+        {
+            ThreadSleep = threadSleep
+        };
+
         var mockScope = new Mock<IServiceScope>().Object;
         var range = Enumerable.Range(0, NumberOfThreads);
         var nanoInitParameters = new NanoInitialisationParameters
@@ -154,4 +164,6 @@ public class SingletonTeraAgentTests
         testAgent.InitCount.Should().Be(1);
         testAgent.AttemptInitCount.Should().Be(1);
     }
+
+    // public async Task Initialise_WhenInitialisedTwice_
 }

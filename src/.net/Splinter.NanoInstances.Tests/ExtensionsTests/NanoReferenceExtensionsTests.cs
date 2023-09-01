@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using Splinter.NanoInstances.Extensions;
 using Splinter.NanoInstances.Services.Superposition;
 using Splinter.NanoInstances.Tests.Agents;
@@ -40,6 +41,43 @@ public class NanoReferenceExtensionsTests
         AssertNoException<INanoAgent>(nanoReference);
         AssertNoException<IUnitTestNanoAgent>(nanoReference);
         AssertNoException<UnitTestAbstractNanoAgent>(nanoReference);
+    }
+
+    [Test]
+    public void IsNotNullOrEmpty_WhenReferenceIsNull_ReturnsFalse()
+    {
+        ((INanoReference?) null).IsNotNullOrEmpty().Should().BeFalse();
+    }
+
+    [Test]
+    public void IsNotNullOrEmpty_WhenNoReferenceHasBeenSet_ReturnsFalse()
+    {
+        var nanoReference = new NanoReference();
+
+        nanoReference.IsNotNullOrEmpty().Should().BeFalse();
+    }
+
+    [Test]
+    public void IsNullOrEmpty_WhenReferenceIsNull_ReturnsTrue()
+    {
+        ((INanoReference?)null).IsNullOrEmpty().Should().BeTrue();
+    }
+
+    [Test]
+    public void IsNullOrEmpty_WhenNoReferenceHasBeenSet_ReturnsTrue()
+    {
+        var nanoReference = new NanoReference();
+
+        nanoReference.IsNullOrEmpty().Should().BeTrue();
+    }
+
+    [Test]
+    public void IsNullOrEmpty_WhenReferenceHasBeenSet_ReturnsFalse()
+    {
+        var nanoReference = new NanoReference();
+
+        nanoReference.Initialise(new UnitTestNanoAgent());
+        nanoReference.IsNullOrEmpty().Should().BeFalse();
     }
 
     private static void AssertNoException<TNanoType>(INanoReference reference) where TNanoType : INanoAgent

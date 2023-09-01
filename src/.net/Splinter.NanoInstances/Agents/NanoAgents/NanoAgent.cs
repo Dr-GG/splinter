@@ -8,7 +8,7 @@ using Splinter.NanoInstances.Services.Superposition;
 using Splinter.NanoTypes.Domain.Core;
 using Splinter.NanoTypes.Domain.Enums;
 using Splinter.NanoTypes.Domain.Exceptions.Agents.TeraAgents;
-using Splinter.NanoTypes.Domain.Exceptions.Superposition;
+using Splinter.NanoTypes.Domain.Exceptions.Services;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Domain.Parameters.Initialisation;
 using Splinter.NanoTypes.Domain.Parameters.Superposition;
@@ -66,7 +66,7 @@ public abstract class NanoAgent : INanoAgent
     }
 
     /// <inheritdoc />
-    public virtual INanoTable NanoTable => this.AssertReturnGetterValue<INanoTable, NanoTableNotInitialisedException>(
+    public virtual INanoTable NanoTable => this.AssertReturnGetterValue<INanoTable, NanoServiceNotInitialiseException<INanoTable>>(
         () => HasTeraParent && TeraParent.HasNanoTable,
         () => TeraParent.NanoTable);
 

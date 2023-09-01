@@ -16,6 +16,7 @@ public class SingletonUnitTestTeraAgent : SingletonTeraAgent
     public int AttemptDisposeCount { get; private set; }
     public int InitCount { get; private set; }
     public int DisposeCount { get; private set; }
+    public int ThreadSleep { get; set; }
 
     public override Task Initialise(NanoInitialisationParameters parameters)
     {
@@ -37,23 +38,25 @@ public class SingletonUnitTestTeraAgent : SingletonTeraAgent
         return base.Terminate(parameters);
     }
 
-    protected override Task SingletonInitialise(NanoInitialisationParameters parameters)
+    protected override async Task SingletonInitialise(NanoInitialisationParameters parameters)
     {
         lock (_lock)
         {
             InitCount++;
         }
 
-        return base.SingletonInitialise(parameters);
+        await Task.Delay(ThreadSleep); // This will cause some locks to form.
+        await base.SingletonInitialise(parameters);
     }
 
-    protected override Task SingletonTerminate(NanoTerminationParameters parameters)
+    protected override async Task SingletonTerminate(NanoTerminationParameters parameters)
     {
         lock (_lock)
         {
             DisposeCount++;
         }
 
-        return base.SingletonTerminate(parameters);
+        await Task.Delay(ThreadSleep); // This will cause some locks to form.
+        await base.SingletonTerminate(parameters);
     }
 }
