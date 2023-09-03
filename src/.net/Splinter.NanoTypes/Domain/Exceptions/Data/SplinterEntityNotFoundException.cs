@@ -8,6 +8,24 @@ public class SplinterEntityNotFoundException : SplinterException
     /// <summary>
     /// Creates a new instance.
     /// </summary>
+    public SplinterEntityNotFoundException()
+    { }
+
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
+    public SplinterEntityNotFoundException(string message) : base(message)
+    { }
+
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
+    public SplinterEntityNotFoundException(string message, System.Exception innerException) : base(message, innerException)
+    { }
+
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public SplinterEntityNotFoundException(string entityType, object entityId) : base($"Could not find the {entityType} with ID {entityId}.")
     { }
 }

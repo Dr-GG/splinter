@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Splinter.NanoTypes.Domain.Core;
+using Splinter.NanoTypes.Interfaces.WaveFunctions;
 
 namespace Splinter.NanoInstances.Tests.Agents;
 
 public class UnitTestNanoAgentWithSplinterIds : UnitTestAbstractNanoAgent
 {
+    public bool InvokedInternalInitialiseNanoReferences { get; private set; }
+
     public static readonly SplinterId NanoTypeId = new()
     {
         Guid = new Guid("{81CF32F3-FECF-42DD-B9A5-4765D00D4E20}"),
@@ -21,4 +25,16 @@ public class UnitTestNanoAgentWithSplinterIds : UnitTestAbstractNanoAgent
 
     public override SplinterId TypeId => NanoTypeId;
     public override SplinterId InstanceId => NanoInstanceId;
+
+    public void OverrideNanoWaveFunction(INanoWaveFunction nanoWaveFunction)
+    {
+        NanoWaveFunction = nanoWaveFunction;
+    }
+
+    protected override Task InitialiseNanoReferences()
+    {
+        InvokedInternalInitialiseNanoReferences = true;
+
+        return base.InitialiseNanoReferences();
+    }
 }

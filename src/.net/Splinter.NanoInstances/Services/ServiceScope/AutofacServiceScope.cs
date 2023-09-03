@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
+using Autofac.Core;
 using Splinter.NanoTypes.Domain.Exceptions.ServiceScope;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
 
@@ -37,9 +38,14 @@ public class AutofacServiceScope : IServiceScope
     /// <inheritdoc />
     public TService ResolveSync<TService>() where TService : class
     {
-        var service = _scope.Resolve<TService>();
-
-        return service ?? throw new ServiceUnresolvedException(typeof(TService));
+        try
+        {
+            return _scope.Resolve<TService>();
+        }
+        catch (DependencyResolutionException)
+        {
+            throw new ServiceUnresolvedException(typeof(TService));
+        }
     }
 
     /// <inheritdoc />
