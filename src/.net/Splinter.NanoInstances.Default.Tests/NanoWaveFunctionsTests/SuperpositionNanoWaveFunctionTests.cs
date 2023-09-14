@@ -18,8 +18,12 @@ using Splinter.NanoTypes.Default.Domain.Exceptions.Superposition;
 using Splinter.NanoTypes.Default.Domain.Parameters.Superposition;
 using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
 using Splinter.NanoTypes.Default.Domain.Superposition;
+using Splinter.NanoTypes.Default.Interfaces.Services.Superposition;
+using Splinter.NanoTypes.Domain.Core;
+using Splinter.NanoTypes.Domain.Exceptions.NanoWaveFunctions;
 using Splinter.NanoTypes.Domain.Parameters.Collapse;
 using Splinter.NanoTypes.Domain.Parameters.Superposition;
+using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 using Splinter.NanoTypes.Interfaces.Agents.TeraAgents;
 using Splinter.NanoTypes.Interfaces.ServiceScope;
 
@@ -30,7 +34,16 @@ public class SuperpositionNanoWaveFunctionTests
 {
     private static readonly Guid TestTeraId = new("{9610E84E-BEC5-4265-AB0C-A9972D240A09}");
     private static readonly Guid NonExistentNanoTypeId = new ("{573BCB7E-FB5B-4AB9-99B8-FE88BC202E7F}");
-    private static Guid RequestNanoTypeId = UnitTestNanoAgentAlternative1.NanoTypeId.Guid;
+
+    private static readonly Guid CollapseRequestNanoTypeId = UnitTestNanoAgentAlternative1.NanoTypeId.Guid;
+    private static readonly Guid CollapseRequestNanoInstanceId = UnitTestNanoAgentAlternative1.NanoInstanceId.Guid;
+
+    private static readonly Guid CollapseSingletonNanoTypeId = UnitTestNanoAgentAlternative2.NanoTypeId.Guid;
+    private static readonly Guid CollapseSingletonNanoInstanceId = UnitTestNanoAgentAlternative2.NanoInstanceId.Guid;
+
+    private static readonly Guid RecollapseRequestNanoTypeId = UnitTestNanoAgentAlternative3.NanoTypeId.Guid;
+    private static readonly Guid RecollapseRequestNanoInstanceId = UnitTestNanoAgentAlternative3.NanoInstanceId.Guid;
+
     private static readonly SuperpositionMapping CollapseRequestMapping = new()
     {
         Mode = SuperpositionMode.Collapse,
@@ -47,7 +60,8 @@ public class SuperpositionNanoWaveFunctionTests
     {
         Mode = SuperpositionMode.Recollapse,
         Scope = SuperpositionScope.Request,
-        NanoInstanceType = typeof(UnitTestNanoAgentAlternative3).AssemblyQualifiedName!
+        NanoInstanceType = typeof(UnitTestNanoAgentAlternative3).AssemblyQualifiedName!,
+        Description = Guid.NewGuid().ToString()
     };
     private static readonly SuperpositionMapping RecollapseSingletonMapping = new()
     {
@@ -55,16 +69,6 @@ public class SuperpositionNanoWaveFunctionTests
         Scope = SuperpositionScope.Singleton,
         NanoInstanceType = typeof(UnitTestNanoAgentAlternative4).AssemblyQualifiedName!
     };
-
-    [Test]
-    public async Task Collapse_WhenNotInitialised_ReturnsNull()
-    {
-        var waveFunction = await GetWaveFunction();
-        var parameters = GetCollapseParameters(UnitTestNanoAgentAlternative1.NanoTypeId.Guid);
-        var result = await waveFunction.Collapse(parameters);
-
-        result.Should().BeNull();
-    }
 
     [Test]
     public async Task Collapse_WhenNanoTypeDoesNotExist_ReturnsNull()
@@ -79,19 +83,189 @@ public class SuperpositionNanoWaveFunctionTests
     [Test]
     public async Task Collapse_WhenCollapsingARequestScopeNanoType_ReturnsTheNanoType()
     {
-        var waveFunction = await GetWaveFunction(true);
-        var parameters = GetCollapseParameters(RequestNanoTypeId);
-        var result = await waveFunction.Collapse(parameters);
+        var mockNanoTypeDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var mockSuperpositionSingletonRegistry = new Mock<ISuperpositionSingletonRegistry>();
+        var teraAgent = GetDefaultTeraAgent(mockNanoTypeDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, mockSuperpositionSingletonRegistry.Object);
+        var parameters = GetCollapseParameters(CollapseRequestNanoTypeId);
+        var result = (await waveFunction.Collapse(parameters))!;
+
+        result.Should().NotBeNull();
+        result.TypeId.Guid.Should().Be(CollapseRequestNanoTypeId);
+        result.InstanceId.Guid.Should().Be(CollapseRequestNanoInstanceId);
+
+        mockNanoTypeDependencyService.VerifyNoOtherCalls();
+        mockSuperpositionSingletonRegistry.VerifyNoOtherCalls();
     }
 
     [Test]
-    public async Task Recollapse_WhenNotInitialised_ReturnsNull()
+    public async Task Collapse_WhenCollapsingASingletonAndTheSingletonExists_ReturnsTheSingleton()
     {
-        var waveFunction = await GetWaveFunction();
-        var parameters = GetRecollapseParameters(UnitTestNanoAgentAlternative1.NanoTypeId.Guid);
-        var result = await waveFunction.Recollapse(parameters);
+        var singletonAgent = new UnitTestNanoAgentAlternative2();
+        var mockNanoTypeDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var mockSuperpositionSingletonRegistry = new Mock<ISuperpositionSingletonRegistry>();
+        var teraAgent = GetDefaultTeraAgent(mockNanoTypeDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, mockSuperpositionSingletonRegistry.Object);
+        var parameters = GetCollapseParameters(CollapseSingletonNanoTypeId);
+
+        mockSuperpositionSingletonRegistry
+            .Setup(x => x.Fetch(CollapseSingletonNanoTypeId))
+            .ReturnsAsync(singletonAgent);
+
+        var result = (await waveFunction.Collapse(parameters))!;
+
+        result.Should().NotBeNull();
+        result.TypeId.Guid.Should().Be(CollapseSingletonNanoTypeId);
+        result.InstanceId.Guid.Should().Be(CollapseSingletonNanoInstanceId);
+
+        mockNanoTypeDependencyService.VerifyNoOtherCalls();
+        mockSuperpositionSingletonRegistry.Verify(r => r.Fetch(CollapseSingletonNanoTypeId), Times.Once);
+        mockSuperpositionSingletonRegistry.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task Collapse_WhenCollapsingASingletonAndTheSingletonDoesNotExistAndCouldNotBeCollapsed_ReturnsNull()
+    {
+        var mockNanoWaveFunctionBuilder = new Mock<INanoWaveFunctionBuilder>();
+
+        mockNanoWaveFunctionBuilder
+            .Setup(b => b.Build(It.IsAny<TimeSpan>()))
+            .ReturnsAsync(new Mock<INanoWaveFunctionContainer>().Object);
+
+        var mockNanoTypeDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var mockSuperpositionSingletonRegistry = new Mock<ISuperpositionSingletonRegistry>();
+        var mockSuperpositionMappingRegistry = new Mock<ISuperpositionMappingRegistry>();
+        var teraAgent = GetDefaultTeraAgent(mockNanoTypeDependencyService.Object, mockNanoWaveFunctionBuilder.Object);
+        var parameters = GetCollapseParameters(CollapseSingletonNanoTypeId);
+        var waveFunction = await GetWaveFunction(true, teraAgent, mockSuperpositionSingletonRegistry.Object, mockSuperpositionMappingRegistry.Object);
+
+        mockSuperpositionMappingRegistry
+            .Setup(r => r.Fetch(It.IsAny<Guid>()))
+            .ReturnsAsync(new InternalSuperpositionMapping
+            {
+                Mode = SuperpositionMode.Collapse,
+                Scope = SuperpositionScope.Singleton
+            });
+
+        var result = await waveFunction.Collapse(parameters);
 
         result.Should().BeNull();
+
+        mockNanoTypeDependencyService.VerifyNoOtherCalls();
+        mockSuperpositionSingletonRegistry.Verify(r => r.Fetch(CollapseSingletonNanoTypeId), Times.Once);
+        mockSuperpositionSingletonRegistry.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task Collapse_WhenTheMappingExistsButHasAnInvalidScopeValue_ThrowsAnException()
+    {
+        var invalidScopeValue = DateTime.Today.Second;
+        var mockSuperpositionMappingRegistry = new Mock<ISuperpositionMappingRegistry>();
+        var parameters = GetCollapseParameters(CollapseSingletonNanoTypeId);
+        var waveFunction = await GetWaveFunction(true, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+
+        mockSuperpositionMappingRegistry
+            .Setup(r => r.Fetch(It.IsAny<Guid>()))
+            .ReturnsAsync(new InternalSuperpositionMapping
+            {
+                Scope = (SuperpositionScope)invalidScopeValue,
+            });
+
+        var error = Assert.ThrowsAsync<NotSupportedException>(() => waveFunction.Collapse(parameters))!;
+
+        error.Should().NotBeNull();
+        error.Message.Should().Be($"The scope {invalidScopeValue} is not supported.");
+    }
+
+    [Test]
+    public async Task Collapse_WhenCollapsingASingletonAndTheSingletonDoesNotExistAndCouldBeCollapsed_ReturnsTheAgentAndRegistersTheSingleton()
+    {
+        var mockNanoTypeDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var mockSuperpositionSingletonRegistry = new Mock<ISuperpositionSingletonRegistry>();
+        var teraAgent = GetDefaultTeraAgent(mockNanoTypeDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, mockSuperpositionSingletonRegistry.Object);
+        var parameters = GetCollapseParameters(CollapseSingletonNanoTypeId);
+
+        mockSuperpositionSingletonRegistry
+            .Setup(x => x.Register(It.IsAny<Guid>(), It.IsAny<INanoAgent>()))
+            .ReturnsAsync((Guid _, INanoAgent nanoAgent) => nanoAgent);
+
+        var result = (await waveFunction.Collapse(parameters))!;
+
+        result.Should().NotBeNull();
+        result.TypeId.Guid.Should().Be(CollapseSingletonNanoTypeId);
+        result.InstanceId.Guid.Should().Be(CollapseSingletonNanoInstanceId);
+
+        mockNanoTypeDependencyService.VerifyNoOtherCalls();
+        mockSuperpositionSingletonRegistry.Verify(r => r.Fetch(CollapseSingletonNanoTypeId), Times.Once);
+        mockSuperpositionSingletonRegistry.Verify(r => r.Register(CollapseSingletonNanoTypeId, It.IsAny<INanoAgent>()), Times.Once);
+        mockSuperpositionSingletonRegistry.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task Collapse_WhenTheMappingIsRecollapsableAndThereIsNoAgentCollapsed_DoesNotRegisterTheDependency()
+    {
+        var mockNanoWaveFunctionBuilder = new Mock<INanoWaveFunctionBuilder>();
+
+        mockNanoWaveFunctionBuilder
+            .Setup(b => b.Build(It.IsAny<TimeSpan>()))
+            .ReturnsAsync(new Mock<INanoWaveFunctionContainer>().Object);
+
+        var mockNanoTypeDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockNanoTypeDependencyService.Object, mockNanoWaveFunctionBuilder.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent);
+        var parameters = GetCollapseParameters(RecollapseRequestNanoTypeId);
+
+        var result = await waveFunction.Collapse(parameters);
+
+        result.Should().BeNull();
+
+        mockNanoTypeDependencyService.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task Collapse_WhenTheMappingIsRecollapsableAndThereIsNoTeraIdAttached_DoesNotRegisterTheDependency()
+    {
+        var mockNanoTypeDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockNanoTypeDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent);
+        var parameters = GetCollapseParameters(RecollapseRequestNanoTypeId);
+
+        parameters = parameters with
+        {
+            TeraAgentId = null
+        };
+
+        var result = (await waveFunction.Collapse(parameters))!;
+
+        result.Should().NotBeNull();
+        result.TypeId.Guid.Should().Be(RecollapseRequestNanoTypeId);
+        result.InstanceId.Guid.Should().Be(RecollapseRequestNanoInstanceId);
+
+        mockNanoTypeDependencyService.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task Collapse_WhenTheMappingIsRecollapsableAndThereIsNoTeraIdAttached_RegistersTheDependency()
+    {
+        var mockNanoTypeDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockNanoTypeDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent);
+        var parameters = GetCollapseParameters(RecollapseRequestNanoTypeId);
+
+        var result = (await waveFunction.Collapse(parameters))!;
+
+        result.Should().NotBeNull();
+        result.TypeId.Guid.Should().Be(RecollapseRequestNanoTypeId);
+        result.InstanceId.Guid.Should().Be(RecollapseRequestNanoInstanceId);
+
+        mockNanoTypeDependencyService
+            .Verify(s =>
+                s.IncrementTeraAgentNanoTypeDependencies(
+                    parameters.TeraAgentId!.Value, 
+                    It.Is<SplinterId>(id => id.Guid == RecollapseRequestNanoTypeId),
+                    1), Times.Once);
+        mockNanoTypeDependencyService.VerifyNoOtherCalls();
     }
 
     [Test]
@@ -116,6 +290,153 @@ public class SuperpositionNanoWaveFunctionTests
         errorMessage.Should().NotBeNull();
     }
 
+    [Test]
+    public async Task Recollapse_WhenMappingIsNotFound_ReturnsNull()
+    {
+        var mockSuperpositionMappingRegistry = new Mock<ISuperpositionMappingRegistry>();
+
+        var waveFunction = await GetWaveFunction(true, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+        var parameters = GetRecollapseParameters(NonExistentNanoTypeId);
+        var result = await waveFunction.Recollapse(parameters);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task Recollapse_WhenMappingIsFoundAndValid_ReturnsTheCorrectRecollapseOperationId()
+    {
+        var recollapseId = Guid.NewGuid();
+        var mockSuperpositionMappingRegistry = GetDefaultMockRegistry();
+        var mockDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+        var parameters = GetRecollapseParameters(RecollapseRequestNanoTypeId);
+
+        mockDependencyService
+            .Setup(s => s.SignalNanoTypeRecollapses(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>?>()))
+            .ReturnsAsync(recollapseId);
+
+        var result = (await waveFunction.Recollapse(parameters))!;
+
+        result.Should().NotBeNull();
+        result.Should().Be(recollapseId);
+    }
+
+    [Test]
+    public async Task Recollapse_WhenMappingIsFoundAndValidAndNoSourceTeraIdIsProvided_UsesTheTeraParentId()
+    {
+        var mockSuperpositionMappingRegistry = GetDefaultMockRegistry();
+        var mockDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+        var parameters = GetRecollapseParameters(RecollapseRequestNanoTypeId);
+        
+        await waveFunction.Recollapse(parameters);
+
+        mockDependencyService            
+            .Verify(s => 
+                s.SignalNanoTypeRecollapses(TestTeraId, RecollapseRequestNanoTypeId, parameters.TeraIds), Times.Once);
+    }
+
+    [Test]
+    public async Task Recollapse_WhenMappingIsFoundAndValidAndASourceTeraIdIsProvided_UsesTheProvidedSourceTeraId()
+    {
+        var mockSuperpositionMappingRegistry = GetDefaultMockRegistry();
+        var mockDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+        var parameters = GetRecollapseParameters(RecollapseRequestNanoTypeId);
+
+        parameters = parameters with
+        {
+            SourceTeraId = Guid.NewGuid()
+        };
+
+        await waveFunction.Recollapse(parameters);
+
+        mockDependencyService
+            .Verify(s =>
+                s.SignalNanoTypeRecollapses(parameters.SourceTeraId.Value, RecollapseRequestNanoTypeId, parameters.TeraIds), Times.Once);
+    }
+
+    [Test]
+    public async Task Recollapse_WhenMappingIsFound_MapsAndSyncsTheCorrectNewMapping()
+    {
+        var mockSuperpositionMappingRegistry = GetDefaultMockRegistry();
+        var mockDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+        var parameters = GetRecollapseParameters(RecollapseRequestNanoTypeId);
+
+        await waveFunction.Recollapse(parameters);
+
+        mockSuperpositionMappingRegistry
+            .Verify(r => r.Synch(It.Is<InternalSuperpositionMapping>(m =>
+                m.NanoTypeId == RecollapseRequestNanoTypeId
+                && m.Mode == SuperpositionMode.Recollapse
+                && m.Scope == parameters.SuperpositionMapping.Scope
+                && m.NanoInstanceType == parameters.SuperpositionMapping.NanoInstanceType
+                && m.Description == parameters.SuperpositionMapping.Description)), Times.Once);
+    }
+
+    [Test]
+    public async Task Recollapse_WhenMappingIsFoundButNewMappingHasNoDescription_UsesTheOldMappingDescription()
+    {
+        var mockSuperpositionMappingRegistry = GetDefaultMockRegistry();
+        var mockDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+        var parameters = GetRecollapseParameters(RecollapseRequestNanoTypeId);
+
+        parameters = parameters with
+        {
+            SuperpositionMapping = parameters.SuperpositionMapping with
+            {
+                Description = null
+            }
+        };
+
+        await waveFunction.Recollapse(parameters);
+
+        mockSuperpositionMappingRegistry
+            .Verify(r => r.Synch(It.Is<InternalSuperpositionMapping>(m =>
+                m.Description == RecollapseRequestMapping.Description)), Times.Once);
+    }
+
+    [Test]
+    public async Task Recollapse_WhenMappingIsFoundButInvalidNewNanoInstanceTypeIsProvided_ThrowsAnError()
+    {
+        var mockSuperpositionMappingRegistry = GetDefaultMockRegistry();
+        var mockDependencyService = new Mock<ITeraAgentNanoTypeDependencyService>();
+        var teraAgent = GetDefaultTeraAgent(mockDependencyService.Object);
+        var waveFunction = await GetWaveFunction(true, teraAgent, superpositionMappingRegistry: mockSuperpositionMappingRegistry.Object);
+        var parameters = GetRecollapseParameters(RecollapseRequestNanoTypeId);
+
+        parameters = parameters with
+        {
+            SuperpositionMapping = parameters.SuperpositionMapping with
+            {
+                NanoInstanceType = "InvalidNanoInstanceType"
+            }
+        };
+
+        var error = Assert.ThrowsAsync<InvalidNanoInstanceException>(() => waveFunction.Recollapse(parameters))!;
+
+        error.Should().NotBeNull();
+        error.Message.Should().Be("Could not find the nano instance type InvalidNanoInstanceType.");
+    }
+
+    [Test]
+    public async Task DisposeAsync_WhenInvoked_InvokesTheRegistryDispose()
+    {
+        var mockSingletonRegistry = new Mock<ISuperpositionSingletonRegistry>();
+        var waveFunction = await GetWaveFunction(true, superpositionSingletonRegistry: mockSingletonRegistry.Object);
+
+        await waveFunction.DisposeAsync();
+
+        mockSingletonRegistry.Verify(r => r.DisposeAsync(), Times.Once);
+    }
+
     private static NanoCollapseParameters GetCollapseParameters(Guid nanoTypeId)
     {
         return new NanoCollapseParameters
@@ -125,21 +446,32 @@ public class SuperpositionNanoWaveFunctionTests
         };
     }
 
-    private static NanoRecollapseParameters GetRecollapseParameters(Guid nanoTypeId)
+    private static NanoSuperpositionMappingRecollapseParameters GetRecollapseParameters(Guid nanoTypeId)
     {
         return new NanoSuperpositionMappingRecollapseParameters
         {
-            NanoTypeId = nanoTypeId
+            NanoTypeId = nanoTypeId,
+            SuperpositionMapping = new SuperpositionMapping
+            {
+                Mode = SuperpositionMode.Collapse,
+                NanoInstanceType = typeof(UnitTestNanoAgentAlternative1).AssemblyQualifiedName ?? string.Empty,
+                Description = Guid.NewGuid().ToString()
+            }
         };
     }
 
-    private static IServiceScope GetDefaultScope()
+    private static IServiceScope GetDefaultScope(
+        ITeraAgentNanoTypeDependencyService? teraAgentNanoTypeDependencyService = null,
+        INanoWaveFunctionBuilder? nanoWaveFunctionBuilder = null)
     {
         var result = new Mock<IServiceScope>();
 
+        teraAgentNanoTypeDependencyService ??= new Mock<ITeraAgentNanoTypeDependencyService>().Object;
+        nanoWaveFunctionBuilder ??= new ActivatorNanoWaveFunctionBuilder();
+
         result
             .Setup(s => s.Start())
-            .ReturnsAsync(GetDefaultScope);
+            .ReturnsAsync(result.Object);
 
         result
             .Setup(s => s.Resolve<ISuperpositionMappingResolver>())
@@ -147,18 +479,30 @@ public class SuperpositionNanoWaveFunctionTests
 
         result
             .Setup(s => s.Resolve<INanoWaveFunctionBuilder>())
-            .ReturnsAsync(new ActivatorNanoWaveFunctionBuilder());
+            .ReturnsAsync(nanoWaveFunctionBuilder);
+
+        result
+            .Setup(s => s.Resolve<ITeraAgentNanoTypeDependencyService>())
+            .ReturnsAsync(teraAgentNanoTypeDependencyService);
 
         return result.Object;
     }
 
-    private static ITeraAgent GetDefaultTeraAgent()
+    private static ITeraAgent GetDefaultTeraAgent(
+        ITeraAgentNanoTypeDependencyService? teraAgentNanoTypeDependencyService = null,
+        INanoWaveFunctionBuilder? nanoWaveFunctionBuilder = null)
     {
         var result = new Mock<ITeraAgent>();
 
         result
             .Setup(t => t.Scope)
-            .Returns(GetDefaultScope);
+            .Returns(GetDefaultScope(
+                teraAgentNanoTypeDependencyService,
+                nanoWaveFunctionBuilder));
+
+        result
+            .SetupGet(t => t.TeraId)
+            .Returns(TestTeraId);
 
         return result.Object;
     }
@@ -189,7 +533,7 @@ public class SuperpositionNanoWaveFunctionTests
         return result.Object;
     }
 
-    private static ISuperpositionMappingRegistry GetMockRegistry()
+    private static Mock<ISuperpositionMappingRegistry> GetDefaultMockRegistry()
     {
         var result = new Mock<ISuperpositionMappingRegistry>();
 
@@ -243,31 +587,47 @@ public class SuperpositionNanoWaveFunctionTests
                 };
             });
 
-        return result.Object;
+        return result;
     }
 
-    private static async Task<ISuperpositionNanoWaveFunction> GetWaveFunction(bool initialise = false)
+    private static ISuperpositionMappingRegistry GetDefaultRegistry()
     {
+        return GetDefaultMockRegistry().Object;
+    }
+
+    private static async Task<ISuperpositionNanoWaveFunction> GetWaveFunction(
+        bool initialise = false,
+        ITeraAgent? teraAgent  = null,
+        ISuperpositionSingletonRegistry? superpositionSingletonRegistry = null,
+        ISuperpositionMappingRegistry? superpositionMappingRegistry = null)
+    {
+        superpositionSingletonRegistry ??= new Mock<ISuperpositionSingletonRegistry>().Object;
+        superpositionMappingRegistry ??= GetDefaultRegistry();
+
         var waveFunction = new SuperpositionNanoWaveFunction(
             new SuperpositionSettings
             {
                 Mappings = Enumerable.Empty<SuperpositionMapping>()
             },
-            GetMockRegistry(),
-            new Mock<ISuperpositionSingletonRegistry>().Object);
+            superpositionMappingRegistry,
+            superpositionSingletonRegistry);
 
-        if (initialise)
+        if (!initialise)
         {
-            await waveFunction.Initialise(
-                GetDefaultTeraAgent(),
-                new[]
-                {
-                    RecollapseRequestMapping,
-                    RecollapseSingletonMapping,
-                    CollapseRequestMapping,
-                    CollapseSingletonMapping
-                });
+            return waveFunction;
         }
+
+        teraAgent ??= GetDefaultTeraAgent();
+
+        await waveFunction.Initialise(
+            teraAgent,
+            new[]
+            {
+                RecollapseRequestMapping,
+                RecollapseSingletonMapping,
+                CollapseRequestMapping,
+                CollapseSingletonMapping
+            });
 
         return waveFunction;
     }
