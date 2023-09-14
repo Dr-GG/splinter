@@ -42,9 +42,9 @@ public class AutofacServiceScope : IServiceScope
         {
             return _scope.Resolve<TService>();
         }
-        catch (DependencyResolutionException)
+        catch (DependencyResolutionException error)
         {
-            throw new ServiceUnresolvedException(typeof(TService));
+            throw new ServiceUnresolvedException(typeof(TService), error);
         }
     }
 

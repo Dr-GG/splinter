@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Diagnostics.CodeAnalysis;
+using Autofac;
 using Splinter.NanoInstances.Default.Extensions;
 using Splinter.NanoTypes.Default.Domain.Settings;
 using Tenjin.Autofac.Extensions;
@@ -8,6 +9,7 @@ namespace Splinter.NanoInstances.Default;
 /// <summary>
 /// The Autofac module that registers all dependency injections for the default Splinter services.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class NanoInstanceDefaultModule : Module
 {
     private readonly SplinterDefaultSettings _settings;

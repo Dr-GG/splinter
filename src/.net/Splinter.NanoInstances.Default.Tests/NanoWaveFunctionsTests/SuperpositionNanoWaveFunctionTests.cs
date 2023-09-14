@@ -30,6 +30,7 @@ public class SuperpositionNanoWaveFunctionTests
 {
     private static readonly Guid TestTeraId = new("{9610E84E-BEC5-4265-AB0C-A9972D240A09}");
     private static readonly Guid NonExistentNanoTypeId = new ("{573BCB7E-FB5B-4AB9-99B8-FE88BC202E7F}");
+    private static Guid RequestNanoTypeId = UnitTestNanoAgentAlternative1.NanoTypeId.Guid;
     private static readonly SuperpositionMapping CollapseRequestMapping = new()
     {
         Mode = SuperpositionMode.Collapse,
@@ -73,6 +74,14 @@ public class SuperpositionNanoWaveFunctionTests
         var result = await waveFunction.Collapse(parameters);
 
         result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task Collapse_WhenCollapsingARequestScopeNanoType_ReturnsTheNanoType()
+    {
+        var waveFunction = await GetWaveFunction(true);
+        var parameters = GetCollapseParameters(RequestNanoTypeId);
+        var result = await waveFunction.Collapse(parameters);
     }
 
     [Test]
@@ -244,19 +253,20 @@ public class SuperpositionNanoWaveFunctionTests
             {
                 Mappings = Enumerable.Empty<SuperpositionMapping>()
             },
-            GetDefaultTeraAgent(),
             GetMockRegistry(),
             new Mock<ISuperpositionSingletonRegistry>().Object);
 
         if (initialise)
         {
-            await waveFunction.Initialise(new[]
-            {
-                RecollapseRequestMapping,
-                RecollapseSingletonMapping,
-                CollapseRequestMapping,
-                CollapseSingletonMapping
-            });
+            await waveFunction.Initialise(
+                GetDefaultTeraAgent(),
+                new[]
+                {
+                    RecollapseRequestMapping,
+                    RecollapseSingletonMapping,
+                    CollapseRequestMapping,
+                    CollapseSingletonMapping
+                });
         }
 
         return waveFunction;

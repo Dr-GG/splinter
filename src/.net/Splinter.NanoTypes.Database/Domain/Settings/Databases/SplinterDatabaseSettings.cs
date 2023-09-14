@@ -15,5 +15,5 @@ public class SplinterDatabaseSettings
     /// <summary>
     /// The startup settings of the ITeraPlatform instance.
     /// </summary>
-    public TeraPlatformSettings TeraPlatform { get; set; } = null!;
+    public TeraPlatformSettings TeraPlatform { get; set; } = new();
 }

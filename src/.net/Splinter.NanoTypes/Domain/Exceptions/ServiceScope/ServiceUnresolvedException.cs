@@ -10,6 +10,6 @@ public class ServiceUnresolvedException : SplinterException
     /// <summary>
     /// Creates a new instance.
     /// </summary>
-    public ServiceUnresolvedException(Type type) : base($"Could not resolve the service type {type.FullName}.")
+    public ServiceUnresolvedException(Type type, Exception innerException) : base($"Could not resolve the service type {type.FullName}.", innerException)
     { }
 }

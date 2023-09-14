@@ -1,5 +1,8 @@
-﻿using Autofac;
+﻿using System.Diagnostics.CodeAnalysis;
+using Autofac;
+using Splinter.NanoInstances.Default.Interfaces.NanoWaveFunctions;
 using Splinter.NanoInstances.Default.Interfaces.Superposition;
+using Splinter.NanoInstances.Default.NanoWaveFunctions;
 using Splinter.NanoInstances.Default.Services.Messaging;
 using Splinter.NanoInstances.Default.Services.NanoTypes;
 using Splinter.NanoInstances.Default.Services.OperatingSystems;
@@ -19,6 +22,7 @@ namespace Splinter.NanoInstances.Default.Extensions;
 /// <summary>
 /// The collection of Autofac container extensions.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class ContainerExtensions
 {
     /// <summary>
@@ -27,7 +31,7 @@ public static class ContainerExtensions
     public static void RegisterDefaultServices(this ContainerBuilder container)
     {
         container
-            .RegisterType<JsonSuperpositionMappingResolver>()
+            .RegisterType<SuperpositionMappingResolver>()
             .As<ISuperpositionMappingResolver>()
             .InstancePerLifetimeScope();
 
@@ -74,6 +78,11 @@ public static class ContainerExtensions
         container
             .RegisterType<RecollapseNanoTypeService>()
             .As<IRecollapseNanoTypeService>()
+            .InstancePerLifetimeScope();
+
+        container
+            .RegisterType<SuperpositionNanoWaveFunction>()
+            .As<ISuperpositionNanoWaveFunction>()
             .InstancePerLifetimeScope();
     }
 }

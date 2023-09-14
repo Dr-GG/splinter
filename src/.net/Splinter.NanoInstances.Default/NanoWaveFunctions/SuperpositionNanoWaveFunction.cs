@@ -27,8 +27,9 @@ namespace Splinter.NanoInstances.Default.NanoWaveFunctions;
 /// </summary>
 public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
 {
+    private ITeraAgent? _parent;
+
     private readonly SuperpositionSettings _settings;
-    private readonly ITeraAgent _parent;
     private readonly ISuperpositionMappingRegistry _mappingRegistry;
     private readonly ISuperpositionSingletonRegistry _singletonRegistry;
 
@@ -39,20 +40,22 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
     /// </summary>
     public SuperpositionNanoWaveFunction(
         SuperpositionSettings settings,
-        ITeraAgent parent,
         ISuperpositionMappingRegistry mappingRegistry, 
         ISuperpositionSingletonRegistry singletonRegistry)
     {
         _settings = settings;
-        _parent = parent;
         _mappingRegistry = mappingRegistry;
         _singletonRegistry = singletonRegistry;
     }
 
+    private ITeraAgent Parent => _parent.AssertNanoTypeReturnGetterValue();
+
     /// <inheritdoc />
-    public async Task Initialise(IEnumerable<SuperpositionMapping> superpositionMappings)
+    public async Task Initialise(ITeraAgent parent, IEnumerable<SuperpositionMapping> superpositionMappings)
     {
-        await using var scope = await _parent.Scope.Start();
+        _parent = parent;
+
+        await using var scope = await Parent.Scope.Start();
         var resolver = await scope.Resolve<ISuperpositionMappingResolver>();
         var waveBuilder = await scope.Resolve<INanoWaveFunctionBuilder>();
         var mappings = (await resolver.Resolve(superpositionMappings)).ToArray();
@@ -75,7 +78,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
             return null;
         }
 
-        await using var scope = await _parent.Scope.Start();
+        await using var scope = await Parent.Scope.Start();
         var dependencyService = await scope.Resolve<ITeraAgentNanoTypeDependencyService>();
         var mapping = await _mappingRegistry.Fetch(parameters.NanoTypeId);
 
@@ -116,7 +119,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
 
         var newMapping = recollapseParameters.SuperpositionMapping;
         var newInternalMapping = ToNewInternalMapping(originalMapping, newMapping);
-        var sourceTeraId = parameters.SourceTeraId ?? _parent.TeraId;
+        var sourceTeraId = parameters.SourceTeraId ?? Parent.TeraId;
 
         await _mappingRegistry.Synch(newInternalMapping);
         await SynchContainer(newInternalMapping.NanoTypeId, newInternalMapping.NanoInstanceType);
@@ -144,7 +147,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
 
     private async Task<Guid?> SignalNanoTypeRecollapses(Guid sourceTeraId, Guid nanoTypeId, IEnumerable<Guid>? teraIds)
     {
-        await using var scope = await _parent.Scope.Start();
+        await using var scope = await Parent.Scope.Start();
         var dependencyService = await scope.Resolve<ITeraAgentNanoTypeDependencyService>();
 
         return await dependencyService.SignalNanoTypeRecollapses(sourceTeraId, nanoTypeId, teraIds);
@@ -195,6 +198,8 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
     public async ValueTask DisposeAsync()
     {
         await _singletonRegistry.DisposeAsync();
+
+        GC.SuppressFinalize(this);
     }
 
     private async Task<INanoAgent?> CollapseNanoAgent(

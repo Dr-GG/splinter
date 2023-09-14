@@ -14,13 +14,16 @@ namespace Splinter.NanoInstances.Default.Services.Superposition;
 /// <summary>
 /// The default implementation of the ISuperpositionMappingResolved interface based on a JSON file.
 /// </summary>
-public class JsonSuperpositionMappingResolver : ISuperpositionMappingResolver
+public class SuperpositionMappingResolver : ISuperpositionMappingResolver
 {
     /// <inheritdoc />
     public Task<IEnumerable<InternalSuperpositionMapping>> Resolve(
         IEnumerable<SuperpositionMapping> superpositionMappings)
     {
-        return Task.FromResult(superpositionMappings.Select(GetInternalMapping));
+        return Task.FromResult<IEnumerable<InternalSuperpositionMapping>>(
+            superpositionMappings
+                .Select(GetInternalMapping)
+                .ToList());
     }
 
     private static InternalSuperpositionMapping GetInternalMapping(SuperpositionMapping mapping)

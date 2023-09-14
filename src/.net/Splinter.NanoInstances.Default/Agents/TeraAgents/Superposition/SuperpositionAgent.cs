@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Splinter.NanoInstances.Agents.TeraAgents;
 using Splinter.NanoInstances.Default.Interfaces.NanoWaveFunctions;
-using Splinter.NanoInstances.Default.Interfaces.Superposition;
-using Splinter.NanoInstances.Default.NanoWaveFunctions;
 using Splinter.NanoInstances.Extensions;
 using Splinter.NanoTypes.Default.Domain.Parameters.Initialisation;
-using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
 using Splinter.NanoTypes.Default.Domain.Superposition;
 using Splinter.NanoTypes.Default.Interfaces.Services.NanoTypes;
 using Splinter.NanoTypes.Default.Interfaces.Services.Superposition;
@@ -104,14 +101,9 @@ public class SuperpositionAgent : TeraAgent, ISuperpositionAgent
     private async Task InitialiseSuperpositionWaveFunction(
         IEnumerable<SuperpositionMapping> superpositionMappings)
     {
-        var settings = await Scope.Resolve<SuperpositionSettings>();
-        var mappingRegistry = await Scope.Resolve<ISuperpositionMappingRegistry>();
-        var singletonRegistry = await Scope.Resolve<ISuperpositionSingletonRegistry>();
-        var waveFunction = new SuperpositionNanoWaveFunction(
-            settings, this, mappingRegistry, singletonRegistry);
+        var waveFunction = await Scope.Resolve<ISuperpositionNanoWaveFunction>();
 
-        await waveFunction.Initialise(superpositionMappings);
-
+        await waveFunction.Initialise(this, superpositionMappings);
         NanoWaveFunction = waveFunction;
     }
 

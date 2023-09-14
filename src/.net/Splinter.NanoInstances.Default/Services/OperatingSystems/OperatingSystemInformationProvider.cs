@@ -52,14 +52,14 @@ public class OperatingSystemInformationProvider : IOperatingSystemInformationPro
             return OperatingSystem.FreeBSD;
         }
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            return OperatingSystem.Linux;
-        }
-
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             return OperatingSystem.OSX;
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return OperatingSystem.Linux;
         }
 
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 

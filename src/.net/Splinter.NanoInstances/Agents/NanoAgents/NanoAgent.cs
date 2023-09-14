@@ -244,7 +244,7 @@ public abstract class NanoAgent : INanoAgent
             return false;
         }
 
-        if (nanoAgent.HolonType == HolonType.Nano && HasTeraParent)
+        if (nanoAgent.HolonType == HolonType.Nano && (HasTeraParent || HolonType == HolonType.Tera))
         {
             nanoAgent.TeraParent = TeraParent;
         }
