@@ -62,8 +62,8 @@ public class OperatingSystemInformationProvider : IOperatingSystemInformationPro
             return OperatingSystem.Linux;
         }
 
-        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
-            ? OperatingSystem.Windows 
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? OperatingSystem.Windows
             : OperatingSystem.Unknown;
     }
 }

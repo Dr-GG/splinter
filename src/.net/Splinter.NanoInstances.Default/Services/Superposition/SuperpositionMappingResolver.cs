@@ -28,7 +28,7 @@ public class SuperpositionMappingResolver : ISuperpositionMappingResolver
 
     private static InternalSuperpositionMapping GetInternalMapping(SuperpositionMapping mapping)
     {
-        var type = Type.GetType(mapping.NanoInstanceType) 
+        var type = Type.GetType(mapping.NanoInstanceType)
                    ?? throw new InvalidNanoTypeException($"Could not find the nano type {mapping.NanoInstanceType}.");
 
         NanoTypeUtilities.GetSplinterIds(type, out var nanoTypeId, out _);

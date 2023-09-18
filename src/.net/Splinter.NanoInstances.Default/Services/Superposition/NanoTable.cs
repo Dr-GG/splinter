@@ -55,7 +55,7 @@ public class NanoTable : INanoTable
     }
 
     private IEnumerable<INanoReference> GetNanoReferences(
-        IEnumerable<INanoReference> references, 
+        IEnumerable<INanoReference> references,
         Guid nanoTypeId)
     {
         lock (_lock)

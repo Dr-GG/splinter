@@ -58,8 +58,8 @@ public class SuperpositionMappingRegistry : ISuperpositionMappingRegistry
         {
             _rwLock.AcquireReaderLock(_settings.RegistryTimeoutSpan);
 
-            return _mappings.TryGetValue(nanoTypeId, out var result) 
-                ? Task.FromResult<InternalSuperpositionMapping?>(result) 
+            return _mappings.TryGetValue(nanoTypeId, out var result)
+                ? Task.FromResult<InternalSuperpositionMapping?>(result)
                 : Task.FromResult<InternalSuperpositionMapping?>(null);
         }
         finally

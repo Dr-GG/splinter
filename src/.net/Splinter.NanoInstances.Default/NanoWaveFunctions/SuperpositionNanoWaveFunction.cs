@@ -42,7 +42,7 @@ public class SuperpositionNanoWaveFunction : ISuperpositionNanoWaveFunction
     /// </summary>
     public SuperpositionNanoWaveFunction(
         SuperpositionSettings settings,
-        ISuperpositionMappingRegistry mappingRegistry, 
+        ISuperpositionMappingRegistry mappingRegistry,
         ISuperpositionSingletonRegistry singletonRegistry)
     {
         _settings = settings;

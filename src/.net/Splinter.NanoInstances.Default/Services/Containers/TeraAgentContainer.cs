@@ -177,8 +177,8 @@ public class TeraAgentContainer : ITeraAgentContainer
         }
 
         _previousRelativeTimestamp = _currentRelativeTimestamp;
-        _currentRelativeTimestamp = Parameters.IncrementTimestamp == null 
-            ? DateTime.UtcNow 
+        _currentRelativeTimestamp = Parameters.IncrementTimestamp == null
+            ? DateTime.UtcNow
             : _currentRelativeTimestamp.Value.Add(Parameters.IncrementTimestamp.Value);
 
         return _currentRelativeTimestamp.Value;

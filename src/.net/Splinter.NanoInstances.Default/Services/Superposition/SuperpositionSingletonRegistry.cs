@@ -60,8 +60,8 @@ public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
         {
             _rwLock.AcquireReaderLock(_settings.RegistryTimeoutSpan);
 
-            return _singletonMap.TryGetValue(nanoTypeId, out var result) 
-                ? Task.FromResult<INanoAgent?>(result) 
+            return _singletonMap.TryGetValue(nanoTypeId, out var result)
+                ? Task.FromResult<INanoAgent?>(result)
                 : Task.FromResult<INanoAgent?>(null);
         }
         finally

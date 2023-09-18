@@ -52,7 +52,7 @@ public class RecollapseNanoTypeService : IRecollapseNanoTypeService
     }
 
     private static async Task Recollapse(
-        INanoAgent parent, 
+        INanoAgent parent,
         INanoReference reference,
         Guid nanoTypeId)
     {
