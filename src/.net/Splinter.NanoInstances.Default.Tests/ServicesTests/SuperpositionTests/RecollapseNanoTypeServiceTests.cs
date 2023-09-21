@@ -20,7 +20,7 @@ namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests;
 public class RecollapseNanoTypeServiceTests
 {
     private const string DefaultJson = "{\"nanoTypeId\":\"604627A0-8106-43E7-9DA6-AB965FCB1199\"}";
-
+    
     [Test]
     public async Task Recollapse_WhenIsNanoTypeAndNoParent_ReturnsZero()
     {

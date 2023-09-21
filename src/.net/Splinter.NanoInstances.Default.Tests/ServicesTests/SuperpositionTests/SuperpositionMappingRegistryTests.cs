@@ -17,7 +17,19 @@ public class SuperpositionMappingRegistryTests
 {
     private const int NumberOfRegisterThreads = 10000;
     private static readonly Guid TestNanoTypeId = new("{B0E820EA-C9EE-4BF4-951D-CA1AB35A9701}");
-        
+
+    [Test]
+    public async Task Register_WhenMappingsIsEmpty_SavesNothing()
+    {
+        var registry = GetRegistry();
+
+        await registry.Register(Array.Empty<InternalSuperpositionMapping>());
+
+        var mapping = await registry.Fetch(TestNanoTypeId);
+
+        mapping.Should().BeNull();
+    }
+
     [Test]
     public async Task Register_WhenRegisteringTheSameMappingConcurrently_SavesCorrectly()
     {

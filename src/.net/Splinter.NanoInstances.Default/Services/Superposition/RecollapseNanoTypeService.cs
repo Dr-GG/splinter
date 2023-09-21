@@ -94,11 +94,6 @@ public class RecollapseNanoTypeService : IRecollapseNanoTypeService
 
     private static async Task InitialiseNewNanoAgent(INanoReference nanoReference)
     {
-        if (nanoReference.HasNoReference)
-        {
-            return;
-        }
-
         var teraParent = nanoReference.Reference.TeraParent;
         var initParameters = new NanoInitialisationParameters
         {

@@ -10,6 +10,7 @@ using Splinter.NanoInstances.Default.Services.Superposition;
 using Splinter.NanoInstances.Default.Tests.Agents.NanoAgents;
 using Splinter.NanoTypes.Default.Domain.Settings.Superposition;
 using Splinter.NanoTypes.Domain.Core;
+using Splinter.NanoTypes.Domain.Parameters.Termination;
 using Splinter.NanoTypes.Interfaces.Agents.NanoAgents;
 
 namespace Splinter.NanoInstances.Default.Tests.ServicesTests.SuperpositionTests;
@@ -27,7 +28,7 @@ public class SuperpositionSingletonRegistryTests
     {
         INanoAgent lastNanoAgent = new UnitTestNanoAgent();
         var registry = GetRegistry();
-        var singletons = GetRandomSingleton();
+        var singletons = GetRandomSingletons();
         var rootLock = new object();
         var tasks = singletons.Select(s =>
             {
@@ -55,7 +56,7 @@ public class SuperpositionSingletonRegistryTests
     public async Task Register_WhenRegisteringSameNanoInstancesButDifferentInstances_KeepsTheOriginalSingleton()
     {
         var registry = GetRegistry();
-        var singletons = GetRandomSingleton(TestNanoInstanceId).ToList();
+        var singletons = GetRandomSingletons(TestNanoInstanceId).ToList();
         var originalSingleton = singletons.First();
         var tasks = singletons.Select(s => registry.Register(TestNanoTypeId, s))
             .Cast<Task>()
@@ -70,9 +71,30 @@ public class SuperpositionSingletonRegistryTests
         originalSingleton.InstanceId.Guid.Should().Be(nanoAgent.InstanceId.Guid);
     }
 
-    private static IEnumerable<INanoAgent> GetRandomSingleton(Guid? nanoInstanceId = null)
+    [Test]
+    public async Task DisposeAsync_WhenInvoked_DisposesAllSingletonReferences()
     {
-        var result = new List<INanoAgent>();
+        var registry = GetRegistry();
+        var mockSingletons = GetRandomMockSingletons(TestNanoInstanceId).ToList();
+
+        foreach (var singleton in mockSingletons)
+        {
+            await registry.Register(Guid.NewGuid(), singleton.Object);
+        }
+
+        await registry.DisposeAsync();
+
+        foreach (var singleton in mockSingletons)
+        {
+            singleton.Verify(n => 
+                n.Terminate(It.Is<NanoTerminationParameters>(p => p.Force)), 
+                Times.Once);
+        }
+    }
+
+    private static IEnumerable<Mock<INanoAgent>> GetRandomMockSingletons(Guid? nanoInstanceId = null)
+    {
+        var result = new List<Mock<INanoAgent>>();
 
         for (var i = 0; i < NumberOfThreads; i++)
         {
@@ -88,10 +110,17 @@ public class SuperpositionSingletonRegistryTests
                     Guid = guid
                 });
 
-            result.Add(mock.Object);
+            result.Add(mock);
         }
 
         return result;
+    }
+
+    private static IEnumerable<INanoAgent> GetRandomSingletons(Guid? nanoInstanceId = null)
+    {
+        return GetRandomMockSingletons(nanoInstanceId)
+            .Select(m => m.Object)
+            .ToList();
     }
 
     private static ISuperpositionSingletonRegistry GetRegistry()

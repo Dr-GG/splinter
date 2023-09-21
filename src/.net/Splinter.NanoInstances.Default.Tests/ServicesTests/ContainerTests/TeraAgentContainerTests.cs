@@ -22,6 +22,31 @@ public class TeraAgentContainerTests
     private const int TestExplicitMultiThreadCount = 5;
 
     [Test]
+    public async Task Start_WhenInvokedMultipleTimes_DoesNotAffectTheContainer()
+    {
+        await using var container = GetContainer();
+        var parameters = new TeraAgentContainerExecutionParameters();
+        var agents = GetTestAgents(executionLimit: 1).ToList();
+
+        foreach (var agent in agents)
+        {
+            await container.Register(agent);
+        }
+
+        await container.Initialise(parameters);
+        await container.Start();
+        await container.Start();
+        await container.Start();
+
+        await Task.Delay(1000);
+
+        await container.Stop();
+
+        container.NumberOfTeraAgents.Should().Be(DefaultNumberOfTestAgents);
+        TeraAgentContainerUnitTestAgent.ExecutionHit.Should().Be(DefaultNumberOfTestAgents);
+    }
+
+    [Test]
     public void Execute_WhenContainerIsNotInitialised_ThrowsException()
     {
         using var container = GetContainer();

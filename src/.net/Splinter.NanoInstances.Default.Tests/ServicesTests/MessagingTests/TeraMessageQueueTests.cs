@@ -70,6 +70,20 @@ public class TeraMessageQueueTests
             Times.Exactly(TestMaximumNumberOfMessages / 2 + 1));
     }
 
+    [Test]
+    public async Task Terminate_WhenInvoked_InvokesTheTeraMessageAgent()
+    {
+        var queue = GetDefaultQueue();
+        var mockMessageAgent = GetDefaultTeraMessageAgent();
+        var parameters = new TeraMessageSyncParameters();
+
+        SplinterEnvironment.TeraMessageAgent = mockMessageAgent.Object;
+
+        await queue.Terminate(parameters);
+
+        mockMessageAgent.Verify(m => m.Sync(parameters), Times.Once);
+    }
+
     private static TeraMessage ConstructNextTeraMessage(int index)
     {
         return new TeraMessage

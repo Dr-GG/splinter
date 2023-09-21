@@ -153,6 +153,14 @@ public class NanoTableTests
         await AssertNonNullableReferences(table, TestNanoTypeId3, 0);
     }
 
+    [Test]
+    public void Deregister_WhenProvidingNullReferences_ExecutesSuccessfully()
+    {
+        var table = new NanoTable();
+
+        Assert.DoesNotThrowAsync(async () => await table.Deregister(GetNullableNanoReference()));
+    }
+
     private static INanoReference GetNanoReference1()
     {
         return GetNanoReference(TestNanoTypeId1);

@@ -186,24 +186,14 @@ public class TeraAgentContainer : ITeraAgentContainer
 
     private TimeSpan GetAbsoluteTimeSpan()
     {
-        if (_initialTimestamp == null
-            || _currentRelativeTimestamp == null)
-        {
-            return TimeSpan.Zero;
-        }
-
-        return _currentRelativeTimestamp.Value - _initialTimestamp.Value;
+        // Use ! because the variables are in previous method calls.
+        return _currentRelativeTimestamp!.Value - _initialTimestamp!.Value;
     }
 
     private TimeSpan GetRelativeTimeSpan()
     {
-        if (_currentRelativeTimestamp == null
-            || _previousRelativeTimestamp == null)
-        {
-            return TimeSpan.Zero;
-        }
-
-        return _currentRelativeTimestamp.Value - _previousRelativeTimestamp.Value;
+        // Use ! because the variables are in previous method calls.
+        return _currentRelativeTimestamp!.Value - _previousRelativeTimestamp!.Value;
     }
 
     private void ProcessPendingAdditions()

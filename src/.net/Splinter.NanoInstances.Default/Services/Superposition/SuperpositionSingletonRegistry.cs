@@ -70,16 +70,7 @@ public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
         }
     }
 
-    private static async Task TerminateSingletonReference(INanoAgent nanoAgent)
-    {
-        var parameters = new NanoTerminationParameters
-        {
-            Force = true
-        };
-
-        await nanoAgent.Terminate(parameters);
-    }
-
+    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         try
@@ -92,10 +83,22 @@ public class SuperpositionSingletonRegistry : ISuperpositionSingletonRegistry
             }
 
             _singletonMap.Clear();
+
+            GC.SuppressFinalize(this);
         }
         finally
         {
             _rwLock.ReleaseWriterLock();
         }
+    }
+
+    private static async Task TerminateSingletonReference(INanoAgent nanoAgent)
+    {
+        var parameters = new NanoTerminationParameters
+        {
+            Force = true
+        };
+
+        await nanoAgent.Terminate(parameters);
     }
 }
